@@ -63,7 +63,7 @@ class DictionaryRepository {
     final Set<String> normalizedWords = <String>{};
 
     for (final String line in rawDictionary.split(RegExp(r'\r?\n'))) {
-      final String normalizedWord = normalizeWord(line);
+      final String normalizedWord = normalizeDictionaryEntry(line);
 
       if (normalizedWord.length >= 3) {
         normalizedWords.add(normalizedWord);
@@ -88,5 +88,15 @@ class DictionaryRepository {
     }
 
     return buffer.toString().replaceAll(RegExp(r'[^a-zçğıöşü]'), '');
+  }
+
+  static String normalizeDictionaryEntry(String entry) {
+    final String trimmedEntry = entry.trim();
+
+    if (trimmedEntry.isEmpty || RegExp(r"[\s'’\-]").hasMatch(trimmedEntry)) {
+      return '';
+    }
+
+    return normalizeWord(trimmedEntry);
   }
 }

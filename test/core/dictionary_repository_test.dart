@@ -9,7 +9,8 @@ void main() {
     final DictionaryRepository repository = DictionaryRepository();
 
     expect(await repository.contains('kalem'), isTrue);
-    expect(await repository.contains('İSTANBUL'), isTrue);
+    expect(await repository.contains('çİÇEK'), isTrue);
+    expect(await repository.contains('abl'), isFalse);
     expect(await repository.contains('xzyt'), isFalse);
   });
 
@@ -38,4 +39,16 @@ void main() {
 
     expect(matches, <String>{'kalem', 'çiçek'});
   });
+
+  test(
+    'ignores multi-word dictionary entries when loading the asset',
+    () async {
+      final DictionaryRepository repository = DictionaryRepository(
+        assetLoader: (_) async => 'kalem\naba güreşi\nçiçek\n',
+      );
+
+      expect(await repository.contains('kalem'), isTrue);
+      expect(await repository.contains('abagüreşi'), isFalse);
+    },
+  );
 }
