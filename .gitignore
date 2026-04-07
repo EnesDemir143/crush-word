@@ -182,3 +182,6 @@ Temporary Items
 
 # Track the app lockfile even though some generic Dart templates ignore it.
 !pubspec.lock
+
+# Keep the downloaded Hunspell source local; the app consumes the generated txt asset.
+assets/dictionary/hunspell-tr-main/
