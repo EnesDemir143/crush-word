@@ -50,8 +50,9 @@
 - [ ] **ECON-01**: Oyuncu test/oyun rahatligi icin yuksek veya fiilen sinirsiz altinla baslar; gercek para ile satin alma akisi bulunmaz.
 - [ ] **MKT-01**: Market ekrani mevcut altini, joker aciklamalarini, kullanim amacini, maliyetini ve kullanim seklini gosterir.
 - [ ] **MKT-02**: Markette tam olarak `Balik`, `Tekerlek`, `Lolipop Kirici`, `Serbest Degistirme`, `Harf Karistirma`, `Parti Guclendiricisi` jokerleri bulunur.
-- [ ] **MKT-03**: Yeterli altina sahip kullanici joker satin alabilir; satin alinan jokerler oyun ekraninda secilebilir olur.
-- [ ] **MKT-04**: Jokerler dokumandaki board etkilerini uygular.
+- [ ] **MKT-03**: Yeterli altina sahip kullanici joker satin alabilir.
+- [ ] **MKT-04**: Satin alinan jokerler oyun ekraninin alt kisiminda secilebilir ve kullanilabilir olarak gorunur.
+- [ ] **MKT-05**: Jokerler dokumandaki board etkilerini uygular.
 
 ### Skor Gecmisi ve Oyun Bitisi
 
@@ -118,6 +119,7 @@
 | MKT-02 | Phase 5 | Pending |
 | MKT-03 | Phase 5 | Pending |
 | MKT-04 | Phase 5 | Pending |
+| MKT-05 | Phase 5 | Pending |
 | HIST-01 | Phase 5 | Pending |
 | HIST-02 | Phase 5 | Pending |
 | PLAT-01 | Phase 6 | Pending |
@@ -125,8 +127,8 @@
 | SHIP-02 | Phase 6 | Pending |
 
 **Coverage:**
-- v1 requirements: 36 total
-- Mapped to phases: 36
+- v1 requirements: 37 total
+- Mapped to phases: 37
 - Unmapped: 0
 
 ---

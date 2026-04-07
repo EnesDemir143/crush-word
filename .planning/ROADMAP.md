@@ -10,7 +10,7 @@ Bu roadmap, varsayilan Flutter starter uygulamasini ders dokumanindaki zorunlu k
 - Integer phases (1, 2, 3): Planli ana is paketleri
 - Decimal phases (2.1, 2.2): Yalnizca acil araya giren isler icin ayrilacak
 
-- [ ] **Phase 1: Foundation and Shell** - Starter uygulamayi urun kabuguna, kalici kullanici akisina ve ortak temel modellere donustur.
+- [x] **Phase 1: Foundation and Shell** - Starter uygulamayi urun kabuguna, kalici kullanici akisina ve ortak temel modellere donustur.
 - [ ] **Phase 2: Game Setup and Board Foundation** - Yeni oyun ayarlari, agirlikli harf uretimi ve board UI temelini kur.
 - [ ] **Phase 3: Core Gameplay and Session Results** - Kelime dogrulama, puanlama, refill ve oyun sonu kayit akislarini tamamla.
 - [ ] **Phase 4: Advanced Board Mechanics** - Her zaman oynanabilir board, combo ve ozel guc davranislarini ekle.
@@ -36,9 +36,9 @@ Bu roadmap, varsayilan Flutter starter uygulamasini ders dokumanindaki zorunlu k
 **Plans**: 3 plans
 
 Plans:
-- [ ] 01-01: Replace starter app with feature-first app shell and navigation
-- [ ] 01-02: Implement username persistence, editing flow and home screen
-- [ ] 01-03: Add dictionary asset plumbing, shared models and baseline test harness
+- [x] 01-01: Replace starter app with feature-first app shell and navigation
+- [x] 01-02: Implement username persistence, editing flow and home screen
+- [x] 01-03: Add dictionary asset plumbing, shared models and baseline test harness
 
 ### Phase 2: Game Setup and Board Foundation
 **Goal**: Yeni oyun ayarlari akisiyla beraber, agirlikli harf ureten ve kare harf gridini gosteren ilk oynanabilir board temelini kurmak.
@@ -106,12 +106,13 @@ Plans:
 ### Phase 5: Market and Score History
 **Goal**: Market ekonomisini, joker satin alma/kullanma akislarini ve skor tablosu ekranini tamamlamak.
 **Depends on**: Phase 4
-**Requirements**: [ECON-01, MKT-01, MKT-02, MKT-03, MKT-04, HIST-01, HIST-02]
+**Requirements**: [ECON-01, MKT-01, MKT-02, MKT-03, MKT-04, MKT-05, HIST-01, HIST-02]
 **Success Criteria** (what must be TRUE):
   1. Oyuncu yuksek test altiniyla baslar ve market ekraninda guncel altinini gorebilir.
   2. Market, tum zorunlu jokerleri maliyet ve aciklamalariyla gosterir.
-  3. Yeterli altinla satin alinan jokerler oyun ekraninda secilebilir olur ve dogru board etkisini uygular.
-  4. Skor tablosu ustte gerekli ozet verilerini, altta da en yeni once olacak sekilde tum gecmis oyunlari gosterir.
+  3. Yeterli altinla satin alinan jokerler oyun ekraninin alt kisiminda secilebilir ve kullanilabilir olarak gorunur.
+  4. Satin alinan jokerler dogru board etkisini uygular.
+  5. Skor tablosu ustte gerekli ozet verilerini, altta da en yeni once olacak sekilde tum gecmis oyunlari gosterir.
 **Canonical refs**:
   - `docs/Yazlab 2- Proje 2.pdf`
   - `.agent/rules/06-grid-gecerlilik-ve-jokerler.md`
@@ -150,7 +151,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation and Shell | 0/3 | Not started | - |
+| 1. Foundation and Shell | 3/3 | Completed | 2026-04-07 |
 | 2. Game Setup and Board Foundation | 0/3 | Not started | - |
 | 3. Core Gameplay and Session Results | 0/3 | Not started | - |
 | 4. Advanced Board Mechanics | 0/3 | Not started | - |
