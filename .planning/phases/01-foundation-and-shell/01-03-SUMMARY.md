@@ -33,7 +33,7 @@ key-files:
     ]
   modified: [.gitignore, pubspec.yaml]
 key-decisions:
-  - "Sozluk, uygulama icinde `assets/dictionary/tr_words.txt` olarak paketlendi ve network bagimliligi kaldirildi."
+  - "Sozluk, uygulama icinde `assets/dictionary/tr_words.txt` olarak paketlendi ve tek kelimelik temiz Turkce girdilere filtrelenerek network bagimliligi kaldirildi."
   - "Zorluk kurallari `GameDifficulty` uzerinde merkezi tutuldu; `GameConfig` bu mapping'i canonical veri sekline donusturuyor."
   - "Skor gecmisi ihtiyaclari icin `GameResult` tarih, sure, skor, kelime sayisi ve en uzun kelime alanlariyla kaliciliga hazir tasarlandi."
 patterns-established:
@@ -57,7 +57,7 @@ completed: 2026-04-07
 
 ## Accomplishments
 
-- Hunspell kaynagindan uretilen `tr_words.txt` asset'i uygulamaya baglandi ve `DictionaryRepository` ile offline lookup kullanima hazir hale geldi.
+- Temizlenmis tek-kelime Turkce liste `tr_words.txt` asset'i olarak paketlendi ve `DictionaryRepository` ile offline lookup kullanima hazir hale geldi.
 - Turkce buyuk/kucuk harf donusumu ve noktalama temizligi tek noktada normalize edildi.
 - `GameDifficulty`, `GameConfig` ve `GameResult` modelleri sonraki setup, gameplay ve score-history fazlarinin kullanacagi ortak contract olarak eklendi.
 
