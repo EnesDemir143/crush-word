@@ -21,7 +21,7 @@ migrate_working_dir/
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
 # is commented out by default.
-#.vscode/
+.vscode/
 
 # Flutter/Dart/Pub related
 **/doc/api/
@@ -185,3 +185,8 @@ Temporary Items
 
 # Keep the downloaded Hunspell source local; the app consumes the generated txt asset.
 assets/dictionary/hunspell-tr-main/
+
+# Keep only the human-readable Graphify report tracked.
+graphify-out/cache/
+graphify-out/graph.html
+graphify-out/graph.json

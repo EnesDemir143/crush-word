@@ -1,6 +1,6 @@
 # Technology Stack
 
-**Analysis Date:** 2026-04-07
+**Analysis Date:** 2026-04-09
 
 ## Languages
 
@@ -39,9 +39,13 @@
 **Critical:**
 - `flutter` - UI ve runtime
 - `cupertino_icons` - Varsayilan ikon paketi
+- `shared_preferences` - Profil ve hafif ayarlar icin mevcut yerel key-value depolama
 
 **Infrastructure:**
 - Dis servis bagimliligi bulunmuyor
+
+**Planned Local Persistence:**
+- `sqflite` - Skor gecmisi, altin ve joker envanteri icin planlanan SQLite katmani
 
 ## Configuration
 
@@ -64,5 +68,5 @@
 - Web ve masaustu teslim kapsaminda degil
 
 ---
-*Stack analysis: 2026-04-07*
+*Stack analysis: 2026-04-09*
 *Update after major dependency changes*

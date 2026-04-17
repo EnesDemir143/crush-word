@@ -1,6 +1,6 @@
 # External Integrations
 
-**Analysis Date:** 2026-04-07
+**Analysis Date:** 2026-04-09
 
 ## APIs & External Services
 
@@ -9,10 +9,12 @@ Bu kod tabaninda halihazirda harici API veya servis entegrasyonu yok.
 ## Data Storage
 
 **Current state:**
-- Kalici veri katmani henuz uygulanmamis
+- Kullanici adi persistence'i `shared_preferences` uzerinden mevcut
+- Structured local database katmani henuz uygulanmamis
 
 **Planned direction for this project:**
-- Kullanici adi, skor gecmisi, altin ve joker envanteri yerel depolamada tutulacak
+- Kullanici adi ve hafif ayarlar `shared_preferences` uzerinden tutulacak
+- Skor gecmisi, altin ve joker envanteri `sqflite` tabanli SQLite depolamada tutulacak
 - Kelime dogrulama, paketlenmis bir yerel sozluk asset'i ile yapilacak
 
 ## Authentication & Identity
@@ -45,5 +47,5 @@ Bu kod tabaninda halihazirda harici API veya servis entegrasyonu yok.
 - Yok
 
 ---
-*Integration audit: 2026-04-07*
+*Integration audit: 2026-04-09*
 *Update when adding/removing external services*
