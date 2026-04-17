@@ -11,6 +11,7 @@ Bu roadmap, varsayilan Flutter starter uygulamasini ders dokumanindaki zorunlu k
 - Decimal phases (2.1, 2.2): Yalnizca acil araya giren isler icin ayrilacak
 
 - [x] **Phase 1: Foundation and Shell** - Starter uygulamayi urun kabuguna, kalici kullanici akisina ve ortak temel modellere donustur.
+- [x] **Phase 01.1: Requirements, Architecture and Persistence Eval Gate** - Phase 2'ye gecmeden once kaynak dokuman, kurallar, SQLite/persistence mimarisi ve riskli oyun davranislarinin ownership/validation planini dondur.
 - [ ] **Phase 2: Game Setup and Board Foundation** - Yeni oyun ayarlari, agirlikli harf uretimi ve board UI temelini kur.
 - [ ] **Phase 3: Core Gameplay and Session Results** - Kelime dogrulama, puanlama, refill ve oyun sonu kayit akislarini tamamla.
 - [ ] **Phase 4: Advanced Board Mechanics** - Her zaman oynanabilir board, combo ve ozel guc davranislarini ekle.
@@ -40,9 +41,36 @@ Plans:
 - [x] 01-02: Implement username persistence, editing flow and home screen
 - [x] 01-03: Add dictionary asset plumbing, shared models and baseline test harness
 
+### Phase 01.1: Requirements, Architecture and Persistence Eval Gate (INSERTED)
+**Goal**: Phase 2 kodlamasina gecmeden once ana proje dokumani, `.agent` kurallari, mevcut roadmap ve mevcut kod tabani arasindaki uyumu degerlendirip persistence/SQLite secimini, tablo yapisini, klasor organizasyonunu ve riskli oyun kurallari icin dogrulama sahipligini netlestirmek.
+**Depends on**: Phase 1
+**Requirements**: Cross-phase eval gate for [GRID-01, GRID-02, GRID-06, GRID-08, COMBO-01, POWER-01, POWER-02, POWER-03, POWER-04, POWER-05, MKT-01, MKT-02, MKT-05, HIST-01, HIST-02, END-01]
+**Success Criteria** (what must be TRUE):
+  1. Ana markdown dokumani, `.agent` kurallari, `.planning` artefaktlari ve mevcut kod arasindaki eksik/yanlis ownership alanlari yazili olarak kaydedilir.
+  2. `shared_preferences` ile `sqflite` sorumluluk siniri, secilecek SQLite paketi, hedef tablo yapisi ve migration yaklasimi netlestirilir.
+  3. Oyun motoru ve persistence kodunun nereye tasinacagi, hangi klasorlerde tutulacagi ve hangi adapter/repository katmanlarina bolunecegi Phase 2 oncesi karara baglanir.
+  4. Asagidaki yuksek riskli davranislar icin validation owner'i atanir: gecersiz secimde hamle dusumu, grid solvability/fallback, combo subsequence mantigi, power-tile tetikleme, non-overlapping kelime sayisi, joker fiyat/etki sync, score aggregate siralama ve app background/resume persistence.
+  5. Harf puan tablosu ve fiyat sabitleri icin manuel kontrol gerektiren maddeler ayrica isaretlenir; otomatik ve manuel kontrol alanlari karistirilmaz.
+**Canonical refs**:
+  - `docs/yazlab2_2_opendataloader/Yazlab 2- Proje 2.md`
+  - `.agent/rules/04-oyun-akisi-ve-kelime-kurallari.md`
+  - `.agent/rules/05-puanlama-ozel-gucler-combo.md`
+  - `.agent/rules/06-grid-gecerlilik-ve-jokerler.md`
+  - `.agent/rules/07-skor-gecmisi-ve-oyun-bitisi.md`
+  - `.planning/PROJECT.md`
+  - `.planning/REQUIREMENTS.md`
+  - `.planning/codebase/ARCHITECTURE.md`
+**Plans**: 3 plans
+
+Plans:
+- [x] 01.1-01: Audit source spec, agent rules and roadmap for missing or misassigned gameplay rules
+- [x] 01.1-02: Freeze persistence boundary, SQLite schema and target file structure
+- [x] 01.1-03: Define eval matrix, manual review checklist and downstream phase updates
+**Exit criteria note**: Phase 2 implementasyonu bu phase'te olusan `01.1-EVAL-MATRIX.md` ve `01.1-MANUAL-CHECKLIST.md` kontratina uyarak ilerleyecektir. `mixed` veya `manual` satirlarda downstream execution `MANUAL GATE` bildirimi olmadan item kapatamaz.
+
 ### Phase 2: Game Setup and Board Foundation
 **Goal**: Yeni oyun ayarlari akisiyla beraber, agirlikli harf ureten ve kare harf gridini gosteren ilk oynanabilir board temelini kurmak.
-**Depends on**: Phase 1
+**Depends on**: Phase 01.1
 **Requirements**: [PLAT-03, SETUP-01, SETUP-02, SETUP-03, GRID-01, GRID-03]
 **Success Criteria** (what must be TRUE):
   1. `Yeni Oyun` akisinda grid secenekleri tam dokumanla ayni deger ve zorluk eslesmesiyle sunulur.
@@ -50,6 +78,9 @@ Plans:
   3. Oyun ekrani secilen boyutta kare harf gridini gosterir.
   4. Baslangic board'undaki harfler Turkce frekans mantigina gore uretilir.
   5. Oyuncu herhangi bir hucreden 8 yonlu komsulukla tekrar kullanmadan secim yolunu olusturabilir ve secilen yol ekranda vurgulanir.
+  6. Phase 01.1'de dondurulen folder structure ve persistence sinirlari ihlal edilmeden ilerlenir.
+**Ownership note**: `GRID-02` solvability/fallback davranisinin authoritative owner'i bu faz degil, Phase 4 / `04-01`'dir. Phase 2 yalnizca weighted generation ve session-level hook'lari hazirlar.
+**Manual gate note**: Zorluk-grid-hamle mapping config'e ilk kez tasindiginda kullaniciyla manuel source check yapilir.
 **Canonical refs**:
   - `docs/yazlab_2_2/Yazlab 2- Proje 2/auto/Yazlab 2- Proje 2.md`
   - `.agent/rules/03-yeni-oyun-ve-zorluk.md`
@@ -70,6 +101,7 @@ Plans:
   2. 3 harften kisa secimler veya gecersiz kelimeler board'u bozmadan geri alinir, ama yine de 1 hamle dusurur.
   3. Gecerli kelimelerde puan hesabi harf tablosuna gore yapilir, secilen harfler temizlenir, yercekimi uygulanir ve ustten yeni harfler dolar.
   4. Hamle sifirlandiginda ya da kullanici cikisi onayladiginda sonuc kaydedilir ve ana ekrana donulur.
+**Manual gate note**: `03-02` sonunda harf puan tablosu canonical source ile kaynak dokuman arasinda manuel karsilastirilir. Resume persistence implement edildiginde app background/resume smoke-check yapilir.
 **Canonical refs**:
   - `docs/Yazlab 2- Proje 2.pdf`
   - `.agent/rules/04-oyun-akisi-ve-kelime-kurallari.md`
@@ -88,10 +120,11 @@ Plans:
 **Requirements**: [GRID-02, GRID-08, POWER-01, POWER-02, POWER-03, POWER-04, POWER-05, COMBO-01]
 **Success Criteria** (what must be TRUE):
   1. Baslangic ve hamle sonrasi board'larda en az bir gecerli kelime kalir; yoksa otomatik cozum uygulanir.
-  2. Oyun ekrani guncel olusturulabilir kelime sayisini gosterir.
-  3. Combo puani, ana kelime icindeki benzersiz alt kelimelerin puanlarini da toplama ekler.
+  2. Oyun ekrani ortak harf kullanmayan cozum mantigiyla hesaplanan guncel olusturulabilir kelime sayisini gosterir.
+  3. Combo puani, ana kelime icindeki benzersiz ve sirayi koruyan alt kelimelerin puanlarini da toplama ekler.
   4. 4/5/6/7+ harfli kelimeler dogru guc tile'ini son harfte olusturur.
   5. Guc tasiyan hucre sonradan kullanildiginda dogru board etkisi tetiklenir.
+**Manual gate note**: `04-01` ve `04-03` sonlarinda oyuncuya gorunen count/power davranisi kisa smoke-check ile teyit edilir; power threshold degerleri config'e ilk yazildiginda manuel source check yapilir.
 **Canonical refs**:
   - `docs/Yazlab 2- Proje 2.pdf`
   - `.agent/rules/05-puanlama-ozel-gucler-combo.md`
@@ -109,10 +142,13 @@ Plans:
 **Requirements**: [ECON-01, MKT-01, MKT-02, MKT-03, MKT-04, MKT-05, HIST-01, HIST-02]
 **Success Criteria** (what must be TRUE):
   1. Oyuncu yuksek test altiniyla baslar ve market ekraninda guncel altinini gorebilir.
-  2. Market, tum zorunlu jokerleri maliyet ve aciklamalariyla gosterir.
+  2. Market, tum zorunlu jokerleri tek canonical katalog kaynagindan gelen maliyet ve aciklamalariyla gosterir.
   3. Yeterli altinla satin alinan jokerler oyun ekraninin alt kisiminda secilebilir ve kullanilabilir olarak gorunur.
-  4. Satin alinan jokerler dogru board etkisini uygular.
+  4. Satin alinan jokerler ayni canonical katalog ile uyumlu dogru board etkisini uygular.
   5. Skor tablosu ustte gerekli ozet verilerini, altta da en yeni once olacak sekilde tum gecmis oyunlari gosterir.
+**Ownership note**: Oyuncuya gorunen score aggregate/newest-first davranisinin authoritative owner'i Phase 5 / `05-03`'tur; `03-03` bu davranis icin yalnizca persistence onkosulu saglar.
+**Manual note**: Joker fiyat sabitleri davranis testlerinden ayri olarak insan tarafindan kaynak tabloya gore dogrulanir.
+**Manual gate note**: `05-01` sonunda joker fiyat/katalog sabitleri, `05-03` sonunda newest-first history ve aggregate alanlari kullanici tarafindan manuel teyit edilir.
 **Canonical refs**:
   - `docs/Yazlab 2- Proje 2.pdf`
   - `.agent/rules/06-grid-gecerlilik-ve-jokerler.md`
@@ -147,11 +183,12 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6
+Phases execute in numeric order: 1 -> 1.1 -> 2 -> 3 -> 4 -> 5 -> 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation and Shell | 3/3 | Completed | 2026-04-07 |
+| 01.1 Requirements, Architecture and Persistence Eval Gate | 3/3 | Completed | 2026-04-18 |
 | 2. Game Setup and Board Foundation | 0/3 | Not started | - |
 | 3. Core Gameplay and Session Results | 0/3 | Not started | - |
 | 4. Advanced Board Mechanics | 0/3 | Not started | - |

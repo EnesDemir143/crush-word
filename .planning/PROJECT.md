@@ -45,10 +45,36 @@ Repo su an varsayilan Flutter counter uygulamasi seviyesinde ve urun davranisi h
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
 | Flutter tabanli, yerel calisan uygulama hedefi | Mevcut repo Flutter ve proje dokumani mobil agirlikli | - Pending |
-| Backend yerine yerel kalici depolama kullan | Skor gecmisi, kullanici adi, altin ve joker envanteri icin yeterli; gereksiz karmasiklik azaltir | - Pending |
+| Backend yerine yerel kalici depolama kullan | Skor gecmisi, kullanici adi, altin ve joker envanteri icin yeterli; gereksiz karmasiklik azaltir | Accepted 2026-04-09 |
+| `shared_preferences`i yalnizca profil ve hafif ayarlar icin kullan | Kullanici adi gibi tekil key-value verilerde en dusuk karmasikligi korur | Accepted 2026-04-09 |
+| Skor gecmisi, altin ve joker envanteri icin `sqflite` tabanli yerel SQLite katmani kur | Newest-first siralama, tekrarli kayitlar ve atomik ekonomi guncellemeleri key-value depolamadan daha temiz yonetilir | Accepted 2026-04-09 |
+| Ayarlanabilir oyun sabitlerini config-driven tut, davranis algoritmalarini ise kodda birak | Fiyatlar, puanlar ve threshold'lar tek yerden degistirilebilir olurken combo/solvability gibi kritik mantik tip-guvenli ve testlenebilir kalir | Accepted 2026-04-18 |
+| Runtime oyun kurallari dosya formati olarak `JSON` kullan; `YAML` kullanma | Bu repo icin daha dusuk parse riski, daha sade tooling ve Flutter tarafinda daha duzgun typed-model akisi saglar | Accepted 2026-04-18 |
+| Structured lokal veriyi `word_crush.db` icindeki `sqflite` katmaninda topla | Tek `AppDatabase` giris noktasi ve integer schema version, Phase 3-5 boyunca migration ve query mantigini sade tutar | Accepted 2026-04-18 |
+| Aktif oyun restore state'ini singleton `session_checkpoint` tablosunda tut | Uygulama ayni anda tek aktif oyun destekleyecek; coklu session history gereksiz karmasiklik ekler | Accepted 2026-04-18 |
+| Gelecek kodu `lib/src/core/gameplay/`, `lib/src/core/config/`, `lib/src/core/persistence/sqlite/` ve `lib/src/core/repositories/` altina yerleştir | Gameplay, config ve persistence sinirlari Phase 2 oncesi dondurulursa downstream planlar ayni yapida ilerler | Accepted 2026-04-18 |
 | Sozluk dosyasini uygulama asset'i olarak paketle | Sunum sirasinda offline ve deterministik davranis saglar | - Pending |
 | Oyun mantigini UI'dan ayri servis/controller katmanlarinda tut | Grid, combo, joker ve puanlama davranislarini test edilebilir hale getirir | - Pending |
 | Agir state-management kutuphaneleri ekleme | Proje olcegi icin built-in Flutter yapilari ve yalnizca gerekli controller katmani yeterli | - Pending |
 
+## Frozen Implementation Shape
+
+Bu eval gate sonrasinda yeni runtime kodu su yerlere gitmelidir:
+
+- `assets/config/game_rules.json`
+- `lib/src/core/config/`
+- `lib/src/core/gameplay/`
+- `lib/src/core/persistence/sqlite/`
+- `lib/src/core/repositories/`
+
+Beklenen ilk repository dosyalari:
+- `lib/src/core/repositories/wallet_repository.dart`
+- `lib/src/core/repositories/session_checkpoint_repository.dart`
+
+Notlar:
+- `wallet_repository` coin state icin canonical read/write siniridir.
+- `session_checkpoint_repository` grid, hamle ve sure restore state'ini yonetir.
+- `game_rules.json` harf puanlari, joker fiyatlari, frekans agirliklari ve threshold'lar icin canonical config kaynagidir.
+
 ---
-*Last updated: 2026-04-07 after initial GSD planning setup*
+*Last updated: 2026-04-18 after Phase 01.1-02 data architecture freeze*

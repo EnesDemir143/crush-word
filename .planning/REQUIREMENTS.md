@@ -126,6 +126,15 @@
 | SHIP-01 | Phase 6 | Pending |
 | SHIP-02 | Phase 6 | Pending |
 
+## Planning Notes
+
+- `GRID-02 ownership`: authoritative solvability/fallback owner'i Phase 4 / `04-01`'dir; Phase 2 yalnizca board/session scaffolding hazirlar.
+- `COMBO-01 note`: compliant implementasyon benzersiz ve sirayi koruyan alt kelimeleri hedefler; substring-only yaklasim yeterli degildir.
+- `MKT-05 ownership`: Phase 5, market fiyat/aciklama verisi ile gameplay effect'lerini tek canonical joker katalogu uzerinden senkron tutmalidir.
+- `HIST-01/HIST-02 ownership`: oyuncuya gorunen aggregate + newest-first davranisi Phase 5 / `05-03` owner'ligindedir; Phase 3 repository sirasini sadece veri onkosulu olarak hazirlar.
+- `Persistence gap`: app background/resume session restore su an source requirement ID tasimayan bir architecture gap'tir ve Phase `01.1-02` icinde explicit owner karari gerektirir.
+- `Manual review note`: `SCORE-01` harf puan sabitleri ile joker fiyat sabitleri otomatik testler olsa bile insan tarafindan kaynak dokumana gore tekrar dogrulanir.
+
 **Coverage:**
 - v1 requirements: 37 total
 - Mapped to phases: 37
@@ -133,4 +142,4 @@
 
 ---
 *Requirements defined: 2026-04-07*
-*Last updated: 2026-04-07 after initial roadmap creation*
+*Last updated: 2026-04-18 after Phase 01.1-01 spec audit*
