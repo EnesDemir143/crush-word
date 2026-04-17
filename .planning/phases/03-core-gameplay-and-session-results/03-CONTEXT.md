@@ -24,6 +24,7 @@ Bu faz, secilen yolun kelimeye donusturulmesi, sozlukte kontrol edilmesi, puan v
 
 ### Session persistence
 - Oyun sonucu; grid boyutu, puan, bulunan kelime sayisi, en uzun kelime ve sure gibi alanlarla kaydedilecek.
+- Bu kayitlar `shared_preferences` yerine `sqflite` tabanli bir `game_results` tablosuna yazilacak.
 - Oyun sonu ve cikis onayi ayni result-save akisini kullanacak.
 
 ### Claude's Discretion
@@ -62,9 +63,10 @@ Bu faz, secilen yolun kelimeye donusturulmesi, sozlukte kontrol edilmesi, puan v
 
 ### Established Patterns
 - Grid state, UI widget'larina yayilmadan merkezi session modeli uzerinden guncellenmeli.
+- Profil/ayarlar ve structured oyun verisi ayni depolama turunde karistirilmamali.
 
 ### Integration Points
-- History persistence bu fazda yazilacak veriyi Phase 5'te okuyacak.
+- History persistence bu fazda `sqflite` ile yazilacak veriyi Phase 5'te okuyacak.
 
 </code_context>
 

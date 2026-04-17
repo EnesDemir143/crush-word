@@ -19,10 +19,12 @@ Bu faz, kullanicinin marketten joker satin alip oyunda kullanmasini ve daha once
 
 ### Joker inventory
 - Satin alinan jokerler yerel depolamada tutulacak.
+- Bu veri, score history ile ayni `sqflite` veritabani icinde tutulacak.
 - Tek kullanimli joker mantigi varsayilacak; kullanildiginda stok duser.
 
 ### Score history
 - Gecmis oyunlar tek cihaz/tek kullanici bazinda saklanacak.
+- Gecmis oyunlar `sqflite` tabanli SQLite kayitlarindan okunacak.
 - Ozet metrikler kayitli sonuclardan turetilecek, ayri elle tutulmus aggregate tablo gerekmeyecek.
 
 ### Claude's Discretion
@@ -36,6 +38,7 @@ Bu faz, kullanicinin marketten joker satin alip oyunda kullanmasini ve daha once
 
 - Joker isimleri ve maliyetleri PDF'den dogrulanan sabit katalog olarak merkezi tek dosyada tutulmali.
 - Skor ekraninda en yeni kaydin ustte olmasi zorunlu; bunu repository seviyesinde garanti etmek daha guvenli.
+- Altin dusumu ve joker stok artisi ayni SQLite transaction icinde yapilabilirse ekonomi daha guvenli kalir.
 
 </specifics>
 
@@ -61,11 +64,12 @@ Bu faz, kullanicinin marketten joker satin alip oyunda kullanmasini ve daha once
 - Phase 4 game session modeli, joker etkilerinin board'a uygulanmasi icin entegrasyon noktasi sunacak.
 
 ### Established Patterns
-- Envanter, altin ve skor gecmisi ayni yerel veri mantigi uzerinden gitmeli; ayri ayri rastgele saklama yapilari acilmamali.
+- Profil ve hafif ayarlar `shared_preferences`, envanter/altin/skor gecmisi ise ayni `sqflite` veritabani uzerinden gitmeli.
 
 ### Integration Points
 - Home ekranindaki `Market` ve `Skor Tablosu` girisleri bu fazda gercek ekranlara baglanacak.
 - In-game joker secici, markette satin alinan envanteri okuyacak.
+- Phase 3'te acilan app database bu fazin market ve history repository'leri tarafindan paylasilacak.
 
 </code_context>
 
