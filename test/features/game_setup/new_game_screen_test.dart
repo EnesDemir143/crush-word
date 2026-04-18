@@ -48,45 +48,83 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('setup-move-15')), findsOneWidget);
-    expect(find.byKey(const Key('setup-move-20')), findsNothing);
-    expect(find.byKey(const Key('setup-move-25')), findsNothing);
+    expect(find.byKey(const Key('setup-move-20')), findsOneWidget);
+    expect(find.byKey(const Key('setup-move-25')), findsOneWidget);
   });
 
-  testWidgets('selecting move count starts a structured game session config', (
-    WidgetTester tester,
-  ) async {
-    final GameSetupController controller = GameSetupController(
-      loader: GameRulesLoader(bundle: _TestAssetBundle(_gameRulesJson)),
-    );
-    GameConfig? startedConfig;
+  testWidgets(
+    'selecting an independent move count starts a structured game session config',
+    (WidgetTester tester) async {
+      final GameSetupController controller = GameSetupController(
+        loader: GameRulesLoader(bundle: _TestAssetBundle(_gameRulesJson)),
+      );
+      GameConfig? startedConfig;
 
-    await tester.pumpWidget(
-      MaterialApp(
-        home: NewGameScreen(
-          controller: controller,
-          onStartGame: (GameConfig config) {
-            startedConfig = config;
-          },
+      await tester.pumpWidget(
+        MaterialApp(
+          home: NewGameScreen(
+            controller: controller,
+            onStartGame: (GameConfig config) {
+              startedConfig = config;
+            },
+          ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('setup-difficulty-medium')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('setup-move-20')));
-    await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('setup-difficulty-medium')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('setup-move-20')));
+      await tester.pumpAndSettle();
 
-    expect(
-      startedConfig,
-      const GameConfig(
-        difficulty: GameDifficulty.medium,
-        difficultyLabel: 'Orta',
-        gridSize: 8,
-        moveLimit: 20,
-      ),
-    );
-  });
+      expect(
+        startedConfig,
+        const GameConfig(
+          difficulty: GameDifficulty.medium,
+          difficultyLabel: 'Orta',
+          gridSize: 8,
+          moveLimit: 20,
+        ),
+      );
+    },
+  );
+
+  testWidgets(
+    'selected grid stays fixed even when a different move package is chosen',
+    (WidgetTester tester) async {
+      final GameSetupController controller = GameSetupController(
+        loader: GameRulesLoader(bundle: _TestAssetBundle(_gameRulesJson)),
+      );
+      GameConfig? startedConfig;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: NewGameScreen(
+            controller: controller,
+            onStartGame: (GameConfig config) {
+              startedConfig = config;
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('setup-difficulty-hard')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('setup-move-25')));
+      await tester.pumpAndSettle();
+
+      expect(
+        startedConfig,
+        const GameConfig(
+          difficulty: GameDifficulty.hard,
+          difficultyLabel: 'Zor',
+          gridSize: 6,
+          moveLimit: 25,
+        ),
+      );
+    },
+  );
 }
 
 class _TestAssetBundle extends CachingAssetBundle {
@@ -114,22 +152,36 @@ const String _gameRulesJson = '''
         "difficulty": "hard",
         "label": "Zor",
         "gridLabel": "6x6 Grid",
-        "gridSize": 6,
-        "moveCountOptions": [15]
+        "gridSize": 6
       },
       {
         "difficulty": "medium",
         "label": "Orta",
         "gridLabel": "8x8 Grid",
-        "gridSize": 8,
-        "moveCountOptions": [20]
+        "gridSize": 8
       },
       {
         "difficulty": "easy",
         "label": "Kolay",
         "gridLabel": "10x10 Grid",
-        "gridSize": 10,
-        "moveCountOptions": [25]
+        "gridSize": 10
+      }
+    ],
+    "moveCountOptions": [
+      {
+        "difficulty": "easy",
+        "label": "Kolay",
+        "moveLimit": 25
+      },
+      {
+        "difficulty": "medium",
+        "label": "Orta",
+        "moveLimit": 20
+      },
+      {
+        "difficulty": "hard",
+        "label": "Zor",
+        "moveLimit": 15
       }
     ]
   }

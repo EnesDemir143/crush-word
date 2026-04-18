@@ -20,21 +20,34 @@ class GameRulesConfig {
 }
 
 class GameSetupRules {
-  const GameSetupRules({required this.difficultyOptions});
+  const GameSetupRules({
+    required this.difficultyOptions,
+    required this.moveCountOptions,
+  });
 
   final List<GameSetupOption> difficultyOptions;
+  final List<GameMoveCountOption> moveCountOptions;
 
   factory GameSetupRules.fromJson(Map<String, dynamic> json) {
-    final Object? optionsJson = json['difficultyOptions'];
+    final Object? difficultyOptionsJson = json['difficultyOptions'];
+    final Object? moveCountOptionsJson = json['moveCountOptions'];
 
-    if (optionsJson is! List<dynamic> || optionsJson.isEmpty) {
+    if (difficultyOptionsJson is! List<dynamic> ||
+        difficultyOptionsJson.isEmpty) {
       throw const FormatException(
         'Setup rules require at least one difficulty option.',
       );
     }
 
+    if (moveCountOptionsJson is! List<dynamic> ||
+        moveCountOptionsJson.isEmpty) {
+      throw const FormatException(
+        'Setup rules require at least one move count option.',
+      );
+    }
+
     return GameSetupRules(
-      difficultyOptions: optionsJson
+      difficultyOptions: difficultyOptionsJson
           .map((Object? optionJson) {
             if (optionJson is! Map<String, dynamic>) {
               throw const FormatException(
@@ -43,6 +56,17 @@ class GameSetupRules {
             }
 
             return GameSetupOption.fromJson(optionJson);
+          })
+          .toList(growable: false),
+      moveCountOptions: moveCountOptionsJson
+          .map((Object? optionJson) {
+            if (optionJson is! Map<String, dynamic>) {
+              throw const FormatException(
+                'Each move count option must be a JSON object.',
+              );
+            }
+
+            return GameMoveCountOption.fromJson(optionJson);
           })
           .toList(growable: false),
     );
@@ -55,32 +79,14 @@ class GameSetupOption {
     required this.label,
     required this.gridLabel,
     required this.gridSize,
-    required this.moveCountOptions,
   });
 
   final GameDifficulty difficulty;
   final String label;
   final String gridLabel;
   final int gridSize;
-  final List<int> moveCountOptions;
-
-  String get moveSummary {
-    if (moveCountOptions.length == 1) {
-      return '${moveCountOptions.single} hamle';
-    }
-
-    return moveCountOptions.map((int count) => '$count').join(' / ');
-  }
 
   GameConfig toGameConfig({required int moveLimit}) {
-    if (!moveCountOptions.contains(moveLimit)) {
-      throw ArgumentError.value(
-        moveLimit,
-        'moveLimit',
-        'Move limit is not allowed for ${difficulty.name}.',
-      );
-    }
-
     return GameConfig(
       difficulty: difficulty,
       difficultyLabel: label,
@@ -94,22 +100,13 @@ class GameSetupOption {
     final String label = (json['label'] as String?)?.trim() ?? '';
     final String gridLabel = (json['gridLabel'] as String?)?.trim() ?? '';
     final int? gridSize = (json['gridSize'] as num?)?.toInt();
-    final List<int> moveCountOptions =
-        ((json['moveCountOptions'] as List?)
-                  ?.map((Object? value) => (value as num?)?.toInt())
-                  .whereType<int>()
-                  .toSet()
-                  .toList() ??
-              const <int>[])
-          ..sort();
 
     if (difficultyName.isEmpty ||
         label.isEmpty ||
         gridLabel.isEmpty ||
-        gridSize == null ||
-        moveCountOptions.isEmpty) {
+        gridSize == null) {
       throw const FormatException(
-        'Difficulty option requires difficulty, label, gridLabel, gridSize and moveCountOptions.',
+        'Difficulty option requires difficulty, label, gridLabel and gridSize.',
       );
     }
 
@@ -118,7 +115,38 @@ class GameSetupOption {
       label: label,
       gridLabel: gridLabel,
       gridSize: gridSize,
-      moveCountOptions: List<int>.unmodifiable(moveCountOptions),
+    );
+  }
+}
+
+class GameMoveCountOption {
+  const GameMoveCountOption({
+    required this.difficulty,
+    required this.label,
+    required this.moveLimit,
+  });
+
+  final GameDifficulty difficulty;
+  final String label;
+  final int moveLimit;
+
+  String get ctaLabel => '$label - $moveLimit hamle';
+
+  factory GameMoveCountOption.fromJson(Map<String, dynamic> json) {
+    final String difficultyName = (json['difficulty'] as String?)?.trim() ?? '';
+    final String label = (json['label'] as String?)?.trim() ?? '';
+    final int? moveLimit = (json['moveLimit'] as num?)?.toInt();
+
+    if (difficultyName.isEmpty || label.isEmpty || moveLimit == null) {
+      throw const FormatException(
+        'Move count option requires difficulty, label and moveLimit.',
+      );
+    }
+
+    return GameMoveCountOption(
+      difficulty: GameDifficulty.fromName(difficultyName),
+      label: label,
+      moveLimit: moveLimit,
     );
   }
 }

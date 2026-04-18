@@ -27,8 +27,8 @@ class GameSetupController extends ChangeNotifier {
   List<GameSetupOption> get difficultyOptions =>
       _rules?.setup.difficultyOptions ?? const <GameSetupOption>[];
 
-  List<int> get availableMoveCountOptions =>
-      _selectedDifficulty?.moveCountOptions ?? const <int>[];
+  List<GameMoveCountOption> get availableMoveCountOptions =>
+      _rules?.setup.moveCountOptions ?? const <GameMoveCountOption>[];
 
   bool get canStepBack => _step == GameSetupStep.moveCount;
 
@@ -68,7 +68,7 @@ class GameSetupController extends ChangeNotifier {
     notifyListeners();
   }
 
-  GameConfig confirmMoveCount(int moveLimit) {
+  GameConfig confirmMoveCount(GameMoveCountOption moveCountOption) {
     final GameSetupOption? option = _selectedDifficulty;
 
     if (option == null) {
@@ -77,6 +77,6 @@ class GameSetupController extends ChangeNotifier {
       );
     }
 
-    return option.toGameConfig(moveLimit: moveLimit);
+    return option.toGameConfig(moveLimit: moveCountOption.moveLimit);
   }
 }

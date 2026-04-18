@@ -5,22 +5,36 @@
         "difficulty": "hard",
         "label": "Zor",
         "gridLabel": "6x6 Grid",
-        "gridSize": 6,
-        "moveCountOptions": [15]
+        "gridSize": 6
       },
       {
         "difficulty": "medium",
         "label": "Orta",
         "gridLabel": "8x8 Grid",
-        "gridSize": 8,
-        "moveCountOptions": [20]
+        "gridSize": 8
       },
       {
         "difficulty": "easy",
         "label": "Kolay",
         "gridLabel": "10x10 Grid",
-        "gridSize": 10,
-        "moveCountOptions": [25]
+        "gridSize": 10
+      }
+    ],
+    "moveCountOptions": [
+      {
+        "difficulty": "easy",
+        "label": "Kolay",
+        "moveLimit": 25
+      },
+      {
+        "difficulty": "medium",
+        "label": "Orta",
+        "moveLimit": 20
+      },
+      {
+        "difficulty": "hard",
+        "label": "Zor",
+        "moveLimit": 15
       }
     ]
   }

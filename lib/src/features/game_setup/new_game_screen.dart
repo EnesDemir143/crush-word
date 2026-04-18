@@ -131,7 +131,13 @@ class _NewGameScreenState extends State<NewGameScreen> {
 
     if (_controller.step == GameSetupStep.moveCount) {
       final GameSetupOption option = _controller.selectedDifficulty!;
-      return _MoveCountStep(option: option, onMoveSelected: _startGame);
+      return _MoveCountStep(
+        option: option,
+        moveCountOptions: _controller.availableMoveCountOptions,
+        onMoveSelected: (GameMoveCountOption moveCountOption) {
+          _startGame(_controller.confirmMoveCount(moveCountOption));
+        },
+      );
     }
 
     return _DifficultyStep(
@@ -174,7 +180,7 @@ class _DifficultyStep extends StatelessWidget {
             title: option.gridLabel,
             badgeLabel: option.label,
             description:
-                'Bu seçimden sonra yalnızca ${option.moveSummary} açılır.',
+                'Bu seçimden sonra bağımsız hamle seçim ekranı açılır.',
             onTap: () => onOptionSelected(option),
           ),
           const SizedBox(height: 16),
@@ -185,10 +191,15 @@ class _DifficultyStep extends StatelessWidget {
 }
 
 class _MoveCountStep extends StatelessWidget {
-  const _MoveCountStep({required this.option, required this.onMoveSelected});
+  const _MoveCountStep({
+    required this.option,
+    required this.moveCountOptions,
+    required this.onMoveSelected,
+  });
 
   final GameSetupOption option;
-  final ValueChanged<GameConfig> onMoveSelected;
+  final List<GameMoveCountOption> moveCountOptions;
+  final ValueChanged<GameMoveCountOption> onMoveSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -204,23 +215,22 @@ class _MoveCountStep extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         Text(
-          '${option.gridLabel} secildi. Bu seviye ${option.label} olarak oynanır.',
+          '${option.gridLabel} seçildi. Şimdi hamle ekranından istediğin hamle paketini seç.',
           style: theme.textTheme.bodyLarge?.copyWith(height: 1.5),
         ),
         const SizedBox(height: 8),
         Text(
-          'Sadece kaynak dokümandaki izinli hamle değerleri gösterilir.',
+          'Hamle ekranında sadece kaynak dokümandaki üç izinli seçenek gösterilir.',
           style: theme.textTheme.bodyMedium,
         ),
         const SizedBox(height: 24),
-        for (final int moveCount in option.moveCountOptions) ...[
+        for (final GameMoveCountOption moveCountOption in moveCountOptions) ...[
           FilledButton(
-            key: Key('setup-move-$moveCount'),
-            onPressed: () =>
-                onMoveSelected(option.toGameConfig(moveLimit: moveCount)),
+            key: Key('setup-move-${moveCountOption.moveLimit}'),
+            onPressed: () => onMoveSelected(moveCountOption),
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 14),
-              child: Text('$moveCount hamle ile başla'),
+              child: Text(moveCountOption.ctaLabel),
             ),
           ),
           const SizedBox(height: 12),
