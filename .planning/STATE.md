@@ -10,16 +10,16 @@ See: .planning/PROJECT.md (updated 2026-04-18)
 ## Current Position
 
 Phase: 2 of 7 (Game Setup and Board Foundation)
-Plan: 1 of 3 in current phase
-Status: Phase 01.1 completed; Phase 2 can start under eval matrix + manual gate rules
-Last activity: 2026-04-18 - Completed Phase 01.1 with spec audit, data architecture freeze, eval matrix and manual checklist.
+Plan: 2 of 3 in current phase
+Status: Phase 2 is in progress; 02-01 completed with user-approved manual gate and 02-02 is next
+Last activity: 2026-04-18 - Completed Phase 02-01 with real new game setup flow, canonical config, route cleanup and manual gate confirmation.
 
-Progress: [███░░░░░░░] 29%
+Progress: [███░░░░░░░] 33%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
+- Total plans completed: 7
 - Average duration: planning + implementation karisik; direct compare edilmemeli
 - Total execution time: Tracking not normalized after inserted eval gate
 
@@ -29,10 +29,11 @@ Progress: [███░░░░░░░] 29%
 |-------|-------|-------|----------|
 | 1. Foundation and Shell | 3 | 1.3h | 26.7m |
 | 01.1 Requirements, Architecture and Persistence Eval Gate | 3 | planning-only | n/a |
+| 2. Game Setup and Board Foundation | 1 | execution tracked in summary only | n/a |
 
 **Recent Trend:**
-- Last 5 plans: 01-02, 01-03, 01.1-01, 01.1-02, 01.1-03
-- Trend: Foundation ve eval gate tamamlandi; gameplay implementation Phase 2 ile guvenli kontrat uzerinden baslayabilir
+- Last 5 plans: 01-03, 01.1-01, 01.1-02, 01.1-03, 02-01
+- Trend: Eval gate sonrasi Phase 2 implementasyonu basladi; setup/session bootstrap kapandi ve board generation work'u bir sonraki adim
 
 ## Accumulated Context
 
@@ -49,6 +50,7 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 - Phase 01.1 inserted after Phase 1: Requirements, Architecture and Persistence Eval Gate (URGENT)
 - Phase 01.1 completed on 2026-04-18 and unblocked Phase 2 with explicit eval matrix + manual gate rules
+- Phase 02-01 completed on 2026-04-18 after user-approved manual gate; current next target is 02-02 weighted board generation
 
 ### Pending Todos
 
@@ -63,5 +65,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-04-18 00:00
-Stopped at: Completed Phase 01.1; next work should begin Phase 2 and honor manual gates at the documented checkpoints
+Stopped at: Completed Phase 02-01; next work should implement 02-02 weighted board generator on top of the approved setup/session input
 Resume file: None
