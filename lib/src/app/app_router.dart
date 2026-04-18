@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'package:crush_word/src/core/models/app_user.dart';
+import 'package:crush_word/src/core/models/game_config.dart';
 import 'package:crush_word/src/core/repositories/profile_repository.dart';
+import 'package:crush_word/src/features/game_setup/new_game_screen.dart';
 import 'package:crush_word/src/features/home/home_screen.dart';
 import 'package:crush_word/src/features/onboarding/username_gate.dart';
 
@@ -9,6 +11,7 @@ class AppRoutes {
   static const onboarding = '/';
   static const home = '/home';
   static const newGame = '/new-game';
+  static const gameSession = '/game-session';
   static const market = '/market';
   static const scoreHistory = '/score-history';
 }
@@ -75,11 +78,30 @@ class AppRouter {
           settings: settings,
         );
       case AppRoutes.newGame:
-        return _buildPlaceholderRoute(
+        return MaterialPageRoute<void>(
+          builder: (BuildContext context) => NewGameScreen(
+            onStartGame: (GameConfig config) {
+              Navigator.of(
+                context,
+              ).pushReplacementNamed(AppRoutes.gameSession, arguments: config);
+            },
+          ),
           settings: settings,
-          title: 'Yeni Oyun',
-          description:
-              'Yeni oyun kurulum akışı bir sonraki fazda bu hedefe bağlanacak.',
+        );
+      case AppRoutes.gameSession:
+        final GameConfig? config = settings.arguments is GameConfig
+            ? settings.arguments as GameConfig
+            : null;
+
+        return MaterialPageRoute<void>(
+          builder: (_) => config == null
+              ? const _PlaceholderScreen(
+                  title: 'Oyun Başlatılamadı',
+                  description:
+                      'Yeni oyun kurulumu tamamlanmadan oyun oturumu açılamaz.',
+                )
+              : GameSessionBootstrapScreen(config: config),
+          settings: settings,
         );
       case AppRoutes.market:
         return _buildPlaceholderRoute(
