@@ -16,6 +16,8 @@ Bu faz, board'un her zaman oynanabilir kalmasi, olusturulabilir kelime sayisinin
 ### Playable-word analysis
 - Analiz, board baslangicinda ve her hamle sonrasinda calisacak.
 - Kullaniciya gosterilen sayi, ortak harf kullanmayan cozumlere gore hesaplanacak.
+- `BoardAnalyzer`, packaged dictionary uzerinden trie/prefix yapisi kurup board'u DFS + backtracking ile tarayacak.
+- Prefix sozlukte yoksa dal erken kesilecek; boylece adjacency aramasi brute-force tam taramaya donusmeyecek.
 
 ### Dead-board recovery
 - Birinci tercih harfleri karistirmak.
