@@ -37,5 +37,24 @@
         "moveLimit": 15
       }
     ]
+  },
+  "boardGeneration": {
+    "letterFrequencyGroups": [
+      {
+        "tier": "high",
+        "weight": 6,
+        "letters": ["A", "E", "İ", "L", "R", "N"]
+      },
+      {
+        "tier": "medium",
+        "weight": 3,
+        "letters": ["K", "M", "T", "S", "Y", "D"]
+      },
+      {
+        "tier": "low",
+        "weight": 1,
+        "letters": ["J", "Ğ", "F", "V"]
+      }
+    ]
   }
 }

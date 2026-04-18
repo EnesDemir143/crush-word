@@ -2,12 +2,14 @@ import 'package:crush_word/src/core/models/game_config.dart';
 import 'package:crush_word/src/core/models/game_difficulty.dart';
 
 class GameRulesConfig {
-  const GameRulesConfig({required this.setup});
+  const GameRulesConfig({required this.setup, required this.boardGeneration});
 
   final GameSetupRules setup;
+  final GameBoardGenerationRules boardGeneration;
 
   factory GameRulesConfig.fromJson(Map<String, dynamic> json) {
     final Object? setupJson = json['setup'];
+    final Object? boardGenerationJson = json['boardGeneration'];
 
     if (setupJson is! Map<String, dynamic>) {
       throw const FormatException(
@@ -15,7 +17,127 @@ class GameRulesConfig {
       );
     }
 
-    return GameRulesConfig(setup: GameSetupRules.fromJson(setupJson));
+    if (boardGenerationJson is! Map<String, dynamic>) {
+      throw const FormatException(
+        'Game rules config requires a valid boardGeneration section.',
+      );
+    }
+
+    return GameRulesConfig(
+      setup: GameSetupRules.fromJson(setupJson),
+      boardGeneration: GameBoardGenerationRules.fromJson(boardGenerationJson),
+    );
+  }
+}
+
+class GameBoardGenerationRules {
+  const GameBoardGenerationRules({required this.letterFrequencyGroups});
+
+  final List<LetterFrequencyGroup> letterFrequencyGroups;
+
+  int get totalWeight => letterFrequencyGroups.fold<int>(
+    0,
+    (int total, LetterFrequencyGroup group) => total + group.weight,
+  );
+
+  factory GameBoardGenerationRules.fromJson(Map<String, dynamic> json) {
+    final Object? frequencyGroupsJson = json['letterFrequencyGroups'];
+
+    if (frequencyGroupsJson is! List<dynamic> || frequencyGroupsJson.isEmpty) {
+      throw const FormatException(
+        'Board generation rules require at least one letter frequency group.',
+      );
+    }
+
+    final List<LetterFrequencyGroup> groups = frequencyGroupsJson
+        .map((Object? groupJson) {
+          if (groupJson is! Map<String, dynamic>) {
+            throw const FormatException(
+              'Each letter frequency group must be a JSON object.',
+            );
+          }
+
+          return LetterFrequencyGroup.fromJson(groupJson);
+        })
+        .toList(growable: false);
+
+    if (groups.fold<int>(
+          0,
+          (int total, LetterFrequencyGroup group) => total + group.weight,
+        ) <=
+        0) {
+      throw const FormatException(
+        'Board generation rules require a positive total weight.',
+      );
+    }
+
+    return GameBoardGenerationRules(letterFrequencyGroups: groups);
+  }
+}
+
+enum LetterFrequencyTier {
+  high,
+  medium,
+  low;
+
+  static LetterFrequencyTier fromName(String value) {
+    return values.firstWhere(
+      (LetterFrequencyTier tier) => tier.name == value,
+      orElse: () {
+        throw ArgumentError.value(
+          value,
+          'value',
+          'Unknown letter frequency tier.',
+        );
+      },
+    );
+  }
+}
+
+class LetterFrequencyGroup {
+  const LetterFrequencyGroup({
+    required this.tier,
+    required this.weight,
+    required this.letters,
+  });
+
+  final LetterFrequencyTier tier;
+  final int weight;
+  final List<String> letters;
+
+  factory LetterFrequencyGroup.fromJson(Map<String, dynamic> json) {
+    final String tierName = (json['tier'] as String?)?.trim() ?? '';
+    final int? weight = (json['weight'] as num?)?.toInt();
+    final Object? lettersJson = json['letters'];
+
+    if (tierName.isEmpty || weight == null || weight <= 0) {
+      throw const FormatException(
+        'Letter frequency group requires tier and a positive weight.',
+      );
+    }
+
+    if (lettersJson is! List<dynamic> || lettersJson.isEmpty) {
+      throw const FormatException(
+        'Letter frequency group requires at least one letter.',
+      );
+    }
+
+    final List<String> letters = lettersJson
+        .map((Object? letterJson) => (letterJson as String?)?.trim() ?? '')
+        .where((String letter) => letter.isNotEmpty)
+        .toList(growable: false);
+
+    if (letters.isEmpty) {
+      throw const FormatException(
+        'Letter frequency group requires non-empty letters.',
+      );
+    }
+
+    return LetterFrequencyGroup(
+      tier: LetterFrequencyTier.fromName(tierName),
+      weight: weight,
+      letters: letters,
+    );
   }
 }
 
