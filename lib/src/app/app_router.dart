@@ -9,45 +9,10 @@ import 'package:crush_word/src/features/market/market_routes.dart';
 import 'package:crush_word/src/features/onboarding/username_gate.dart';
 import 'package:crush_word/src/features/score_history/score_history_routes.dart';
 
-class AppDestination {
-  const AppDestination({
-    required this.label,
-    required this.routeName,
-    required this.icon,
-    required this.description,
-  });
-
-  final String label;
-  final String routeName;
-  final IconData icon;
-  final String description;
-}
-
 class AppRouter {
   AppRouter({required this.profileRepository});
 
   final ProfileRepository profileRepository;
-
-  static const primaryDestinations = <AppDestination>[
-    AppDestination(
-      label: 'Yeni Oyun',
-      routeName: AppRoutes.newGame,
-      icon: Icons.play_circle_fill_rounded,
-      description: 'Yeni bir kelime serisi başlat.',
-    ),
-    AppDestination(
-      label: 'Skor Tablosu',
-      routeName: AppRoutes.scoreHistory,
-      icon: Icons.leaderboard_rounded,
-      description: 'Geçmiş sonuçlarını ve zirveyi incele.',
-    ),
-    AppDestination(
-      label: 'Market',
-      routeName: AppRoutes.market,
-      icon: Icons.local_mall_rounded,
-      description: 'Jokerlerini ve altın planını yönet.',
-    ),
-  ];
 
   Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name ?? AppRoutes.onboarding) {
