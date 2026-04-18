@@ -163,38 +163,40 @@ class _ActiveWordPanel extends StatelessWidget {
     return Semantics(
       container: true,
       label: isPlaceholder ? 'Aktif kelime seçilmedi' : 'Aktif kelime $value',
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: const Color(0xFF183C38),
-          borderRadius: BorderRadius.circular(24),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                'Aktif Kelime',
-                style: theme.textTheme.labelLarge?.copyWith(
-                  color: Colors.white.withValues(alpha: 0.78),
-                  fontWeight: FontWeight.w700,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 68),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: const Color(0xFF183C38),
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'Aktif Kelime',
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: Colors.white.withValues(alpha: 0.78),
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                value,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style:
-                    (isPlaceholder
-                            ? theme.textTheme.titleMedium
-                            : theme.textTheme.headlineSmall)
-                        ?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w800,
-                        ),
-              ),
-            ],
+                const SizedBox(height: 8),
+                Text(
+                  value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    color: Colors.white.withValues(
+                      alpha: isPlaceholder ? 0.5 : 1.0,
+                    ),
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

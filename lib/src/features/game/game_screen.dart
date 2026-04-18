@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import 'package:crush_word/src/core/gameplay/models/game_session.dart';
+import 'package:crush_word/src/core/gameplay/services/word_validator.dart';
 import 'package:crush_word/src/core/models/game_config.dart';
 import 'package:crush_word/src/features/game/game_controller.dart';
 import 'package:crush_word/src/features/game/widgets/game_header.dart';
@@ -121,6 +122,8 @@ class _GameBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final InvalidAttemptFeedback? feedback = controller.lastInvalidFeedback;
+
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         final bool isWide = constraints.maxWidth >= 900;
@@ -151,7 +154,8 @@ class _GameBody extends StatelessWidget {
                       compact: constraints.maxHeight < 760,
                     ),
                     const SizedBox(height: 20),
-                    _InstructionPanel(compact: constraints.maxHeight < 760),
+                    if (feedback != null)
+                      _InvalidFeedbackBanner(feedback: feedback),
                   ],
                 ),
               ),
@@ -173,8 +177,13 @@ class _GameBody extends StatelessWidget {
             Expanded(
               child: _BoardStage(session: session, controller: controller),
             ),
-            const SizedBox(height: 16),
-            _InstructionPanel(compact: useCompactChrome),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 44,
+              child: feedback != null
+                  ? _InvalidFeedbackBanner(feedback: feedback)
+                  : null,
+            ),
           ],
         );
       },
@@ -216,7 +225,7 @@ class _BoardStage extends StatelessWidget {
         selectedCellIds: controller.selectedCellIds,
         onSelectionStart: controller.startSelection,
         onSelectionExtend: controller.extendSelection,
-        onSelectionEnd: controller.endSelection,
+        onSelectionEnd: () => unawaited(controller.endSelection()),
       ),
     );
 
@@ -278,58 +287,57 @@ class _BoardStage extends StatelessWidget {
   }
 }
 
-class _InstructionPanel extends StatelessWidget {
-  const _InstructionPanel({required this.compact});
 
-  final bool compact;
+
+class _InvalidFeedbackBanner extends StatelessWidget {
+  const _InvalidFeedbackBanner({required this.feedback});
+
+  final InvalidAttemptFeedback feedback;
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final String displayMessage = switch (feedback.reason) {
+      WordValidationReason.tooShort =>
+        'En az 3 harf gerekli',
+      WordValidationReason.notInDictionary =>
+        '"${feedback.word}" sözlükte bulunamadı',
+      _ => 'Geçersiz kelime',
+    };
 
-    return Semantics(
-      container: true,
-      label: 'Oyun ipuçları',
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.82),
-          borderRadius: BorderRadius.circular(24),
+          color: const Color(0xFFFDE8E8),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: theme.colorScheme.primary.withValues(alpha: 0.10),
+            color: const Color(0xFFF5C6C6),
           ),
         ),
         child: Padding(
-          padding: EdgeInsets.all(compact ? 14 : 18),
-          child: compact
-              ? Text(
-                  'Komşu harfleri sürükle. Aktif path içinde aynı hücre '
-                  'ikinci kez kullanılamaz.',
-                  style: theme.textTheme.bodyMedium?.copyWith(height: 1.45),
-                  textAlign: TextAlign.center,
-                )
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      'Nasıl Oynanır',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      'Kelimeyi oluşturmak için istediğin hücreden başla ve '
-                      'yalnızca komşu harflere sürükle.',
-                      style: theme.textTheme.bodyLarge?.copyWith(height: 1.5),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Aynı hücre aynı aktif path içinde ikinci kez '
-                      'seçilemez.',
-                      style: theme.textTheme.bodyMedium?.copyWith(height: 1.45),
-                    ),
-                  ],
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Icon(
+                Icons.info_outline_rounded,
+                color: Color(0xFFB91C1C),
+                size: 18,
+              ),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  displayMessage,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: const Color(0xFFB91C1C),
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
+              ),
+            ],
+          ),
         ),
       ),
     );

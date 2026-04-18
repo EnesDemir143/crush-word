@@ -77,10 +77,15 @@ void main() {
     );
     await tester.pump();
 
-    await gesture.up();
-
+    // During drag: only adjacent cells should be in the path.
     expect(controller.selectedCellIds, <String>['0:0', '0:1']);
     expect(controller.selectedWord, 'AB');
+
+    await gesture.up();
+    await tester.pumpAndSettle();
+
+    // After gesture up: endSelection finalizes and clears the path.
+    expect(controller.selectedCellIds, isEmpty);
   });
 
   test('an already selected cell cannot be re-added to the path', () {
