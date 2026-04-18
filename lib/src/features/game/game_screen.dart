@@ -128,7 +128,8 @@ class _GameBody extends StatelessWidget {
       builder: (BuildContext context, BoxConstraints constraints) {
         final bool isWide = constraints.maxWidth >= 900;
         final bool isMedium = constraints.maxWidth >= 640;
-        final bool useCompactChrome = !isMedium || constraints.maxHeight < 620;
+        final bool useCompactChrome =
+            !isMedium || constraints.maxHeight < 620;
 
         if (isWide) {
           return Row(
@@ -153,9 +154,8 @@ class _GameBody extends StatelessWidget {
                       activeWord: controller.selectedWord,
                       compact: constraints.maxHeight < 760,
                     ),
-                    const SizedBox(height: 20),
-                    if (feedback != null)
-                      _InvalidFeedbackBanner(feedback: feedback),
+                    const SizedBox(height: 12),
+                    _AnimatedFeedback(feedback: feedback),
                   ],
                 ),
               ),
@@ -173,16 +173,13 @@ class _GameBody extends StatelessWidget {
               activeWord: controller.selectedWord,
               compact: useCompactChrome,
             ),
-            const SizedBox(height: 16),
+            _AnimatedFeedback(feedback: feedback),
+            const SizedBox(height: 8),
             Expanded(
-              child: _BoardStage(session: session, controller: controller),
-            ),
-            const SizedBox(height: 12),
-            SizedBox(
-              height: 44,
-              child: feedback != null
-                  ? _InvalidFeedbackBanner(feedback: feedback)
-                  : null,
+              child: _BoardStage(
+                session: session,
+                controller: controller,
+              ),
             ),
           ],
         );
@@ -226,6 +223,7 @@ class _BoardStage extends StatelessWidget {
         onSelectionStart: controller.startSelection,
         onSelectionExtend: controller.extendSelection,
         onSelectionEnd: () => unawaited(controller.endSelection()),
+        lastRemovedCellIds: controller.lastRemovedCellIds,
       ),
     );
 
@@ -289,8 +287,38 @@ class _BoardStage extends StatelessWidget {
 
 
 
+class _AnimatedFeedback extends StatelessWidget {
+  const _AnimatedFeedback({required this.feedback});
+
+  final InvalidAttemptFeedback? feedback;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 280),
+      switchInCurve: Curves.easeOutCubic,
+      switchOutCurve: Curves.easeInCubic,
+      transitionBuilder: (Widget child, Animation<double> animation) {
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0, -0.3),
+            end: Offset.zero,
+          ).animate(animation),
+          child: FadeTransition(opacity: animation, child: child),
+        );
+      },
+      child: feedback != null
+          ? _InvalidFeedbackBanner(
+              key: ValueKey<String>(feedback!.word),
+              feedback: feedback!,
+            )
+          : const SizedBox.shrink(key: ValueKey<String>('empty')),
+    );
+  }
+}
+
 class _InvalidFeedbackBanner extends StatelessWidget {
-  const _InvalidFeedbackBanner({required this.feedback});
+  const _InvalidFeedbackBanner({super.key, required this.feedback});
 
   final InvalidAttemptFeedback feedback;
 
@@ -306,17 +334,20 @@ class _InvalidFeedbackBanner extends StatelessWidget {
     };
 
     return Padding(
-      padding: const EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.only(top: 8),
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: const Color(0xFFFDE8E8),
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: const Color(0xFFF5C6C6),
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: 8,
+          ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -324,13 +355,13 @@ class _InvalidFeedbackBanner extends StatelessWidget {
               const Icon(
                 Icons.info_outline_rounded,
                 color: Color(0xFFB91C1C),
-                size: 18,
+                size: 16,
               ),
               const SizedBox(width: 8),
               Flexible(
                 child: Text(
                   displayMessage,
-                  style: theme.textTheme.bodyMedium?.copyWith(
+                  style: theme.textTheme.bodySmall?.copyWith(
                     color: const Color(0xFFB91C1C),
                     fontWeight: FontWeight.w600,
                   ),

@@ -21,92 +21,73 @@ class GameHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final String activeWordValue = activeWord.isEmpty
-        ? 'İz sürmeye başla'
-        : activeWord;
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(22),
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: <Color>[Color(0xCCFFFFFF), Color(0xFFF6EFE2)],
+          colors: <Color>[Color(0xDDFFFFFF), Color(0xFFF6EFE2)],
         ),
         border: Border.all(
-          color: theme.colorScheme.primary.withValues(alpha: 0.14),
+          color: theme.colorScheme.primary.withValues(alpha: 0.10),
         ),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: const Color(0xFF102A24).withValues(alpha: 0.08),
-            blurRadius: 24,
-            offset: const Offset(0, 16),
+            color: const Color(0xFF102A24).withValues(alpha: 0.06),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
       child: Padding(
-        padding: EdgeInsets.all(compact ? 16 : 22),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 10,
+        ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
+            // ── Top row: difficulty + score + moves ──────
             Wrap(
-              spacing: 10,
-              runSpacing: 10,
+              spacing: 6,
+              runSpacing: 6,
+              alignment: WrapAlignment.spaceBetween,
               children: <Widget>[
-                _HeaderBadge(
+                _PillBadge(
                   icon: Icons.tune_rounded,
                   label: config.difficultyLabel,
+                  color: theme.colorScheme.primary,
                 ),
-                _HeaderBadge(
+                _PillBadge(
                   icon: Icons.grid_4x4_rounded,
-                  label: config.gridLabel,
+                  label: '${config.gridSize}×${config.gridSize}',
+                  color: theme.colorScheme.primary,
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    _MetricPill(
+                      icon: Icons.star_rounded,
+                      value: '$score',
+                      color: const Color(0xFFD4A017),
+                    ),
+                    const SizedBox(width: 8),
+                    _MetricPill(
+                      icon: Icons.swipe_rounded,
+                      value: '$movesLeft',
+                      color: const Color(0xFF2E8B7A),
+                    ),
+                  ],
                 ),
               ],
             ),
-            SizedBox(height: compact ? 12 : 14),
-            Text(
-              compact
-                  ? 'Kelime zincirini kur'
-                  : 'Tahta hazır, şimdi komşu harflerden iz çıkar',
-              style:
-                  (compact
-                          ? theme.textTheme.titleLarge
-                          : theme.textTheme.headlineSmall)
-                      ?.copyWith(fontWeight: FontWeight.w800),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              compact
-                  ? 'Sürükle, yolu büyüt ve ritmi yakala.'
-                  : 'Her sürüklemede yalnızca geçerli komşu yolu uzat. '
-                        'Yoğun boardlarda okunabilirlik korunacak şekilde '
-                        'ölçeklenen bir oyun yüzeyi kullanılıyor.',
-              style: theme.textTheme.bodyMedium?.copyWith(height: 1.45),
-            ),
-            SizedBox(height: compact ? 14 : 18),
-            _ActiveWordPanel(
-              value: activeWordValue,
-              isPlaceholder: activeWord.isEmpty,
-            ),
-            SizedBox(height: compact ? 14 : 18),
-            Wrap(
-              spacing: 10,
-              runSpacing: 10,
-              children: <Widget>[
-                _MetricCard(
-                  title: 'Skor',
-                  value: '$score',
-                  semanticLabel: 'Skor $score',
-                  compact: compact,
-                ),
-                _MetricCard(
-                  title: 'Hamle',
-                  value: '$movesLeft',
-                  semanticLabel: '$movesLeft hamle kaldı',
-                  compact: compact,
-                ),
-              ],
-            ),
+            // ── Active word strip ────────────────────────
+            if (activeWord.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              _ActiveWordStrip(word: activeWord),
+            ],
           ],
         ),
       ),
@@ -114,32 +95,39 @@ class GameHeader extends StatelessWidget {
   }
 }
 
-class _HeaderBadge extends StatelessWidget {
-  const _HeaderBadge({required this.icon, required this.label});
+class _PillBadge extends StatelessWidget {
+  const _PillBadge({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
 
   final IconData icon;
   final String label;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: theme.colorScheme.primary.withValues(alpha: 0.08),
+        color: color.withValues(alpha: 0.09),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 10,
+          vertical: 5,
+        ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Icon(icon, size: 16, color: theme.colorScheme.primary),
-            const SizedBox(width: 6),
+            Icon(icon, size: 14, color: color),
+            const SizedBox(width: 4),
             Text(
               label,
-              style: theme.textTheme.labelLarge?.copyWith(
-                color: theme.colorScheme.primary,
+              style: TextStyle(
+                color: color,
+                fontSize: 12,
                 fontWeight: FontWeight.w800,
               ),
             ),
@@ -150,114 +138,88 @@ class _HeaderBadge extends StatelessWidget {
   }
 }
 
-class _ActiveWordPanel extends StatelessWidget {
-  const _ActiveWordPanel({required this.value, required this.isPlaceholder});
+class _MetricPill extends StatelessWidget {
+  const _MetricPill({
+    required this.icon,
+    required this.value,
+    required this.color,
+  });
 
+  final IconData icon;
   final String value;
-  final bool isPlaceholder;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-
-    return Semantics(
-      container: true,
-      label: isPlaceholder ? 'Aktif kelime seçilmedi' : 'Aktif kelime $value',
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: 68),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: const Color(0xFF183C38),
-            borderRadius: BorderRadius.circular(24),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  'Aktif Kelime',
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: Colors.white.withValues(alpha: 0.78),
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  value,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    color: Colors.white.withValues(
-                      alpha: isPlaceholder ? 0.5 : 1.0,
-                    ),
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ],
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 6,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Icon(icon, size: 16, color: color),
+            const SizedBox(width: 5),
+            Text(
+              value,
+              style: TextStyle(
+                color: color,
+                fontSize: 15,
+                fontWeight: FontWeight.w900,
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
   }
 }
 
-class _MetricCard extends StatelessWidget {
-  const _MetricCard({
-    required this.title,
-    required this.value,
-    required this.semanticLabel,
-    required this.compact,
-  });
+class _ActiveWordStrip extends StatelessWidget {
+  const _ActiveWordStrip({required this.word});
 
-  final String title;
-  final String value;
-  final String semanticLabel;
-  final bool compact;
+  final String word;
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-
-    return Semantics(
-      container: true,
-      label: semanticLabel,
-      child: ConstrainedBox(
-        constraints: BoxConstraints(minWidth: compact ? 116 : 132),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surface.withValues(alpha: 0.84),
-            borderRadius: BorderRadius.circular(22),
-          ),
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: compact ? 14 : 16,
-              vertical: compact ? 12 : 14,
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: const Color(0xFF183C38),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 8,
+        ),
+        child: Row(
+          children: <Widget>[
+            const Icon(
+              Icons.text_fields_rounded,
+              color: Color(0xAAFFFFFF),
+              size: 16,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  title,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                    fontWeight: FontWeight.w700,
-                  ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                word,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 2,
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  value,
-                  style:
-                      (compact
-                              ? theme.textTheme.titleLarge
-                              : theme.textTheme.headlineSmall)
-                          ?.copyWith(fontWeight: FontWeight.w800),
-                ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
