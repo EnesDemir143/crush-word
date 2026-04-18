@@ -11,15 +11,15 @@ See: .planning/PROJECT.md (updated 2026-04-18)
 
 Phase: 2 of 7 (Game Setup and Board Foundation)
 Plan: 2 of 3 in current phase
-Status: Phase 2 is in progress; 02-01 completed with user-approved manual gate and 02-02 is next
-Last activity: 2026-04-18 - Completed Phase 02-01 with real new game setup flow, canonical config, route cleanup and manual gate confirmation.
+Status: Phase 2 is in progress; 02-01 and 02-02 completed, 02-03 is next
+Last activity: 2026-04-18 - Completed Phase 02-02 with weighted board generation, session models, config updates and manual frequency-group review.
 
-Progress: [███░░░░░░░] 33%
+Progress: [██████░░░░] 67%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
+- Total plans completed: 8
 - Average duration: planning + implementation karisik; direct compare edilmemeli
 - Total execution time: Tracking not normalized after inserted eval gate
 
@@ -29,11 +29,11 @@ Progress: [███░░░░░░░] 33%
 |-------|-------|-------|----------|
 | 1. Foundation and Shell | 3 | 1.3h | 26.7m |
 | 01.1 Requirements, Architecture and Persistence Eval Gate | 3 | planning-only | n/a |
-| 2. Game Setup and Board Foundation | 1 | execution tracked in summary only | n/a |
+| 2. Game Setup and Board Foundation | 2 | execution tracked in summaries | n/a |
 
 **Recent Trend:**
-- Last 5 plans: 01-03, 01.1-01, 01.1-02, 01.1-03, 02-01
-- Trend: Eval gate sonrasi Phase 2 implementasyonu basladi; setup/session bootstrap kapandi ve board generation work'u bir sonraki adim
+- Last 5 plans: 01.1-01, 01.1-02, 01.1-03, 02-01, 02-02
+- Trend: Eval gate sonrasi Phase 2 hizlandi; setup/bootstrap ve weighted board generation kapandi, siradaki is board interaction
 
 ## Accumulated Context
 
@@ -50,7 +50,8 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 - Phase 01.1 inserted after Phase 1: Requirements, Architecture and Persistence Eval Gate (URGENT)
 - Phase 01.1 completed on 2026-04-18 and unblocked Phase 2 with explicit eval matrix + manual gate rules
-- Phase 02-01 completed on 2026-04-18 after user-approved manual gate; current next target is 02-02 weighted board generation
+- Phase 02-01 completed on 2026-04-18 after user-approved manual gate
+- Phase 02-02 completed on 2026-04-18 with weighted board generation, session models and deterministic coverage; current next target is 02-03 board rendering + drag path capture
 
 ### Pending Todos
 
@@ -59,11 +60,11 @@ None yet.
 ### Blockers/Concerns
 
 - Phase 2 ve sonrasi implementasyonlarda `01.1-EVAL-MATRIX.md` ve `01.1-MANUAL-CHECKLIST.md` zorunlu referans kabul edilmeli.
-- Harf puan tablosu, joker fiyatlari, zorluk-grid-hamle eslesmesi ve power threshold'lari ilk canonical source yazildigi anda kullaniciyla manuel teyit gerektiriyor.
+- Harf puan tablosu, joker fiyatlari ve power threshold'lari canonical source yazildigi anda kullaniciyla manuel teyit gerektiriyor.
 - Resume behavior, newest-first history ve kullaniciya gorunen aggregate/power/count alanlari icin feature-cikisinda kisa smoke-check gerekecek.
 
 ## Session Continuity
 
 Last session: 2026-04-18 00:00
-Stopped at: Completed Phase 02-01; next work should implement 02-02 weighted board generator on top of the approved setup/session input
+Stopped at: Completed Phase 02-02; next work should render the board UI and drag path capture on top of the approved session model
 Resume file: None

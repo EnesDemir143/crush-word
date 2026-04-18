@@ -9,7 +9,7 @@
 
 - [ ] **PLAT-01**: Uygulama Android veya iOS odakli mobil calisir ve sunum emulator ya da fiziksel telefon uzerinden yapilabilir; web/masaustu akisi zorunlu tutulmaz.
 - [ ] **PLAT-02**: Kelime dogrulamasi icin uygulama icine paketlenmis Turkce bir sozluk/kelime listesi kullanilir.
-- [ ] **PLAT-03**: Oyun alani kare grid yapisinda olur ve her hucre bir harf tasir.
+- [x] **PLAT-03**: Oyun alani kare grid yapisinda olur ve her hucre bir harf tasir.
 
 ### Kullanici ve Ana Ekran
 
@@ -20,13 +20,13 @@
 
 ### Yeni Oyun ve Kurulum
 
-- [ ] **SETUP-01**: `Yeni Oyun` secimi oyun ayarlari akisini acar.
-- [ ] **SETUP-02**: Grid secenekleri tam olarak `6x6 = Zor`, `8x8 = Orta`, `10x10 = Kolay` seklinde sunulur.
-- [ ] **SETUP-03**: Hamle secenekleri zorluga uygun olarak `15/20/25` seklinde sunulur ve secim tamamlaninca oyun baslar.
+- [x] **SETUP-01**: `Yeni Oyun` secimi oyun ayarlari akisini acar.
+- [x] **SETUP-02**: Grid secenekleri tam olarak `6x6 = Zor`, `8x8 = Orta`, `10x10 = Kolay` seklinde sunulur.
+- [x] **SETUP-03**: Hamle secenekleri zorluga uygun olarak `15/20/25` seklinde sunulur ve secim tamamlaninca oyun baslar.
 
 ### Grid ve Kelime Kurallari
 
-- [ ] **GRID-01**: Harfler Turkce frekans mantigina gore agirlikli uretilir; duz uniform rastgelelik kullanilmaz.
+- [x] **GRID-01**: Harfler Turkce frekans mantigina gore agirlikli uretilir; duz uniform rastgelelik kullanilmaz.
 - [ ] **GRID-02**: Baslangic board'u ve hamle sonrasi/refill board'lari her zaman en az bir gecerli kelime barindiracak sekilde analiz edilir; gerekirse otomatik cozum uygulanir.
 - [ ] **GRID-03**: Oyuncu herhangi bir hucreden baslayip 8 yonlu komsu hucreler uzerinden ayni hucreyi tekrar kullanmadan secim yapabilir.
 - [ ] **GRID-04**: 3 harften kisa secimler gecersiz sayilir.
@@ -93,11 +93,11 @@
 | USER-02 | Phase 1 | Pending |
 | HOME-01 | Phase 1 | Pending |
 | HOME-02 | Phase 1 | Pending |
-| PLAT-03 | Phase 2 | Pending |
-| SETUP-01 | Phase 2 | Pending |
-| SETUP-02 | Phase 2 | Pending |
-| SETUP-03 | Phase 2 | Pending |
-| GRID-01 | Phase 2 | Pending |
+| PLAT-03 | Phase 2 | Completed |
+| SETUP-01 | Phase 2 | Completed |
+| SETUP-02 | Phase 2 | Completed |
+| SETUP-03 | Phase 2 | Completed |
+| GRID-01 | Phase 2 | Completed |
 | GRID-03 | Phase 2 | Pending |
 | GRID-04 | Phase 3 | Pending |
 | GRID-05 | Phase 3 | Pending |

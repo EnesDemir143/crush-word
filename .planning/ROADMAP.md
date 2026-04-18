@@ -89,7 +89,7 @@ Plans:
 
 Plans:
 - [x] 02-01: Build new game settings flow and session bootstrap
-- [ ] 02-02: Implement weighted board generator and playable initial seed
+- [x] 02-02: Implement weighted board generator and playable initial seed
 - [ ] 02-03: Render the board UI and drag-path capture behavior
 
 ### Phase 3: Core Gameplay and Session Results
@@ -189,7 +189,7 @@ Phases execute in numeric order: 1 -> 1.1 -> 2 -> 3 -> 4 -> 5 -> 6
 |-------|----------------|--------|-----------|
 | 1. Foundation and Shell | 3/3 | Completed | 2026-04-07 |
 | 01.1 Requirements, Architecture and Persistence Eval Gate | 3/3 | Completed | 2026-04-18 |
-| 2. Game Setup and Board Foundation | 1/3 | In progress | - |
+| 2. Game Setup and Board Foundation | 2/3 | In progress | - |
 | 3. Core Gameplay and Session Results | 0/3 | Not started | - |
 | 4. Advanced Board Mechanics | 0/3 | Not started | - |
 | 5. Market and Score History | 0/3 | Not started | - |
