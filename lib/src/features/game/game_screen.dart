@@ -49,13 +49,14 @@ class _GameScreenState extends State<GameScreen> {
         final GameSession? session = _controller.session;
 
         return Scaffold(
-          backgroundColor: Colors.transparent,
+          backgroundColor: const Color(0xFFF6EFE3),
           appBar: AppBar(
             backgroundColor: Colors.transparent,
             surfaceTintColor: Colors.transparent,
-            title: Text('${widget.config.difficultyLabel} Oyun Tahtası'),
+            foregroundColor: const Color(0xFF3A3025),
+            elevation: 0,
           ),
-          extendBodyBehindAppBar: false,
+          extendBodyBehindAppBar: true,
           body: DecoratedBox(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -120,70 +121,86 @@ class _GameBody extends StatelessWidget {
   final GameSession session;
   final GameController controller;
 
+  bool get _isGameOver => controller.movesLeft <= 0;
+
   @override
   Widget build(BuildContext context) {
     final InvalidAttemptFeedback? feedback = controller.lastInvalidFeedback;
 
-    return LayoutBuilder(
-      builder: (BuildContext context, BoxConstraints constraints) {
-        final bool isWide = constraints.maxWidth >= 900;
-        final bool isMedium = constraints.maxWidth >= 640;
-        final bool useCompactChrome =
-            !isMedium || constraints.maxHeight < 620;
+    return Stack(
+      children: <Widget>[
+        // ── Main game layout ──────────────────────
+        LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+            final bool isWide = constraints.maxWidth >= 900;
+            final bool isMedium = constraints.maxWidth >= 640;
+            final bool useCompactChrome =
+                !isMedium || constraints.maxHeight < 620;
 
-        if (isWide) {
-          return Row(
-            children: <Widget>[
-              Expanded(
-                flex: 7,
-                child: _BoardStage(
-                  session: session,
-                  controller: controller,
-                  boardSide: _resolveWideBoardSide(constraints),
-                ),
-              ),
-              const SizedBox(width: 24),
-              Expanded(
-                flex: 5,
-                child: Column(
-                  children: <Widget>[
-                    GameHeader(
-                      config: session.config,
-                      score: controller.score,
-                      movesLeft: controller.movesLeft,
-                      activeWord: controller.selectedWord,
-                      compact: constraints.maxHeight < 760,
+            if (isWide) {
+              return Row(
+                children: <Widget>[
+                  Expanded(
+                    flex: 7,
+                    child: _BoardStage(
+                      session: session,
+                      controller: controller,
+                      boardSide: _resolveWideBoardSide(constraints),
                     ),
-                    const SizedBox(height: 12),
-                    _AnimatedFeedback(feedback: feedback),
-                  ],
-                ),
-              ),
-            ],
-          );
-        }
+                  ),
+                  const SizedBox(width: 24),
+                  Expanded(
+                    flex: 5,
+                    child: Column(
+                      children: <Widget>[
+                        GameHeader(
+                          config: session.config,
+                          score: controller.score,
+                          movesLeft: controller.movesLeft,
+                          activeWord: controller.selectedWord,
+                          compact: constraints.maxHeight < 760,
+                          lastWordScore: controller.lastWordScore,
+                        ),
+                        const SizedBox(height: 12),
+                        _AnimatedFeedback(feedback: feedback),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            }
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            GameHeader(
-              config: session.config,
-              score: controller.score,
-              movesLeft: controller.movesLeft,
-              activeWord: controller.selectedWord,
-              compact: useCompactChrome,
-            ),
-            _AnimatedFeedback(feedback: feedback),
-            const SizedBox(height: 8),
-            Expanded(
-              child: _BoardStage(
-                session: session,
-                controller: controller,
-              ),
-            ),
-          ],
-        );
-      },
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                GameHeader(
+                  config: session.config,
+                  score: controller.score,
+                  movesLeft: controller.movesLeft,
+                  activeWord: controller.selectedWord,
+                  compact: useCompactChrome,
+                  lastWordScore: controller.lastWordScore,
+                ),
+                _AnimatedFeedback(feedback: feedback),
+                const SizedBox(height: 8),
+                Expanded(
+                  child: _BoardStage(
+                    session: session,
+                    controller: controller,
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+
+        // ── Game over overlay ─────────────────────
+        if (_isGameOver)
+          _GameOverOverlay(
+            score: controller.score,
+            config: session.config,
+          ),
+      ],
     );
   }
 
@@ -199,7 +216,7 @@ class _GameBody extends StatelessWidget {
   }
 }
 
-class _BoardStage extends StatelessWidget {
+class _BoardStage extends StatefulWidget {
   const _BoardStage({
     required this.session,
     required this.controller,
@@ -211,34 +228,99 @@ class _BoardStage extends StatelessWidget {
   final double? boardSide;
 
   @override
+  State<_BoardStage> createState() => _BoardStageState();
+}
+
+class _BoardStageState extends State<_BoardStage>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _shakeController;
+  late final Animation<double> _shakeOffset;
+
+  InvalidAttemptFeedback? _lastFeedback;
+
+  @override
+  void initState() {
+    super.initState();
+    _shakeController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+    _shakeOffset = TweenSequence<double>(
+      <TweenSequenceItem<double>>[
+        TweenSequenceItem<double>(
+          tween: Tween<double>(begin: 0, end: 8),
+          weight: 15,
+        ),
+        TweenSequenceItem<double>(
+          tween: Tween<double>(begin: 8, end: -6),
+          weight: 20,
+        ),
+        TweenSequenceItem<double>(
+          tween: Tween<double>(begin: -6, end: 4),
+          weight: 20,
+        ),
+        TweenSequenceItem<double>(
+          tween: Tween<double>(begin: 4, end: -2),
+          weight: 20,
+        ),
+        TweenSequenceItem<double>(
+          tween: Tween<double>(begin: -2, end: 0),
+          weight: 25,
+        ),
+      ],
+    ).animate(CurvedAnimation(
+      parent: _shakeController,
+      curve: Curves.easeOut,
+    ));
+  }
+
+  @override
+  void didUpdateWidget(covariant _BoardStage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    final InvalidAttemptFeedback? newFeedback =
+        widget.controller.lastInvalidFeedback;
+    if (newFeedback != null && newFeedback != _lastFeedback) {
+      _lastFeedback = newFeedback;
+      _shakeController
+        ..reset()
+        ..forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    _shakeController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final double stagePadding = session.gridSize >= 10 ? 6 : 10;
+    final double stagePadding =
+        widget.session.gridSize >= 10 ? 6 : 10;
 
     final Widget gridContent = RepaintBoundary(
       child: LetterGrid(
         key: const Key('game-letter-grid'),
-        session: session,
-        selectedCellIds: controller.selectedCellIds,
-        onSelectionStart: controller.startSelection,
-        onSelectionExtend: controller.extendSelection,
-        onSelectionEnd: () => unawaited(controller.endSelection()),
-        lastRemovedCellIds: controller.lastRemovedCellIds,
+        session: widget.session,
+        selectedCellIds: widget.controller.selectedCellIds,
+        onSelectionStart: widget.controller.startSelection,
+        onSelectionExtend: widget.controller.extendSelection,
+        onSelectionEnd: () =>
+            unawaited(widget.controller.endSelection()),
+        lastRemovedCellIds: widget.controller.lastRemovedCellIds,
       ),
     );
 
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        // Determine the board side length.
-        // For wide/desktop layout, use the provided fixed value.
-        // For narrow/phone layout, fill the available width fully.
         final double side;
-        if (boardSide != null) {
-          side = math.max(0, boardSide!);
+        if (widget.boardSide != null) {
+          side = math.max(0, widget.boardSide!);
         } else {
           final double availableWidth = constraints.maxWidth;
           final double availableHeight = constraints.maxHeight;
-          // Fill the width, accounting for stage padding on each side.
           side = math.min(
             availableWidth - (stagePadding * 2),
             availableHeight - (stagePadding * 2),
@@ -247,35 +329,59 @@ class _BoardStage extends StatelessWidget {
         final double safeSide = math.max(0, side);
 
         return Center(
-          child: TweenAnimationBuilder<double>(
-            duration: const Duration(milliseconds: 420),
-            curve: Curves.easeOutCubic,
-            tween: Tween<double>(begin: 0.96, end: 1),
-            builder: (BuildContext context, double scale, Widget? child) {
-              return Transform.scale(scale: scale, child: child);
+          child: AnimatedBuilder(
+            animation: _shakeController,
+            builder: (BuildContext context, Widget? child) {
+              return Transform.translate(
+                offset: Offset(_shakeOffset.value, 0),
+                child: child,
+              );
             },
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(36),
-                gradient: const LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: <Color>[Color(0xFFF8F4EC), Color(0xFFF0E6D6)],
-                ),
-                border: Border.all(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.12),
-                ),
-                boxShadow: <BoxShadow>[
-                  BoxShadow(
-                    color: const Color(0xFF0F172A).withValues(alpha: 0.08),
-                    blurRadius: 30,
-                    offset: const Offset(0, 18),
+            child: TweenAnimationBuilder<double>(
+              duration: const Duration(milliseconds: 420),
+              curve: Curves.easeOutCubic,
+              tween: Tween<double>(begin: 0.96, end: 1),
+              builder: (
+                BuildContext context,
+                double scale,
+                Widget? child,
+              ) {
+                return Transform.scale(
+                  scale: scale,
+                  child: child,
+                );
+              },
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(36),
+                  gradient: const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: <Color>[
+                      Color(0xFFF8F4EC),
+                      Color(0xFFF0E6D6),
+                    ],
                   ),
-                ],
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(stagePadding),
-                child: SizedBox.square(dimension: safeSide, child: gridContent),
+                  border: Border.all(
+                    color: theme.colorScheme.primary
+                        .withValues(alpha: 0.12),
+                  ),
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                      color: const Color(0xFF0F172A)
+                          .withValues(alpha: 0.08),
+                      blurRadius: 30,
+                      offset: const Offset(0, 18),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(stagePadding),
+                  child: SizedBox.square(
+                    dimension: safeSide,
+                    child: gridContent,
+                  ),
+                ),
               ),
             ),
           ),
@@ -371,6 +477,212 @@ class _InvalidFeedbackBanner extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _GameOverOverlay extends StatefulWidget {
+  const _GameOverOverlay({
+    required this.score,
+    required this.config,
+  });
+
+  final int score;
+  final GameConfig config;
+
+  @override
+  State<_GameOverOverlay> createState() => _GameOverOverlayState();
+}
+
+class _GameOverOverlayState extends State<_GameOverOverlay>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _backgroundOpacity;
+  late final Animation<double> _cardScale;
+  late final Animation<double> _cardOpacity;
+  late final Animation<double> _scoreProgress;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+
+    _backgroundOpacity = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0, 0.3, curve: Curves.easeOut),
+      ),
+    );
+    _cardScale = Tween<double>(begin: 0.8, end: 1).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(
+          0.15,
+          0.5,
+          curve: Curves.elasticOut,
+        ),
+      ),
+    );
+    _cardOpacity = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.15, 0.4),
+      ),
+    );
+    _scoreProgress = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(
+          0.4,
+          0.9,
+          curve: Curves.easeOutCubic,
+        ),
+      ),
+    );
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (BuildContext context, _) {
+        return Positioned.fill(
+          child: ColoredBox(
+            color: Color.fromRGBO(
+              0,
+              0,
+              0,
+              0.45 * _backgroundOpacity.value,
+            ),
+            child: Center(
+              child: Opacity(
+                opacity: _cardOpacity.value,
+                child: Transform.scale(
+                  scale: _cardScale.value,
+                  child: ConstrainedBox(
+                    constraints:
+                        const BoxConstraints(maxWidth: 320),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        borderRadius:
+                            BorderRadius.circular(28),
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: <Color>[
+                            Color(0xFFFFFCF7),
+                            Color(0xFFF6EFE2),
+                          ],
+                        ),
+                        boxShadow: <BoxShadow>[
+                          BoxShadow(
+                            color: const Color(0xFF0F172A)
+                                .withValues(alpha: 0.15),
+                            blurRadius: 40,
+                            offset: const Offset(0, 20),
+                          ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(32),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            DecoratedBox(
+                              decoration: BoxDecoration(
+                                gradient:
+                                    const LinearGradient(
+                                      colors: <Color>[
+                                        Color(0xFFD4A017),
+                                        Color(0xFFE6B533),
+                                      ],
+                                    ),
+                                borderRadius:
+                                    BorderRadius.circular(
+                                      22,
+                                    ),
+                              ),
+                              child: const Padding(
+                                padding:
+                                    EdgeInsets.all(16),
+                                child: Icon(
+                                  Icons
+                                      .emoji_events_rounded,
+                                  size: 40,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            const Text(
+                              'Oyun Bitti!',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.w900,
+                                color: Color(0xFF3A3025),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '${widget.config.difficultyLabel} • ${widget.config.gridLabel}',
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: Color(0xFF7A6F62),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            Text(
+                              '${(_scoreProgress.value * widget.score).round()}',
+                              style: const TextStyle(
+                                fontSize: 48,
+                                fontWeight: FontWeight.w900,
+                                color: Color(0xFFD4A017),
+                              ),
+                            ),
+                            const Text(
+                              'PUAN',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800,
+                                color: Color(0xFF7A6F62),
+                                letterSpacing: 3,
+                              ),
+                            ),
+                            const SizedBox(height: 28),
+                            SizedBox(
+                              width: double.infinity,
+                              child: FilledButton(
+                                onPressed: () =>
+                                    Navigator.of(context)
+                                        .pop(),
+                                child: const Text(
+                                  'Ana Menüye Dön',
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

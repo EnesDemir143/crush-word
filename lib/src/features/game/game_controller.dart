@@ -111,6 +111,11 @@ class GameController extends ChangeNotifier {
   /// [startSelection].
   List<String> _lastRemovedCellIds = const <String>[];
 
+  /// Score earned on the last valid word — used by the UI to
+  /// display a floating "+X" animation.  Cleared on the next
+  /// [startSelection].
+  int _lastWordScore = 0;
+
   /// Whether a finalization is already running (prevents double-taps).
   bool _isFinalizing = false;
 
@@ -121,6 +126,7 @@ class GameController extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   InvalidAttemptFeedback? get lastInvalidFeedback => _lastInvalidFeedback;
   List<String> get lastRemovedCellIds => _lastRemovedCellIds;
+  int get lastWordScore => _lastWordScore;
   bool get isFinalizing => _isFinalizing;
 
   int get score => _session?.score ?? 0;
@@ -206,6 +212,7 @@ class GameController extends ChangeNotifier {
     // Clear transient state from previous attempt.
     _lastInvalidFeedback = null;
     _lastRemovedCellIds = const <String>[];
+    _lastWordScore = 0;
 
     _session = activeSession.copyWith(selectedCellIds: <String>[cell.id]);
     notifyListeners();
@@ -307,6 +314,7 @@ class GameController extends ChangeNotifier {
           );
           newBoard = resolved.board;
           _lastRemovedCellIds = activeSession.selectedCellIds;
+          _lastWordScore = wordScore;
         }
 
         _session = activeSession.copyWith(
