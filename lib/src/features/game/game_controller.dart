@@ -7,6 +7,8 @@ import 'package:crush_word/src/core/gameplay/models/game_session.dart';
 import 'package:crush_word/src/core/gameplay/services/board_analyzer.dart';
 import 'package:crush_word/src/core/gameplay/services/board_generator.dart';
 import 'package:crush_word/src/core/gameplay/services/board_recovery.dart';
+import 'package:crush_word/src/core/gameplay/services/board_resolver.dart';
+import 'package:crush_word/src/core/gameplay/services/scoring_engine.dart';
 import 'package:crush_word/src/core/gameplay/services/word_validator.dart';
 import 'package:crush_word/src/core/models/game_config.dart';
 import 'package:crush_word/src/core/repositories/dictionary_repository.dart';
@@ -31,6 +33,8 @@ class GameController extends ChangeNotifier {
     DictionaryRepository? dictionaryRepository,
     BoardAnalyzer? boardAnalyzer,
     WordValidator? wordValidator,
+    ScoringEngine? scoringEngine,
+    BoardResolver? boardResolver,
     GameSession? initialSession,
   }) : _config = config,
        _rulesLoader = rulesLoader ?? const GameRulesLoader(),
@@ -38,6 +42,8 @@ class GameController extends ChangeNotifier {
        _dictionaryRepository = dictionaryRepository ?? DictionaryRepository(),
        _boardAnalyzer = boardAnalyzer ?? BoardAnalyzer(),
        _wordValidator = wordValidator,
+       _scoringEngine = scoringEngine,
+       _boardResolver = boardResolver,
        _session = initialSession;
 
   factory GameController.fromSession(
@@ -47,6 +53,8 @@ class GameController extends ChangeNotifier {
     DictionaryRepository? dictionaryRepository,
     BoardAnalyzer? boardAnalyzer,
     WordValidator? wordValidator,
+    ScoringEngine? scoringEngine,
+    BoardResolver? boardResolver,
   }) {
     return GameController(
       config: session.config,
@@ -55,6 +63,8 @@ class GameController extends ChangeNotifier {
       dictionaryRepository: dictionaryRepository,
       boardAnalyzer: boardAnalyzer,
       wordValidator: wordValidator,
+      scoringEngine: scoringEngine,
+      boardResolver: boardResolver,
       initialSession: session,
     );
   }
@@ -72,6 +82,21 @@ class GameController extends ChangeNotifier {
       _wordValidator ??= WordValidator(
         dictionaryRepository: _dictionaryRepository,
       );
+
+  /// Lazily initialised scoring engine — uses the injected instance
+  /// or creates one from the loaded rules config.
+  ScoringEngine? _scoringEngine;
+
+  /// Lazily initialised board resolver.
+  BoardResolver? _boardResolver;
+  BoardResolver get _resolver =>
+      _boardResolver ??= BoardResolver(
+        boardGenerator: _boardGenerator,
+      );
+
+  /// Cached rules config set during [load] — needed for board
+  /// refill letter generation.
+  GameRulesConfig? _cachedRules;
 
   GameSession? _session;
   bool _isLoading = false;
@@ -124,7 +149,19 @@ class GameController extends ChangeNotifier {
 
     try {
       final GameRulesConfig rules = await _rulesLoader.load();
-      final Set<String> dictionary = await _dictionaryRepository.loadWords();
+      final Set<String> dictionary =
+          await _dictionaryRepository.loadWords();
+
+      // Cache rules for later use (scoring + board refill).
+      _cachedRules = rules;
+
+      // Initialise scoring engine from loaded config if not
+      // injected via constructor.
+      if (rules.scoring != null && _scoringEngine == null) {
+        _scoringEngine = ScoringEngine(
+          scoringConfig: rules.scoring!,
+        );
+      }
 
       GameSession session = _boardGenerator.createSession(
         config: _config,
@@ -243,15 +280,37 @@ class GameController extends ChangeNotifier {
       final int newMovesLeft = (activeSession.movesLeft - 1).clamp(0, 999);
 
       if (result.isValid) {
-        // Valid word: clear selection and update moves.
-        // Scoring, gravity and refill will be added in 03-02.
+        // ── Scoring ────────────────────────────────────────
+        int wordScore = 0;
+        if (_scoringEngine != null) {
+          final ScoringResult scoring =
+              _scoringEngine!.score(result.word);
+          wordScore = scoring.totalScore;
+        }
+
+        // ── Board resolution (clear → gravity → refill) ──
+        List<BoardCell> newBoard = activeSession.board;
+        final GameRulesConfig? rules = _cachedRules;
+        if (rules != null) {
+          final BoardResolveResult resolved = _resolver.resolve(
+            board: activeSession.board,
+            selectedCellIds: activeSession.selectedCellIds,
+            gridSize: activeSession.gridSize,
+            rules: rules.boardGeneration,
+          );
+          newBoard = resolved.board;
+        }
+
         _session = activeSession.copyWith(
+          board: newBoard,
           selectedCellIds: const <String>[],
           movesLeft: newMovesLeft,
+          score: activeSession.score + wordScore,
         );
         _lastInvalidFeedback = null;
       } else {
-        // Invalid word: revert selection, consume the move, show feedback.
+        // Invalid word: revert selection, consume the move,
+        // show feedback.
         _session = activeSession.copyWith(
           selectedCellIds: const <String>[],
           movesLeft: newMovesLeft,

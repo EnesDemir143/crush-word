@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-04-18)
 
 **Core value:** Oyuncuya her zaman oynanabilir kalan, kurallari acikca gorunen ve ders dokumanindaki tum zorunlu maddeleri eksiksiz yerine getiren bir mobil kelime oyunu sunmak.
-**Current focus:** Phase 3 - Core Gameplay and Session Results (Plan 2 next)
+**Current focus:** Phase 3 - Core Gameplay and Session Results (Plan 3 next)
 
 ## Current Position
 
 Phase: 3 of 8 (Core Gameplay and Session Results)
-Plan: 1 of 3 in current phase (completed)
-Status: Plan 03-01 completed; word finalization, dictionary validation, move consumption and invalid feedback wired. Next is 03-02 (scoring, gravity, refill).
-Last activity: 2026-04-18 - Completed Phase 03-01 with WordValidator service, endSelection finalization, move consumption on both valid/invalid, inline invalid feedback banner and 21 new tests. Manual gate pending user approval.
+Plan: 2 of 3 in current phase (completed)
+Status: Plan 03-02 completed; scoring engine, board resolver (clear/gravity/refill) and controller wiring done. Next is 03-03 (session result persistence).
+Last activity: 2026-04-18 - Completed Phase 03-02 with ScoringEngine, BoardResolver, canonical letter-score table in game_rules.json, GameController scoring+board-resolution wiring and 28 new tests. Manual gate pending user approval.
 
 Progress: [████████░░] 82%
 
@@ -31,11 +31,11 @@ Progress: [████████░░] 82%
 | 01.1 Requirements, Architecture and Persistence Eval Gate | 3 | planning-only | n/a |
 | 2. Game Setup and Board Foundation | 3 | execution tracked in summaries | n/a |
 | 02.1 Initial Board Solvability Gate | 1 | execution tracked in summary | n/a |
-| 3. Core Gameplay and Session Results | 1/3 | in progress | n/a |
+| 3. Core Gameplay and Session Results | 2/3 | in progress | n/a |
 
 **Recent Trend:**
-- Last 5 plans: 02-02, 02-03, 02.1-01, 03-01 (all completed)
-- Trend: Core gameplay basladi; word validation ve move consumption tamamlandi. Siradaki is scoring table, gravity ve refill pipeline (03-02).
+- Last 5 plans: 02-02, 02-03, 02.1-01, 03-01, 03-02 (all completed)
+- Trend: Core gameplay devam ediyor; scoring table, gravity ve refill pipeline tamamlandi. Siradaki is session result persistence (03-03).
 
 ## Accumulated Context
 
@@ -58,7 +58,8 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - Phase 02-03 completed on 2026-04-18 with board UI render, drag selection, adjacency guard and responsive width-first grid layout
 - Phase 02.1 completed on 2026-04-18 with trie-backed board analyzer, dead-board recovery service, controller solvability gate and 14 unit tests
 - Phase 03-01 completed on 2026-04-18 with WordValidator service, endSelection finalization, move consumption (valid+invalid), inline invalid feedback banner and 21 new tests
-- Current next target is Phase 3 `03-02`; scoring, gravity and refill pipeline
+- Phase 03-02 completed on 2026-04-18 with ScoringEngine, BoardResolver (clear/gravity/refill), canonical letter-score table in game_rules.json, GameController wiring and 28 new tests
+- Current next target is Phase 3 `03-03`; session result persistence
 
 ### Pending Todos
 
@@ -72,6 +73,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-18 14:25
-Stopped at: Phase 03-01 completed; manual gate pending user approval. Next work is Phase 3 Plan 02 (scoring, gravity/refill).
+Last session: 2026-04-18 15:07
+Stopped at: Phase 03-02 completed; manual gate pending user approval. Next work is Phase 3 Plan 03 (session result persistence).
 Resume file: None
