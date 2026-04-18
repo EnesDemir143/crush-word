@@ -26,9 +26,7 @@ class _TrieNode {
 /// The analyzer short-circuits as soon as any valid word is found,
 /// making it efficient for the initial-session solvability check.
 class BoardAnalyzer {
-  BoardAnalyzer({
-    this.minWordLength = 3,
-  });
+  BoardAnalyzer({this.minWordLength = 3});
 
   /// Minimum character count for a word to be accepted.
   final int minWordLength;
@@ -91,9 +89,7 @@ class BoardAnalyzer {
     required Set<String> visited,
     required int depth,
   }) {
-    final String letter = DictionaryRepository.normalizeWord(
-      cell.letter,
-    );
+    final String letter = DictionaryRepository.normalizeWord(cell.letter);
 
     // Prefix pruning: if the letter has no child in the trie,
     // this entire branch is a dead end.
@@ -174,10 +170,7 @@ class BoardAnalyzer {
 
       for (int i = 0; i < word.length; i++) {
         final String char = word[i];
-        current = current.children.putIfAbsent(
-          char,
-          _TrieNode.new,
-        );
+        current = current.children.putIfAbsent(char, _TrieNode.new);
       }
 
       current.isTerminal = true;

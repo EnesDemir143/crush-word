@@ -100,8 +100,9 @@ class BoardRecovery {
   /// Produces a new session with the same letters shuffled into
   /// random positions while preserving all other session state.
   GameSession _shuffleBoard(GameSession session) {
-    final List<String> letters =
-        session.board.map((BoardCell cell) => cell.letter).toList();
+    final List<String> letters = session.board
+        .map((BoardCell cell) => cell.letter)
+        .toList();
 
     // Fisher-Yates shuffle.
     for (int i = letters.length - 1; i > 0; i--) {

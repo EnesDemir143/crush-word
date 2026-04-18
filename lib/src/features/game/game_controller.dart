@@ -21,8 +21,7 @@ class GameController extends ChangeNotifier {
   }) : _config = config,
        _rulesLoader = rulesLoader ?? const GameRulesLoader(),
        _boardGenerator = boardGenerator ?? BoardGenerator(),
-       _dictionaryRepository =
-           dictionaryRepository ?? DictionaryRepository(),
+       _dictionaryRepository = dictionaryRepository ?? DictionaryRepository(),
        _boardAnalyzer = boardAnalyzer ?? BoardAnalyzer(),
        _session = initialSession;
 
@@ -77,9 +76,8 @@ class GameController extends ChangeNotifier {
         .toList(growable: false);
   }
 
-  String get selectedWord => selectedCells
-      .map((BoardCell cell) => cell.letter)
-      .join();
+  String get selectedWord =>
+      selectedCells.map((BoardCell cell) => cell.letter).join();
 
   Future<void> load({bool force = false}) async {
     if (_session != null && !force) {
@@ -92,8 +90,7 @@ class GameController extends ChangeNotifier {
 
     try {
       final GameRulesConfig rules = await _rulesLoader.load();
-      final Set<String> dictionary =
-          await _dictionaryRepository.loadWords();
+      final Set<String> dictionary = await _dictionaryRepository.loadWords();
 
       GameSession session = _boardGenerator.createSession(
         config: _config,

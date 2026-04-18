@@ -171,10 +171,7 @@ class _GameBody extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: _BoardStage(
-                session: session,
-                controller: controller,
-              ),
+              child: _BoardStage(session: session, controller: controller),
             ),
             const SizedBox(height: 16),
             _InstructionPanel(compact: useCompactChrome),
@@ -271,10 +268,7 @@ class _BoardStage extends StatelessWidget {
               ),
               child: Padding(
                 padding: EdgeInsets.all(stagePadding),
-                child: SizedBox.square(
-                  dimension: safeSide,
-                  child: gridContent,
-                ),
+                child: SizedBox.square(dimension: safeSide, child: gridContent),
               ),
             ),
           ),

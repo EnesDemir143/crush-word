@@ -23,11 +23,7 @@ List<BoardCell> _board2x2(List<String> letters) {
 
   return List<BoardCell>.generate(
     4,
-    (int i) => BoardCell(
-      row: i ~/ 2,
-      column: i % 2,
-      letter: letters[i],
-    ),
+    (int i) => BoardCell(row: i ~/ 2, column: i % 2, letter: letters[i]),
     growable: false,
   );
 }
@@ -38,11 +34,7 @@ List<BoardCell> _boardNxN(int size, List<String> letters) {
 
   return List<BoardCell>.generate(
     letters.length,
-    (int i) => BoardCell(
-      row: i ~/ size,
-      column: i % size,
-      letter: letters[i],
-    ),
+    (int i) => BoardCell(row: i ~/ size, column: i % size, letter: letters[i]),
     growable: false,
   );
 }
@@ -56,10 +48,7 @@ const Set<String> _miniDictionary = <String>{
 };
 
 /// A dictionary that contains no word formable on the dead board.
-const Set<String> _impossibleDictionary = <String>{
-  'xyz',
-  'qwerty',
-};
+const Set<String> _impossibleDictionary = <String>{'xyz', 'qwerty'};
 
 const GameConfig _testConfig = GameConfig(
   difficulty: GameDifficulty.hard,
@@ -123,9 +112,7 @@ void main() {
       // Board:  k a
       //         l _
       // Path k→a→l = "kal" which is in dictionary.
-      final List<BoardCell> board = _board2x2(
-        <String>['k', 'a', 'l', 'x'],
-      );
+      final List<BoardCell> board = _board2x2(<String>['k', 'a', 'l', 'x']);
 
       final bool result = analyzer.hasPlayableWord(
         board: board,
@@ -140,9 +127,7 @@ void main() {
       // Board: x x
       //        x x
       // No word in dictionary can be formed.
-      final List<BoardCell> board = _board2x2(
-        <String>['x', 'x', 'x', 'x'],
-      );
+      final List<BoardCell> board = _board2x2(<String>['x', 'x', 'x', 'x']);
 
       final bool result = analyzer.hasPlayableWord(
         board: board,
@@ -158,9 +143,7 @@ void main() {
       //        z z
       // No prefix "z..." exists in dictionary, so all branches
       // should be pruned at depth 1 without reaching depth 2+.
-      final List<BoardCell> board = _board2x2(
-        <String>['z', 'z', 'z', 'z'],
-      );
+      final List<BoardCell> board = _board2x2(<String>['z', 'z', 'z', 'z']);
 
       final bool result = analyzer.hasPlayableWord(
         board: board,
@@ -176,9 +159,7 @@ void main() {
       //        x x
       // "ata" requires a→t→a, but there is only one 'a' cell.
       // If no-reuse is enforced, this must return false.
-      final List<BoardCell> board = _board2x2(
-        <String>['a', 't', 'x', 'x'],
-      );
+      final List<BoardCell> board = _board2x2(<String>['a', 't', 'x', 'x']);
 
       final bool result = analyzer.hasPlayableWord(
         board: board,
@@ -196,9 +177,7 @@ void main() {
       //        x a
       // Path e(0,0)→l(0,1)→a(1,1) = "ela" is in dictionary.
       // l and a are vertically adjacent, e and l horizontally.
-      final List<BoardCell> board = _board2x2(
-        <String>['e', 'l', 'x', 'a'],
-      );
+      final List<BoardCell> board = _board2x2(<String>['e', 'l', 'x', 'a']);
 
       final bool result = analyzer.hasPlayableWord(
         board: board,
@@ -220,9 +199,7 @@ void main() {
     });
 
     test('returns false with empty dictionary', () {
-      final List<BoardCell> board = _board2x2(
-        <String>['k', 'a', 'l', 'e'],
-      );
+      final List<BoardCell> board = _board2x2(<String>['k', 'a', 'l', 'e']);
 
       final bool result = analyzer.hasPlayableWord(
         board: board,
@@ -239,9 +216,15 @@ void main() {
       //   x l x
       //   x x x
       final List<BoardCell> board = _boardNxN(3, <String>[
-        'k', 'a', 'x',
-        'x', 'l', 'x',
-        'x', 'x', 'x',
+        'k',
+        'a',
+        'x',
+        'x',
+        'l',
+        'x',
+        'x',
+        'x',
+        'x',
       ]);
 
       final bool result = analyzer.hasPlayableWord(
@@ -278,8 +261,7 @@ void main() {
       generator = BoardGenerator();
     });
 
-    test('returns original session when board is already playable',
-        () {
+    test('returns original session when board is already playable', () {
       final GameSession playableSession = GameSession(
         config: _testConfig,
         board: _board2x2(<String>['k', 'a', 'l', 'x']),
@@ -304,16 +286,20 @@ void main() {
     test('recovers a dead board via shuffle or regeneration', () {
       // 3×3 board with k, a, l placed non-adjacently so no
       // word can be formed in the initial arrangement.
-      final GameConfig config3x3 = _testConfig.copyWith(
-        gridSize: 3,
-      );
+      final GameConfig config3x3 = _testConfig.copyWith(gridSize: 3);
 
       final GameSession deadSession = GameSession(
         config: config3x3,
         board: _boardNxN(3, <String>[
-          'k', 'x', 'l',
-          'x', 'x', 'x',
-          'a', 'x', 'x',
+          'k',
+          'x',
+          'l',
+          'x',
+          'x',
+          'x',
+          'a',
+          'x',
+          'x',
         ]),
         movesLeft: 15,
       );
@@ -331,9 +317,7 @@ void main() {
       // Use a seeded random for deterministic shuffle.
       final BoardRecovery recovery = BoardRecovery(
         analyzer: analyzer,
-        boardGenerator: BoardGenerator(
-          randomSource: _FixedRandomSource(0),
-        ),
+        boardGenerator: BoardGenerator(randomSource: _FixedRandomSource(0)),
         random: Random(42),
         maxShuffleAttempts: 20,
         maxRegenerateAttempts: 20,
@@ -359,10 +343,7 @@ void main() {
       );
 
       // Strategy should not be none.
-      expect(
-        recovery.lastStrategy,
-        isNot(RecoveryStrategy.none),
-      );
+      expect(recovery.lastStrategy, isNot(RecoveryStrategy.none));
     });
 
     test('prefers shuffle over regeneration', () {
@@ -393,55 +374,49 @@ void main() {
       );
     });
 
-    test(
-      'falls back to regeneration when shuffle cannot help',
-      () {
-        // All cells are 'x' — shuffle is futile.
-        // The generator cycles k→a→l→k producing a board
-        // where "kal" is formable.
-        final GameSession deadSession = GameSession(
-          config: _testConfig,
-          board: _board2x2(<String>['x', 'x', 'x', 'x']),
-          movesLeft: 15,
-        );
+    test('falls back to regeneration when shuffle cannot help', () {
+      // All cells are 'x' — shuffle is futile.
+      // The generator cycles k→a→l→k producing a board
+      // where "kal" is formable.
+      final GameSession deadSession = GameSession(
+        config: _testConfig,
+        board: _board2x2(<String>['x', 'x', 'x', 'x']),
+        movesLeft: 15,
+      );
 
-        final BoardGenerator playableGenerator = BoardGenerator(
-          randomSource: _LoopingRandomSource(
-            // Cycle: threshold=0→high, letterIdx=0→'k',
-            //        threshold=0→high, letterIdx=1→'a',
-            //        threshold=0→high, letterIdx=2→'l',
-            //        threshold=0→high, letterIdx=0→'k'
-            <int>[0, 0, 0, 1, 0, 2, 0, 0],
-          ),
-        );
+      final BoardGenerator playableGenerator = BoardGenerator(
+        randomSource: _LoopingRandomSource(
+          // Cycle: threshold=0→high, letterIdx=0→'k',
+          //        threshold=0→high, letterIdx=1→'a',
+          //        threshold=0→high, letterIdx=2→'l',
+          //        threshold=0→high, letterIdx=0→'k'
+          <int>[0, 0, 0, 1, 0, 2, 0, 0],
+        ),
+      );
 
-        final BoardRecovery recovery = BoardRecovery(
-          analyzer: analyzer,
-          boardGenerator: playableGenerator,
-          maxShuffleAttempts: 1,
-          maxRegenerateAttempts: 5,
-        );
+      final BoardRecovery recovery = BoardRecovery(
+        analyzer: analyzer,
+        boardGenerator: playableGenerator,
+        maxShuffleAttempts: 1,
+        maxRegenerateAttempts: 5,
+      );
 
-        final GameSession result = recovery.ensurePlayable(
-          session: deadSession,
-          dictionary: _miniDictionary,
-          rules: _testRules,
-        );
+      final GameSession result = recovery.ensurePlayable(
+        session: deadSession,
+        dictionary: _miniDictionary,
+        rules: _testRules,
+      );
 
-        expect(
-          analyzer.hasPlayableWord(
-            board: result.board,
-            gridSize: 2,
-            words: _miniDictionary,
-          ),
-          isTrue,
-        );
-        expect(
-          recovery.lastStrategy,
-          RecoveryStrategy.regenerate,
-        );
-      },
-    );
+      expect(
+        analyzer.hasPlayableWord(
+          board: result.board,
+          gridSize: 2,
+          words: _miniDictionary,
+        ),
+        isTrue,
+      );
+      expect(recovery.lastStrategy, RecoveryStrategy.regenerate);
+    });
 
     test('throws when all recovery attempts are exhausted', () {
       final GameSession deadSession = GameSession(
