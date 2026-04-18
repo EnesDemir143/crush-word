@@ -290,10 +290,14 @@ class _LetterCell extends StatelessWidget {
           'Satır ${cell.row + 1}, sütun ${cell.column + 1}, '
           '${cell.letter} harfi'
           '${isSelected ? ', seçili ${selectionIndex! + 1}. sıra' : ''}',
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 140),
-        curve: Curves.easeOutCubic,
-        padding: EdgeInsets.all(contentPadding),
+      child: AnimatedScale(
+        scale: isSelected ? 1.08 : 1.0,
+        duration: const Duration(milliseconds: 160),
+        curve: Curves.easeOutBack,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 140),
+          curve: Curves.easeOutCubic,
+          padding: EdgeInsets.all(contentPadding),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
@@ -376,6 +380,7 @@ class _LetterCell extends StatelessWidget {
               ),
           ],
         ),
+      ),
       ),
     );
   }
