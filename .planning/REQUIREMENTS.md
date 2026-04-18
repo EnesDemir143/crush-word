@@ -8,15 +8,15 @@
 ### Platform ve Kapsam
 
 - [ ] **PLAT-01**: Uygulama Android veya iOS odakli mobil calisir ve sunum emulator ya da fiziksel telefon uzerinden yapilabilir; web/masaustu akisi zorunlu tutulmaz.
-- [ ] **PLAT-02**: Kelime dogrulamasi icin uygulama icine paketlenmis Turkce bir sozluk/kelime listesi kullanilir.
+- [x] **PLAT-02**: Kelime dogrulamasi icin uygulama icine paketlenmis Turkce bir sozluk/kelime listesi kullanilir.
 - [x] **PLAT-03**: Oyun alani kare grid yapisinda olur ve her hucre bir harf tasir.
 
 ### Kullanici ve Ana Ekran
 
-- [ ] **USER-01**: Ilk acilista kullanici adi alinir ve sonraki acilislarda ayni cihazda saklanir.
-- [ ] **USER-02**: Kullanici adi ana ekranin sol ust alanindan degistirilebilir.
-- [ ] **HOME-01**: Kullanici adi tamamlandiktan sonra kullanici ana ekrana yonlendirilir.
-- [ ] **HOME-02**: Ana ekranda `Yeni Oyun`, `Skor Tablosu` ve `Market` secenekleri bulunur.
+- [x] **USER-01**: Ilk acilista kullanici adi alinir ve sonraki acilislarda ayni cihazda saklanir.
+- [x] **USER-02**: Kullanici adi ana ekranin sol ust alanindan degistirilebilir.
+- [x] **HOME-01**: Kullanici adi tamamlandiktan sonra kullanici ana ekrana yonlendirilir.
+- [x] **HOME-02**: Ana ekranda `Yeni Oyun`, `Skor Tablosu` ve `Market` secenekleri bulunur.
 
 ### Yeni Oyun ve Kurulum
 
@@ -28,16 +28,16 @@
 
 - [x] **GRID-01**: Harfler Turkce frekans mantigina gore agirlikli uretilir; duz uniform rastgelelik kullanilmaz.
 - [ ] **GRID-02**: Baslangic board'u ve hamle sonrasi/refill board'lari her zaman en az bir gecerli kelime barindiracak sekilde analiz edilir; gerekirse otomatik cozum uygulanir.
-- [ ] **GRID-03**: Oyuncu herhangi bir hucreden baslayip 8 yonlu komsu hucreler uzerinden ayni hucreyi tekrar kullanmadan secim yapabilir.
-- [ ] **GRID-04**: 3 harften kisa secimler gecersiz sayilir.
-- [ ] **GRID-05**: Parmak kaldirildiginda secim tamamlanir ve olusan kelime sozlukte kontrol edilir.
-- [ ] **GRID-06**: Gecerli ve gecersiz denemelerin ikisi de 1 hamle harcar; gecersiz deneme secimi eski haline doner.
-- [ ] **GRID-07**: Gecerli kelimede secilen harfler kaldirilir, ustteki harfler asagi duser ve bosluklar ustten yeni harflerle dolar.
+- [x] **GRID-03**: Oyuncu herhangi bir hucreden baslayip 8 yonlu komsu hucreler uzerinden ayni hucreyi tekrar kullanmadan secim yapabilir.
+- [x] **GRID-04**: 3 harften kisa secimler gecersiz sayilir.
+- [x] **GRID-05**: Parmak kaldirildiginda secim tamamlanir ve olusan kelime sozlukte kontrol edilir.
+- [x] **GRID-06**: Gecerli ve gecersiz denemelerin ikisi de 1 hamle harcar; gecersiz deneme secimi eski haline doner.
+- [x] **GRID-07**: Gecerli kelimede secilen harfler kaldirilir, ustteki harfler asagi duser ve bosluklar ustten yeni harflerle dolar.
 - [ ] **GRID-08**: O an olusturulabilir kelime sayisi, ortak harf kullanmayan cozum mantigiyla hesaplanip oyun ekraninda gosterilir.
 
 ### Puanlama, Ozel Gucler ve Combo
 
-- [ ] **SCORE-01**: Harf puanlari PDF tablosuna uygun tanimlanir ve gecerli kelime puani anlik toplama eklenir.
+- [x] **SCORE-01**: Harf puanlari PDF tablosuna uygun tanimlanir ve gecerli kelime puani anlik toplama eklenir.
 - [ ] **POWER-01**: 4 harfli kelime son harfte satir temizleme gucu olusturur.
 - [ ] **POWER-02**: 5 harfli kelime son harfte alan patlatma gucu olusturur.
 - [ ] **POWER-03**: 6 harfli kelime son harfte sutun temizleme gucu olusturur.
@@ -58,8 +58,8 @@
 
 - [ ] **HIST-01**: Skor tablosu ust bolumde toplam oyun, en yuksek puan, ortalama puan, toplam kelime, en uzun kelime ve toplam sure ozetini gosterir.
 - [ ] **HIST-02**: Skor gecmisi en son oynanan ustte olacak sekilde listelenir ve her kart oyun no, tarih, grid, puan, kelime sayisi, en uzun kelime ve sureyi gosterir.
-- [ ] **END-01**: Hamle sayisi bittiginde oyun sonucu kaydedilir ve ana ekrana donulur.
-- [ ] **END-02**: Geri ile cikis denendiginde `Evet/Hayir` onayi gelir; `Hayir` oyuna devam eder, `Evet` sonucu kaydedip ana ekrana doner.
+- [x] **END-01**: Hamle sayisi bittiginde oyun sonucu kaydedilir ve ana ekrana donulur.
+- [x] **END-02**: Geri ile cikis denendiginde `Evet/Hayir` onayi gelir; `Hayir` oyuna devam eder, `Evet` sonucu kaydedip ana ekrana doner.
 
 ### Teslim ve Sunum Hazirligi
 
@@ -88,24 +88,24 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PLAT-02 | Phase 1 | Pending |
-| USER-01 | Phase 1 | Pending |
-| USER-02 | Phase 1 | Pending |
-| HOME-01 | Phase 1 | Pending |
-| HOME-02 | Phase 1 | Pending |
+| PLAT-02 | Phase 1 | Completed |
+| USER-01 | Phase 1 | Completed |
+| USER-02 | Phase 1 | Completed |
+| HOME-01 | Phase 1 | Completed |
+| HOME-02 | Phase 1 | Completed |
 | PLAT-03 | Phase 2 | Completed |
 | SETUP-01 | Phase 2 | Completed |
 | SETUP-02 | Phase 2 | Completed |
 | SETUP-03 | Phase 2 | Completed |
 | GRID-01 | Phase 2 | Completed |
-| GRID-03 | Phase 2 | Pending |
-| GRID-04 | Phase 3 | Pending |
-| GRID-05 | Phase 3 | Pending |
-| GRID-06 | Phase 3 | Pending |
-| GRID-07 | Phase 3 | Pending |
-| SCORE-01 | Phase 3 | Pending |
-| END-01 | Phase 3 | Pending |
-| END-02 | Phase 3 | Pending |
+| GRID-03 | Phase 2 | Completed |
+| GRID-04 | Phase 3 | Completed |
+| GRID-05 | Phase 3 | Completed |
+| GRID-06 | Phase 3 | Completed |
+| GRID-07 | Phase 3 | Completed |
+| SCORE-01 | Phase 3 | Completed |
+| END-01 | Phase 3 | Completed |
+| END-02 | Phase 3 | Completed |
 | GRID-02 | Phase 02.1 + Phase 4 | Pending |
 | GRID-08 | Phase 4 | Pending |
 | POWER-01 | Phase 4 | Pending |
@@ -142,4 +142,4 @@
 
 ---
 *Requirements defined: 2026-04-07*
-*Last updated: 2026-04-18 after Phase 01.1-01 spec audit*
+*Last updated: 2026-04-18 after Phase 03-03 closure sync*

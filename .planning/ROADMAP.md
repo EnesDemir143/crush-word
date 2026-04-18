@@ -14,7 +14,7 @@ Bu roadmap, varsayilan Flutter starter uygulamasini ders dokumanindaki zorunlu k
 - [x] **Phase 01.1: Requirements, Architecture and Persistence Eval Gate** - Phase 2'ye gecmeden once kaynak dokuman, kurallar, SQLite/persistence mimarisi ve riskli oyun davranislarinin ownership/validation planini dondur.
 - [x] **Phase 2: Game Setup and Board Foundation** - Yeni oyun ayarlari, agirlikli harf uretimi ve board UI temelini kur.
 - [x] **Phase 02.1: Initial Board Solvability Gate** - Phase 2 tamamlanir tamamlanmaz ilk gosterilen board'un dead gelmesini engelle ve ilk render oncesi recovery kapisini kapat.
-- [ ] **Phase 3: Core Gameplay and Session Results** - Kelime dogrulama, puanlama, refill ve oyun sonu kayit akislarini tamamla.
+- [x] **Phase 3: Core Gameplay and Session Results** - Kelime dogrulama, puanlama, refill ve oyun sonu kayit akislarini tamamla.
 - [ ] **Phase 4: Advanced Board Mechanics** - Her zaman oynanabilir board, combo ve ozel guc davranislarini ekle.
 - [ ] **Phase 5: Market and Score History** - Joker ekonomisi, market kullanimi ve skor tablosu ekranlarini tamamla.
 - [ ] **Phase 6: Mobile Polish and Delivery** - Mobil sunum sertlestirmesi, testler ve LaTeX/teslim varliklarini kapat.
@@ -133,7 +133,7 @@ Plans:
 - [x] 03-01: Implement word finalization and dictionary validation flow
 - [x] 03-02: Add scoring table, move consumption, gravity and refill pipeline
 - [x] 03-02.1: Implement UI polish, game animations, game-over screen and premium visuals
-- [ ] 03-03: Persist game results and exit/endgame flows
+- [x] 03-03: Persist game results and exit/endgame flows
 
 ### Phase 4: Advanced Board Mechanics
 **Goal**: Hamle sonrasi board continuity count'ini, combo puanlamasini ve uzun kelime ozel guclerini eklemek.
@@ -213,7 +213,7 @@ Phases execute in numeric order: 1 -> 1.1 -> 2 -> 2.1 -> 3 -> 4 -> 5 -> 6
 | 01.1 Requirements, Architecture and Persistence Eval Gate | 3/3 | Completed | 2026-04-18 |
 | 2. Game Setup and Board Foundation | 3/3 | Completed | 2026-04-18 |
 | 02.1 Initial Board Solvability Gate | 1/1 | Completed | 2026-04-18 |
-| 3. Core Gameplay and Session Results | 3/4 | In progress | - |
+| 3. Core Gameplay and Session Results | 4/4 | Completed | 2026-04-18 |
 | 4. Advanced Board Mechanics | 0/3 | Not started | - |
 | 5. Market and Score History | 0/3 | Not started | - |
 | 6. Mobile Polish and Delivery | 0/3 | Not started | - |
