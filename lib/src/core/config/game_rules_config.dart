@@ -1,15 +1,66 @@
 import 'package:crush_word/src/core/models/game_config.dart';
 import 'package:crush_word/src/core/models/game_difficulty.dart';
 
+/// Canonical letter-score mapping loaded from `game_rules.json`.
+///
+/// Keys are uppercase Turkish letters.  The map is unmodifiable at
+/// construction time so the table cannot drift at runtime.
+class ScoringConfig {
+  ScoringConfig({required Map<String, int> letterScores})
+      : letterScores = Map<String, int>.unmodifiable(letterScores);
+
+  /// Uppercase letter → point value.
+  final Map<String, int> letterScores;
+
+  /// Returns the point value for [letter].
+  ///
+  /// Falls back to 0 when the letter is not in the table
+  /// (e.g. a wildcard tile in later phases).
+  int scoreOf(String letter) =>
+      letterScores[letter.toUpperCase()] ?? 0;
+
+  factory ScoringConfig.fromJson(Map<String, dynamic> json) {
+    final Object? scoresJson = json['letterScores'];
+
+    if (scoresJson is! Map<String, dynamic>) {
+      throw const FormatException(
+        'Scoring config requires a letterScores map.',
+      );
+    }
+
+    final Map<String, int> parsed = <String, int>{};
+    for (final MapEntry<String, dynamic> entry in scoresJson.entries) {
+      final int? value = (entry.value as num?)?.toInt();
+      if (value == null) {
+        throw FormatException(
+          'Letter score for "${entry.key}" must be an integer.',
+        );
+      }
+      parsed[entry.key.toUpperCase()] = value;
+    }
+
+    return ScoringConfig(letterScores: parsed);
+  }
+}
+
 class GameRulesConfig {
-  const GameRulesConfig({required this.setup, required this.boardGeneration});
+  const GameRulesConfig({
+    required this.setup,
+    required this.boardGeneration,
+    this.scoring,
+  });
 
   final GameSetupRules setup;
   final GameBoardGenerationRules boardGeneration;
 
+  /// Null when loaded from legacy JSON that predates the scoring
+  /// section — callers must handle this gracefully.
+  final ScoringConfig? scoring;
+
   factory GameRulesConfig.fromJson(Map<String, dynamic> json) {
     final Object? setupJson = json['setup'];
     final Object? boardGenerationJson = json['boardGeneration'];
+    final Object? scoringJson = json['scoring'];
 
     if (setupJson is! Map<String, dynamic>) {
       throw const FormatException(
@@ -25,7 +76,12 @@ class GameRulesConfig {
 
     return GameRulesConfig(
       setup: GameSetupRules.fromJson(setupJson),
-      boardGeneration: GameBoardGenerationRules.fromJson(boardGenerationJson),
+      boardGeneration: GameBoardGenerationRules.fromJson(
+        boardGenerationJson,
+      ),
+      scoring: scoringJson is Map<String, dynamic>
+          ? ScoringConfig.fromJson(scoringJson)
+          : null,
     );
   }
 }
