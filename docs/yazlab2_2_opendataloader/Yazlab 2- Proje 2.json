@@ -1,0 +1,3563 @@
+{
+  "file name" : "Yazlab 2- Proje 2.pdf",
+  "number of pages" : 13,
+  "author" : null,
+  "title" : "Yazlab 2- Proje 2.docx",
+  "creation date" : null,
+  "modification date" : null,
+  "kids" : [ {
+    "type" : "heading",
+    "id" : 1,
+    "level" : "Doctitle",
+    "page number" : 1,
+    "bounding box" : [ 136.125, 651.696, 475.875, 719.235 ],
+    "heading level" : 1,
+    "font" : "TimesNewRomanPS-BoldMT",
+    "font size" : 18.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "KOCAELİ ÜNİVERSİTESİ BİLGİSAYAR MÜHENDİSLİĞİ BÖLÜMÜ YAZILIM LABORATUVARI-II"
+  }, {
+    "type" : "heading",
+    "id" : 2,
+    "level" : "Subtitle",
+    "page number" : 1,
+    "bounding box" : [ 267.245, 609.379, 344.755, 629.313 ],
+    "heading level" : 1,
+    "font" : "TimesNewRomanPS-BoldMT",
+    "font size" : 18.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "PROJE II"
+  }, {
+    "type" : "heading",
+    "id" : 3,
+    "level" : "Subtitle",
+    "page number" : 1,
+    "bounding box" : [ 215.108, 564.073, 396.894, 581.792 ],
+    "heading level" : 3,
+    "font" : "TimesNewRomanPS-BoldMT",
+    "font size" : 16.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Word Crush Mobil Oyunu"
+  }, {
+    "type" : "heading",
+    "id" : 4,
+    "level" : "Subtitle",
+    "page number" : 1,
+    "bounding box" : [ 212.783, 526.701, 399.221, 542.205 ],
+    "heading level" : 5,
+    "font" : "TimesNewRomanPS-BoldMT",
+    "font size" : 14.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Proje Teslim Tarihi: 01.05.2026"
+  }, {
+    "type" : "paragraph",
+    "id" : 5,
+    "page number" : 1,
+    "bounding box" : [ 72.0, 435.013, 539.959, 511.777 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Bu projede mobil programlama kullanılarak kelime tabanlı bir oyun geliştirilmesi hedeflenmektedir. Oyuncu, oyun alanında bulunan harfleri kullanarak anlamlı kelimeler oluşturur. Oluşturulan kelimeler oyun alanından silinir ve yerlerine yeni harfler düşer. Oyuncu verilen hamle sayısı içerisinde en yüksek puanı elde etmeye çalışır. Bu oyunun temel amacı, oyuncunun hem kelime bilgisini hem de stratejik düşünme yeteneğini geliştirmektir."
+  }, {
+    "type" : "heading",
+    "id" : 6,
+    "level" : "Subtitle",
+    "page number" : 1,
+    "bounding box" : [ 83.25, 407.145, 117.234, 420.434 ],
+    "heading level" : 7,
+    "font" : "TimesNewRomanPS-BoldMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Amaç:"
+  }, {
+    "type" : "list",
+    "id" : 7,
+    "level" : "1",
+    "page number" : 1,
+    "bounding box" : [ 84.0, 276.785, 515.057, 391.823 ],
+    "numbering style" : "unknown style",
+    "number of list items" : 3,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 1,
+      "bounding box" : [ 100.5, 378.534, 395.754, 391.823 ],
+      "font" : "TimesNewRomanPSMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "1. Mobil programlama konusunda bilgi ve beceri kazanılması",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 1,
+      "bounding box" : [ 100.5, 350.113, 515.057, 377.433 ],
+      "font" : "TimesNewRomanPSMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "2. Mobil programlama aracılığıyla oyun geliştirme ve uygulama oluşturma becerisinin geliştirilmesi.",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 1,
+      "bounding box" : [ 84.0, 276.785, 405.851, 348.78 ],
+      "font" : "TimesNewRomanPSMT",
+      "font size" : 13.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "3. Dinamik özelliklere sahip bir program geliştirebilme Programlama Dili: Java, Kotlin, Flutter, React Native, Swift vb. Mobil Programlama",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "list",
+    "id" : 8,
+    "level" : "2",
+    "page number" : 1,
+    "bounding box" : [ 90.0, 181.172, 520.488, 263.455 ],
+    "numbering style" : "unknown style",
+    "number of list items" : 4,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 1,
+      "bounding box" : [ 90.0, 250.166, 433.945, 263.455 ],
+      "font" : "TimesNewRomanPSMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "1. Mobil programlama kodları Android veya IOS için geliştirilmelidir.",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 1,
+      "bounding box" : [ 90.0, 236.367, 387.592, 249.656 ],
+      "font" : "TimesNewRomanPSMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "2. Kodlama için herhangi bir programlama dili kullanılabilir.",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 1,
+      "bounding box" : [ 90.0, 208.769, 520.488, 235.857 ],
+      "font" : "TimesNewRomanPSMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "3. Geliştirilecek uygulama kelime tabanlı bir oyundur. Bundan dolayı oyunda kelime listesinin kullanılması gereklidir.",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 1,
+      "bounding box" : [ 90.0, 181.172, 520.037, 208.259 ],
+      "font" : "TimesNewRomanPSMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "4. Sunum sırasında oyun gösterimi emulatör veya telefon üzerinde gerçekleştirilecektir. Web veya masaüstü gösterimler kabul edilmeyecektir.",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "heading",
+    "id" : 10,
+    "level" : "Subtitle",
+    "page number" : 2,
+    "bounding box" : [ 72.0, 700.452, 207.051, 719.444 ],
+    "heading level" : 2,
+    "font" : "Arial-BoldMT",
+    "font size" : 17.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Uygulama Yapısı"
+  }, {
+    "type" : "paragraph",
+    "id" : 11,
+    "page number" : 2,
+    "bounding box" : [ 72.0, 642.916, 540.0, 687.942 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Oyun, iki boyutlu bir grid yapısından oluşmaktadır. Bu grid, satır ve sütunlardan meydana gelen kare bir yapıdadır. Her kare içerisinde bir harf bulunmaktadır. Oyuncu bu harfleri kullanarak kelime oluşturacaktır."
+  }, {
+    "type" : "heading",
+    "id" : 12,
+    "level" : "Subtitle",
+    "page number" : 2,
+    "bounding box" : [ 72.0, 607.897, 275.713, 622.42 ],
+    "heading level" : 6,
+    "font" : "Arial-BoldMT",
+    "font size" : 13.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Oyun Giriş Ekranı ve Seçenekler"
+  }, {
+    "type" : "paragraph",
+    "id" : 13,
+    "page number" : 2,
+    "bounding box" : [ 72.0, 518.372, 539.848, 595.135 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Oyun ilk açıldığında oyuncudan kullanıcı adı girmesi istenecektir. Kullanıcı adı girdikten sonra oyuncu ana ekrana yönlendirilir. Kullanıcı adı ilk girişte alınır ve daha sonra kullanılmak üzere saklanır. Kullanıcı uygulamayı tekrar açtığında yeniden isim girmesine gerek kalmayacaktır. Değişiklik durumlarında ana ekranın sol üst kısımda yer alan kullanıcı isminin üzerine tıklayarak değiştirilecektir."
+  }, {
+    "type" : "heading",
+    "id" : 14,
+    "level" : "Subtitle",
+    "page number" : 2,
+    "bounding box" : [ 72.0, 475.053, 203.975, 491.665 ],
+    "heading level" : 4,
+    "font" : "TimesNewRomanPS-BoldMT",
+    "font size" : 15.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Ana Ekran Tasarımı"
+  }, {
+    "type" : "paragraph",
+    "id" : 15,
+    "page number" : 2,
+    "bounding box" : [ 72.0, 430.799, 539.83, 459.956 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Ana ekran, kullanıcının oyun ile ilgili tüm işlemleri gerçekleştirebileceği merkez ekran olacaktır. Bu ekranın orta kısmında aşağıdaki seçenekler bulunacaktır:"
+  }, {
+    "type" : "list",
+    "id" : 16,
+    "level" : "2",
+    "page number" : 2,
+    "bounding box" : [ 90.0, 371.019, 171.492, 416.336 ],
+    "numbering style" : "unknown style",
+    "number of list items" : 3,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 2,
+      "bounding box" : [ 90.0, 402.877, 159.791, 416.336 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Yeni Oyun",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 2,
+      "bounding box" : [ 90.0, 386.948, 171.492, 400.407 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Skor Tablosu",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 2,
+      "bounding box" : [ 90.0, 371.019, 142.652, 384.478 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Market",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "heading",
+    "id" : 17,
+    "level" : "Subtitle",
+    "page number" : 2,
+    "bounding box" : [ 72.0, 340.842, 135.378, 356.346 ],
+    "heading level" : 5,
+    "font" : "TimesNewRomanPS-BoldMT",
+    "font size" : 14.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Yeni Oyun"
+  }, {
+    "type" : "paragraph",
+    "id" : 18,
+    "page number" : 2,
+    "bounding box" : [ 72.0, 284.76, 487.137, 325.918 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Kullanıcı \"Yeni Oyun\" butonuna tıklandığında oyun ayarlarının seçileceği ekran açılır. Bu ekranda kullanıcıya grid boyutu seçenekleri sunulur:"
+  }, {
+    "type" : "list",
+    "id" : 19,
+    "level" : "2",
+    "page number" : 2,
+    "bounding box" : [ 90.0, 224.98, 238.975, 270.298 ],
+    "numbering style" : "unknown style",
+    "number of list items" : 3,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 2,
+      "bounding box" : [ 90.0, 256.839, 214.975, 270.298 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● 6x6 Grid (Zor Seviye)",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 2,
+      "bounding box" : [ 90.0, 240.909, 218.971, 254.368 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● 8x8 Grid (Orta Seviye)",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 2,
+      "bounding box" : [ 90.0, 224.98, 238.975, 238.439 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● 10x10 Grid (Kolay Seviye)",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "paragraph",
+    "id" : 20,
+    "page number" : 2,
+    "bounding box" : [ 72.0, 181.235, 539.871, 210.392 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Kullanıcı grid boyutunu seçtikten sonra Hamle sayısını seçim ekranına yönlendirecektir. Açılan ekranda"
+  }, {
+    "type" : "list",
+    "id" : 21,
+    "level" : "2",
+    "page number" : 2,
+    "bounding box" : [ 90.0, 121.455, 225.967, 166.772 ],
+    "numbering style" : "unknown style",
+    "number of list items" : 3,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 2,
+      "bounding box" : [ 90.0, 153.313, 225.967, 166.772 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Kolay level → 25 hamle",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 2,
+      "bounding box" : [ 90.0, 137.384, 217.963, 150.843 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Orta level → 20 hamle",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 2,
+      "bounding box" : [ 90.0, 121.455, 213.967, 134.914 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Zor level → 15 hamle",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "paragraph",
+    "id" : 22,
+    "page number" : 2,
+    "bounding box" : [ 72.0, 77.71, 539.361, 106.867 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Hamle sayısını seçecektir ve oyun başlayacaktır. Oyuncu her kelime oluşturduğunda bir hamle harcamış olur. (Hatalı kelimede olsa)"
+  }, {
+    "type" : "heading",
+    "id" : 23,
+    "level" : "Subtitle",
+    "page number" : 3,
+    "bounding box" : [ 72.0, 703.901, 151.208, 719.405 ],
+    "heading level" : 5,
+    "font" : "TimesNewRomanPS-BoldMT",
+    "font size" : 14.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Skor Tablosu"
+  }, {
+    "type" : "paragraph",
+    "id" : 24,
+    "page number" : 3,
+    "bounding box" : [ 72.0, 643.95, 539.906, 688.977 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Skor tablosunda, kendi performansını takip etmesini amaçlamaktadır. Skor tablosu, oyuncunun oynadığı oyunların geçmişini inceleyebileceği ve gelişimini gözlemleyebileceği bir yapı sunacaktır."
+  }, {
+    "type" : "paragraph",
+    "id" : 25,
+    "page number" : 3,
+    "bounding box" : [ 72.0, 600.213, 539.701, 629.371 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Ana ekranda bulunan \"Skor Tablosu\" butonuna tıklandığında kullanıcının geçmiş oyunların listelendiği bir ekran açılacaktır."
+  }, {
+    "type" : "paragraph",
+    "id" : 26,
+    "page number" : 3,
+    "bounding box" : [ 72.0, 556.476, 539.813, 585.634 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Skor tablosu ekranının üst kısmında kullanıcının genel performansını gösteren bir özet alanı bulunacaktır. Bu alanda aşağıdaki bilgiler yer alacaktır:"
+  }, {
+    "type" : "list",
+    "id" : 27,
+    "level" : "2",
+    "page number" : 3,
+    "bounding box" : [ 72.0, 90.848, 539.666, 542.013 ],
+    "numbering style" : "unknown style",
+    "number of list items" : 13,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 3,
+      "bounding box" : [ 90.0, 528.554, 252.809, 542.013 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Toplam Oynanan Oyun Sayısı",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 3,
+      "bounding box" : [ 90.0, 512.625, 187.992, 526.084 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● En Yüksek Puan",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 3,
+      "bounding box" : [ 90.0, 496.696, 179.643, 510.155 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Ortalama Puan",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 3,
+      "bounding box" : [ 90.0, 480.766, 258.809, 494.225 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Toplam Bulunan Kelime Sayısı",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 3,
+      "bounding box" : [ 90.0, 464.837, 188.643, 478.296 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● En Uzun Kelime",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 3,
+      "bounding box" : [ 72.0, 214.345, 539.666, 462.367 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Toplam Oyun Süresi Örnek: Toplam Oyun: 12 En Yüksek Puan: 1450 Ortalama Puan: 860 Toplam Kelime: 132 En Uzun Kelime: \"KELİMELER\" Toplam Süre: 1 saat 25 dakika Bu alan kullanıcının genel performansını hızlı şekilde görebilmesini sağlar. Skor ekranının alt kısmında kullanıcının oynadığı tüm oyunlar liste halinde gösterilecektir. Bu liste en son oynanan oyun üstte olacak şekilde sıralanacaktır. Her oyun kartında aşağıdaki bilgiler yer alacaktır:",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 3,
+      "bounding box" : [ 90.0, 186.424, 181.652, 199.883 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Oyun numarası",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 3,
+      "bounding box" : [ 90.0, 170.494, 162.99, 183.953 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Oyun tarihi",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 3,
+      "bounding box" : [ 90.0, 154.565, 261.99, 168.024 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Grid boyutu (6x6 / 8x8 / 10x10)",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 3,
+      "bounding box" : [ 90.0, 138.635, 170.813, 152.094 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Toplam puan",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 3,
+      "bounding box" : [ 90.0, 122.706, 214.652, 136.165 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Bulunan kelime sayısı",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 3,
+      "bounding box" : [ 90.0, 106.777, 183.311, 120.236 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● En uzun kelime",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 3,
+      "bounding box" : [ 90.0, 90.848, 165.662, 104.307 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Oyun süresi",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "paragraph",
+    "id" : 28,
+    "page number" : 4,
+    "bounding box" : [ 72.0, 555.252, 487.529, 719.49 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Örnek Oyun Kartı: Oyun 12 Tarih: 15.05.2026 Grid: 8x8 Puan: 1240 Kelime Sayısı: 18 En Uzun Kelime: \"KELİMELER\" Süre: 6 dk Bu yapı sayesinde kullanıcı geçmiş performanslarını detaylı şekilde inceleyebilecektir."
+  }, {
+    "type" : "heading",
+    "id" : 29,
+    "level" : "Subtitle",
+    "page number" : 4,
+    "bounding box" : [ 72.0, 525.083, 117.067, 540.587 ],
+    "heading level" : 5,
+    "font" : "TimesNewRomanPS-BoldMT",
+    "font size" : 14.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Market"
+  }, {
+    "type" : "paragraph",
+    "id" : 30,
+    "page number" : 4,
+    "bounding box" : [ 72.0, 465.133, 539.859, 510.159 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Bu bölümde, oyun içerisinde kullanılabilecek joker özelliklerinin satın alınması işlemleri gerçekleştirilecektir. Kullanıcılar, oyun sırasında avantaj sağlayan çeşitli jokerleri oyun içi altın kullanarak satın alabileceklerdir."
+  }, {
+    "type" : "paragraph",
+    "id" : 31,
+    "page number" : 4,
+    "bounding box" : [ 72.0, 405.527, 539.707, 450.553 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Oyun içerisinde, kullanıcıya başlangıçta belirli miktarda oyun içi altın tanımlanacaktır. Bu altınlar, yalnızca oyun içi özellikleri satın almak amacıyla kullanılacaktır. Kullanıcı, sahip olduğu altın miktarını joker satın alma ekranında görüntüleyebilecektir."
+  }, {
+    "type" : "paragraph",
+    "id" : 32,
+    "page number" : 4,
+    "bounding box" : [ 72.0, 377.658, 261.932, 390.947 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Joker satın alma ekranında, her jokerin:"
+  }, {
+    "type" : "list",
+    "id" : 33,
+    "level" : "2",
+    "page number" : 4,
+    "bounding box" : [ 90.0, 301.949, 351.961, 363.196 ],
+    "numbering style" : "unknown style",
+    "number of list items" : 4,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 4,
+      "bounding box" : [ 90.0, 349.737, 197.631, 363.196 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Özellik açıklaması",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 4,
+      "bounding box" : [ 90.0, 333.807, 184.975, 347.266 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Kullanım amacı",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 4,
+      "bounding box" : [ 90.0, 317.878, 174.99, 331.337 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Altın maliyeti",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 4,
+      "bounding box" : [ 90.0, 301.949, 351.961, 315.408 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Kullanım şekli (Animasyonlu gösterim yapılabilir)",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "paragraph",
+    "id" : 34,
+    "page number" : 4,
+    "bounding box" : [ 72.0, 258.203, 539.795, 287.361 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "bilgileri açık bir şekilde gösterilecektir. Kullanıcı, yeterli altına sahipse istediği jokeri satın alabilecek ve oyun sırasında bu jokerleri kullanabilecektir."
+  }, {
+    "type" : "paragraph",
+    "id" : 35,
+    "page number" : 4,
+    "bounding box" : [ 72.0, 182.729, 539.959, 243.624 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Bu projede gerçek para ile altın satın alma sistemi bulunmayacaktır. Bu nedenle kullanıcıya, test ve oyun deneyiminin kesintisiz devam edebilmesi amacıyla başlangıçta sınırsız veya yüksek miktarda altın tanımlanacaktır. Böylece kullanıcı, oyun içindeki tüm joker özelliklerini rahatlıkla deneyebilecektir."
+  }, {
+    "type" : "heading",
+    "id" : 36,
+    "level" : "Subtitle",
+    "page number" : 4,
+    "bounding box" : [ 72.0, 153.71, 299.833, 168.107 ],
+    "heading level" : 6,
+    "font" : "TimesNewRomanPS-BoldMT",
+    "font size" : 13.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Oyun Ekranı ve Oyun Oynama Adımları"
+  }, {
+    "type" : "paragraph",
+    "id" : 37,
+    "page number" : 4,
+    "bounding box" : [ 72.0, 109.801, 539.268, 138.958 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Grid seviyelerinden biri seçildikten sonra oyun ekranı geçilecektir. Bu ekranda seçilen grid değeri göre harf alanı açılacaktır. Örneğin 6x6 seçimin gösterimi aşağıdaki gibidir."
+  }, {
+    "type" : "image",
+    "id" : 44,
+    "page number" : 5,
+    "bounding box" : [ 179.725, 453.993, 461.641, 735.045 ],
+    "source" : "Yazlab 2- Proje 2_images/imageFile1.png"
+  }, {
+    "type" : "paragraph",
+    "id" : 38,
+    "page number" : 5,
+    "bounding box" : [ 72.0, 439.43, 539.924, 500.325 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Burada harfler rastgele bir şekilde atanmaktadır. Fakat rastgele atanırken kelime oluşturması için belirli bir şekilde bu rastgeleliği sağlanması gereklidir. Eğer tamamen rastgele harf üretilirse, anlamlı kelime oluşturmak zorlaşır. Bu nedenle harfler Türkçe diline uygun frekanslara göre üretilir."
+  }, {
+    "type" : "paragraph",
+    "id" : 39,
+    "page number" : 5,
+    "bounding box" : [ 72.0, 411.561, 280.254, 424.85 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Örneğin Türkçede en sık kullanılan harfler:"
+  }, {
+    "type" : "list",
+    "id" : 40,
+    "level" : "2",
+    "page number" : 5,
+    "bounding box" : [ 90.0, 303.993, 116.666, 397.099 ],
+    "numbering style" : "unknown style",
+    "number of list items" : 2,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 5,
+      "bounding box" : [ 90.0, 351.781, 116.666, 397.099 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● A ● E ● İ",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 5,
+      "bounding box" : [ 90.0, 303.993, 116.666, 349.311 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● L ● R ● N",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "paragraph",
+    "id" : 41,
+    "page number" : 5,
+    "bounding box" : [ 72.0, 248.248, 304.283, 289.406 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Bu harflerin gelme olasılığı daha yüksek tutulur. Orta sıklıkta kullanılan harfler:"
+  }, {
+    "type" : "list",
+    "id" : 42,
+    "level" : "2",
+    "page number" : 5,
+    "bounding box" : [ 90.0, 140.68, 118.67, 233.785 ],
+    "numbering style" : "unknown style",
+    "number of list items" : 2,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 5,
+      "bounding box" : [ 90.0, 204.397, 118.67, 233.785 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● K ● M",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 5,
+      "bounding box" : [ 90.0, 140.68, 116.666, 201.927 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● T ● S ● Y ● D",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "paragraph",
+    "id" : 43,
+    "page number" : 5,
+    "bounding box" : [ 72.0, 112.804, 250.922, 126.093 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Bu harfler orta seviyede üretilecektir."
+  }, {
+    "type" : "paragraph",
+    "id" : 45,
+    "page number" : 6,
+    "bounding box" : [ 72.0, 706.201, 200.268, 719.49 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Daha az kullanılan harfler:"
+  }, {
+    "type" : "list",
+    "id" : 46,
+    "level" : "2",
+    "page number" : 6,
+    "bounding box" : [ 90.0, 630.492, 116.666, 691.739 ],
+    "numbering style" : "unknown style",
+    "number of list items" : 2,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 6,
+      "bounding box" : [ 90.0, 678.28, 112.67, 691.739 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● J",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 6,
+      "bounding box" : [ 90.0, 630.492, 116.666, 675.81 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Ğ ● F ● V",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "paragraph",
+    "id" : 47,
+    "page number" : 6,
+    "bounding box" : [ 72.0, 602.615, 298.957, 615.904 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Bu harflerin gelme olasılığı daha düşük tutulur."
+  }, {
+    "type" : "paragraph",
+    "id" : 48,
+    "page number" : 6,
+    "bounding box" : [ 72.0, 543.01, 539.936, 588.036 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Bu kurallara göre harfler rastgele dağıtacak şekilde bir algoritma geliştirecektir. Bu algoritmayı geliştirirken harflerden oluşabilecek kelimeler kontrol edilecektir. Kelimelerin kontrolü yapılarak algoritma geliştirilmesi beklenmektedir."
+  }, {
+    "type" : "paragraph",
+    "id" : 49,
+    "page number" : 6,
+    "bounding box" : [ 90.0, 509.141, 219.967, 522.43 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "4.1 Başlangıç Harfi Seçimi"
+  }, {
+    "type" : "paragraph",
+    "id" : 50,
+    "page number" : 6,
+    "bounding box" : [ 72.0, 433.666, 539.602, 494.561 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Oyuncu kelime oluşturmak için grid üzerinde bulunan herhangi bir harfi seçerek başlar. Oyuncu harfin üzerine dokunduğunda, seçilen harf görsel olarak vurgulanır. Bu vurgulama, oyuncunun hangi harfi seçtiğini anlamasını sağlar. Seçilen ilk harf, oluşturulacak kelimenin başlangıç harfi olarak kabul edilir."
+  }, {
+    "type" : "paragraph",
+    "id" : 51,
+    "page number" : 6,
+    "bounding box" : [ 72.0, 389.929, 539.924, 419.087 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Oyuncu ilk harfi seçtikten sonra parmağını sürükleyerek komşu harfleri seçmeye devam eder. Ancak burada önemli bir kural vardır. Oyuncu sadece komşu harflere geçebilir."
+  }, {
+    "type" : "paragraph",
+    "id" : 52,
+    "page number" : 6,
+    "bounding box" : [ 72.0, 362.061, 210.316, 375.35 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Komşuluk şu yönleri kapsar:"
+  }, {
+    "type" : "list",
+    "id" : 53,
+    "level" : "2",
+    "page number" : 6,
+    "bounding box" : [ 90.0, 222.634, 143.004, 347.598 ],
+    "numbering style" : "unknown style",
+    "number of list items" : 4,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 6,
+      "bounding box" : [ 90.0, 334.139, 139.992, 347.598 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Yukarı",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 6,
+      "bounding box" : [ 90.0, 318.209, 135.996, 331.668 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Aşağı",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 6,
+      "bounding box" : [ 90.0, 286.351, 126.0, 315.739 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Sağ ● Sol",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 6,
+      "bounding box" : [ 90.0, 222.634, 143.004, 283.88 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Sağ üst ● Sağ alt ● Sol üst ● Sol alt",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "paragraph",
+    "id" : 54,
+    "page number" : 6,
+    "bounding box" : [ 72.0, 166.889, 393.58, 208.046 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Bu sayede oyuncu toplam 8 farklı yönde hareket edebilir. Bu sistem oyuncuya daha fazla kelime oluşturma özgürlüğü sağlar."
+  }, {
+    "type" : "paragraph",
+    "id" : 55,
+    "page number" : 6,
+    "bounding box" : [ 72.0, 107.283, 539.461, 152.309 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Oyuncu harfleri seçerken her yeni seçilen harf bir önceki harfe komşu olmak zorundadır. Ayrıca seçilen harf tekrar seçilemez. Bu kural, aynı hücrenin bir kelime içerisinde birden fazla kullanılmasını engeller. Örnek:"
+  }, {
+    "type" : "image",
+    "id" : 63,
+    "page number" : 7,
+    "bounding box" : [ 162.0, 430.5, 450.0, 718.5 ],
+    "source" : "Yazlab 2- Proje 2_images/imageFile2.png"
+  }, {
+    "type" : "paragraph",
+    "id" : 56,
+    "page number" : 7,
+    "bounding box" : [ 72.0, 356.298, 539.391, 413.325 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "S → O → R → U Oyunda oluşturulabilecek kelimelerin minimum uzunluğu 3 harf olarak belirlenmiştir. Oyuncu 3 harften kısa bir seçim yaptığında bu seçim geçersiz sayılır."
+  }, {
+    "type" : "paragraph",
+    "id" : 57,
+    "level" : "3",
+    "page number" : 7,
+    "bounding box" : [ 90.0, 316.43, 243.293, 329.719 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "5. Kelime Doğrulama Mekaniği"
+  }, {
+    "type" : "paragraph",
+    "id" : 58,
+    "page number" : 7,
+    "bounding box" : [ 72.0, 256.824, 539.93, 301.85 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Oyuncu parmağını ekrandan kaldırdığında kelime oluşturma işlemi tamamlanmış olur. Seçilen harfler birleştirilerek kelime elde edilir. Daha sonra bu kelime sözlük veri tabanında kontrol edilir."
+  }, {
+    "type" : "paragraph",
+    "id" : 59,
+    "page number" : 7,
+    "bounding box" : [ 72.0, 201.034, 238.957, 242.244 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Eğer kelime sözlükte bulunuyorsa: ● Kelime geçerli kabul edilir"
+  }, {
+    "type" : "list",
+    "id" : 60,
+    "level" : "2",
+    "page number" : 7,
+    "bounding box" : [ 72.0, 85.501, 331.6, 198.563 ],
+    "numbering style" : "unknown style",
+    "number of list items" : 3,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 7,
+      "bounding box" : [ 72.0, 157.228, 248.291, 198.563 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Harfler patlatılır Eğer kelime sözlükte bulunmuyorsa:",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 7,
+      "bounding box" : [ 90.0, 129.307, 190.646, 142.766 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Seçim iptal edilir",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 7,
+      "bounding box" : [ 72.0, 85.501, 331.6, 126.836 ],
+      "font" : "ArialMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "● Harfler eski haline döner Her iki durumda da hamle sayısı 1 değer düşmektedir.",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "paragraph",
+    "id" : 244,
+    "page number" : 8,
+    "bounding box" : [ 72.0, 675.131, 518.021, 716.742 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Yok olan kelimenin puanı hesaplanarak üst kısmında anlık puan kısmına ekleme yapılır. Her harfin puanı farklıdır. Harf puanlarına göre ilgili kelimenin puanı hesaplanarak genel puana eklenmektedir."
+  }, {
+    "type" : "paragraph",
+    "id" : 245,
+    "page number" : 8,
+    "bounding box" : [ 72.0, 647.262, 320.262, 657.136 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Harflerin puanları aşağıdaki tabloda gösterilmiştir."
+  }, {
+    "type" : "table",
+    "id" : 246,
+    "level" : "3",
+    "page number" : 8,
+    "bounding box" : [ 71.421, 479.032, 527.59, 633.79 ],
+    "number of rows" : 4,
+    "number of columns" : 15,
+    "rows" : [ {
+      "type" : "table row",
+      "row number" : 1,
+      "cells" : [ {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 71.421, 595.1, 101.833, 633.79 ],
+        "row number" : 1,
+        "column number" : 1,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 124,
+          "page number" : 8,
+          "bounding box" : [ 71.421, 595.1, 101.833, 633.79 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Harf"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 101.833, 595.1, 132.244, 633.79 ],
+        "row number" : 1,
+        "column number" : 2,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 125,
+          "page number" : 8,
+          "bounding box" : [ 101.833, 595.1, 132.244, 633.79 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "A"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 132.244, 595.1, 162.655, 633.79 ],
+        "row number" : 1,
+        "column number" : 3,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 126,
+          "page number" : 8,
+          "bounding box" : [ 132.244, 595.1, 162.655, 633.79 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "B"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 162.655, 595.1, 193.066, 633.79 ],
+        "row number" : 1,
+        "column number" : 4,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 127,
+          "page number" : 8,
+          "bounding box" : [ 162.655, 595.1, 193.066, 633.79 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "C"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 193.066, 595.1, 223.477, 633.79 ],
+        "row number" : 1,
+        "column number" : 5,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 128,
+          "page number" : 8,
+          "bounding box" : [ 193.066, 595.1, 223.477, 633.79 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Ç"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 223.477, 595.1, 253.889, 633.79 ],
+        "row number" : 1,
+        "column number" : 6,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 129,
+          "page number" : 8,
+          "bounding box" : [ 223.477, 595.1, 253.889, 633.79 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "D"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 253.889, 595.1, 284.3, 633.79 ],
+        "row number" : 1,
+        "column number" : 7,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 130,
+          "page number" : 8,
+          "bounding box" : [ 253.889, 595.1, 284.3, 633.79 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "E"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 284.3, 595.1, 314.711, 633.79 ],
+        "row number" : 1,
+        "column number" : 8,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 131,
+          "page number" : 8,
+          "bounding box" : [ 284.3, 595.1, 314.711, 633.79 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "F"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 314.711, 595.1, 345.122, 633.79 ],
+        "row number" : 1,
+        "column number" : 9,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 132,
+          "page number" : 8,
+          "bounding box" : [ 314.711, 595.1, 345.122, 633.79 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "G"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 345.122, 595.1, 375.534, 633.79 ],
+        "row number" : 1,
+        "column number" : 10,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 133,
+          "page number" : 8,
+          "bounding box" : [ 345.122, 595.1, 375.534, 633.79 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Ğ"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 375.534, 595.1, 405.945, 633.79 ],
+        "row number" : 1,
+        "column number" : 11,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 134,
+          "page number" : 8,
+          "bounding box" : [ 375.534, 595.1, 405.945, 633.79 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "H"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 405.945, 595.1, 436.356, 633.79 ],
+        "row number" : 1,
+        "column number" : 12,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 135,
+          "page number" : 8,
+          "bounding box" : [ 405.945, 595.1, 436.356, 633.79 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "I"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 436.356, 595.1, 466.767, 633.79 ],
+        "row number" : 1,
+        "column number" : 13,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 136,
+          "page number" : 8,
+          "bounding box" : [ 436.356, 595.1, 466.767, 633.79 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "İ"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 466.767, 595.1, 497.179, 633.79 ],
+        "row number" : 1,
+        "column number" : 14,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 137,
+          "page number" : 8,
+          "bounding box" : [ 466.767, 595.1, 497.179, 633.79 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "J K"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 497.179, 595.1, 527.59, 633.79 ],
+        "row number" : 1,
+        "column number" : 15,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 138,
+          "page number" : 8,
+          "bounding box" : [ 497.179, 595.1, 527.59, 633.79 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "L"
+        } ]
+      } ]
+    }, {
+      "type" : "table row",
+      "row number" : 2,
+      "cells" : [ {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 71.421, 556.411, 101.833, 595.1 ],
+        "row number" : 2,
+        "column number" : 1,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 139,
+          "page number" : 8,
+          "bounding box" : [ 71.421, 556.411, 101.833, 595.1 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Puanı"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 101.833, 556.411, 132.244, 595.1 ],
+        "row number" : 2,
+        "column number" : 2,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 140,
+          "page number" : 8,
+          "bounding box" : [ 101.833, 556.411, 132.244, 595.1 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "1"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 132.244, 556.411, 162.655, 595.1 ],
+        "row number" : 2,
+        "column number" : 3,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 141,
+          "page number" : 8,
+          "bounding box" : [ 132.244, 556.411, 162.655, 595.1 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "3 4"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 162.655, 556.411, 193.066, 595.1 ],
+        "row number" : 2,
+        "column number" : 4,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 142,
+          "page number" : 8,
+          "bounding box" : [ 162.655, 556.411, 193.066, 595.1 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "4"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 193.066, 556.411, 223.477, 595.1 ],
+        "row number" : 2,
+        "column number" : 5,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 143,
+          "page number" : 8,
+          "bounding box" : [ 193.066, 556.411, 223.477, 595.1 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "3"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 223.477, 556.411, 253.889, 595.1 ],
+        "row number" : 2,
+        "column number" : 6,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 144,
+          "page number" : 8,
+          "bounding box" : [ 223.477, 556.411, 253.889, 595.1 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "1"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 253.889, 556.411, 284.3, 595.1 ],
+        "row number" : 2,
+        "column number" : 7,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 284.3, 556.411, 314.711, 595.1 ],
+        "row number" : 2,
+        "column number" : 8,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 145,
+          "page number" : 8,
+          "bounding box" : [ 284.3, 556.411, 314.711, 595.1 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "7"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 314.711, 556.411, 345.122, 595.1 ],
+        "row number" : 2,
+        "column number" : 9,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 146,
+          "page number" : 8,
+          "bounding box" : [ 314.711, 556.411, 345.122, 595.1 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "5 8"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 345.122, 556.411, 375.534, 595.1 ],
+        "row number" : 2,
+        "column number" : 10,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 147,
+          "page number" : 8,
+          "bounding box" : [ 345.122, 556.411, 375.534, 595.1 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "5"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 375.534, 556.411, 405.945, 595.1 ],
+        "row number" : 2,
+        "column number" : 11,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 148,
+          "page number" : 8,
+          "bounding box" : [ 375.534, 556.411, 405.945, 595.1 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "2"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 405.945, 556.411, 436.356, 595.1 ],
+        "row number" : 2,
+        "column number" : 12,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 149,
+          "page number" : 8,
+          "bounding box" : [ 405.945, 556.411, 436.356, 595.1 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "1"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 436.356, 556.411, 466.767, 595.1 ],
+        "row number" : 2,
+        "column number" : 13,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 150,
+          "page number" : 8,
+          "bounding box" : [ 436.356, 556.411, 466.767, 595.1 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "10"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 466.767, 556.411, 497.179, 595.1 ],
+        "row number" : 2,
+        "column number" : 14,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 151,
+          "page number" : 8,
+          "bounding box" : [ 466.767, 556.411, 497.179, 595.1 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "1"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 497.179, 556.411, 527.59, 595.1 ],
+        "row number" : 2,
+        "column number" : 15,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 152,
+          "page number" : 8,
+          "bounding box" : [ 497.179, 556.411, 527.59, 595.1 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "1"
+        } ]
+      } ]
+    }, {
+      "type" : "table row",
+      "row number" : 3,
+      "cells" : [ {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 71.421, 517.721, 101.833, 556.411 ],
+        "row number" : 3,
+        "column number" : 1,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 153,
+          "page number" : 8,
+          "bounding box" : [ 71.421, 517.721, 101.833, 556.411 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Harf"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 101.833, 517.721, 132.244, 556.411 ],
+        "row number" : 3,
+        "column number" : 2,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 154,
+          "page number" : 8,
+          "bounding box" : [ 101.833, 517.721, 132.244, 556.411 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "M"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 132.244, 517.721, 162.655, 556.411 ],
+        "row number" : 3,
+        "column number" : 3,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 155,
+          "page number" : 8,
+          "bounding box" : [ 132.244, 517.721, 162.655, 556.411 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "N O"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 162.655, 517.721, 193.066, 556.411 ],
+        "row number" : 3,
+        "column number" : 4,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 156,
+          "page number" : 8,
+          "bounding box" : [ 162.655, 517.721, 193.066, 556.411 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Ö"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 193.066, 517.721, 223.477, 556.411 ],
+        "row number" : 3,
+        "column number" : 5,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 157,
+          "page number" : 8,
+          "bounding box" : [ 193.066, 517.721, 223.477, 556.411 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "P"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 223.477, 517.721, 253.889, 556.411 ],
+        "row number" : 3,
+        "column number" : 6,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 158,
+          "page number" : 8,
+          "bounding box" : [ 223.477, 517.721, 253.889, 556.411 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "R"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 253.889, 517.721, 284.3, 556.411 ],
+        "row number" : 3,
+        "column number" : 7,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 159,
+          "page number" : 8,
+          "bounding box" : [ 253.889, 517.721, 284.3, 556.411 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "S"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 284.3, 517.721, 314.711, 556.411 ],
+        "row number" : 3,
+        "column number" : 8,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 160,
+          "page number" : 8,
+          "bounding box" : [ 284.3, 517.721, 314.711, 556.411 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Ş"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 314.711, 517.721, 345.122, 556.411 ],
+        "row number" : 3,
+        "column number" : 9,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 161,
+          "page number" : 8,
+          "bounding box" : [ 314.711, 517.721, 345.122, 556.411 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "T"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 345.122, 517.721, 375.534, 556.411 ],
+        "row number" : 3,
+        "column number" : 10,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 162,
+          "page number" : 8,
+          "bounding box" : [ 345.122, 517.721, 375.534, 556.411 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "U"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 375.534, 517.721, 405.945, 556.411 ],
+        "row number" : 3,
+        "column number" : 11,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 163,
+          "page number" : 8,
+          "bounding box" : [ 375.534, 517.721, 405.945, 556.411 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Ü"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 405.945, 517.721, 436.356, 556.411 ],
+        "row number" : 3,
+        "column number" : 12,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 164,
+          "page number" : 8,
+          "bounding box" : [ 405.945, 517.721, 436.356, 556.411 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "V"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 436.356, 517.721, 466.767, 556.411 ],
+        "row number" : 3,
+        "column number" : 13,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 165,
+          "page number" : 8,
+          "bounding box" : [ 436.356, 517.721, 466.767, 556.411 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Y"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 466.767, 517.721, 497.179, 556.411 ],
+        "row number" : 3,
+        "column number" : 14,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 166,
+          "page number" : 8,
+          "bounding box" : [ 466.767, 517.721, 497.179, 556.411 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Z"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 497.179, 517.721, 527.59, 556.411 ],
+        "row number" : 3,
+        "column number" : 15,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ ]
+      } ]
+    }, {
+      "type" : "table row",
+      "row number" : 4,
+      "cells" : [ {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 71.421, 479.032, 101.833, 517.721 ],
+        "row number" : 4,
+        "column number" : 1,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 167,
+          "page number" : 8,
+          "bounding box" : [ 71.421, 479.032, 101.833, 517.721 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Puanı"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 101.833, 479.032, 132.244, 517.721 ],
+        "row number" : 4,
+        "column number" : 2,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 168,
+          "page number" : 8,
+          "bounding box" : [ 101.833, 479.032, 132.244, 517.721 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "2"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 132.244, 479.032, 162.655, 517.721 ],
+        "row number" : 4,
+        "column number" : 3,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 169,
+          "page number" : 8,
+          "bounding box" : [ 132.244, 479.032, 162.655, 517.721 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "1 2"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 162.655, 479.032, 193.066, 517.721 ],
+        "row number" : 4,
+        "column number" : 4,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 170,
+          "page number" : 8,
+          "bounding box" : [ 162.655, 479.032, 193.066, 517.721 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "7"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 193.066, 479.032, 223.477, 517.721 ],
+        "row number" : 4,
+        "column number" : 5,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 171,
+          "page number" : 8,
+          "bounding box" : [ 193.066, 479.032, 223.477, 517.721 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "5"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 223.477, 479.032, 253.889, 517.721 ],
+        "row number" : 4,
+        "column number" : 6,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 172,
+          "page number" : 8,
+          "bounding box" : [ 223.477, 479.032, 253.889, 517.721 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "1"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 253.889, 479.032, 284.3, 517.721 ],
+        "row number" : 4,
+        "column number" : 7,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 173,
+          "page number" : 8,
+          "bounding box" : [ 253.889, 479.032, 284.3, 517.721 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "2"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 284.3, 479.032, 314.711, 517.721 ],
+        "row number" : 4,
+        "column number" : 8,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 174,
+          "page number" : 8,
+          "bounding box" : [ 284.3, 479.032, 314.711, 517.721 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "4"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 314.711, 479.032, 345.122, 517.721 ],
+        "row number" : 4,
+        "column number" : 9,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 175,
+          "page number" : 8,
+          "bounding box" : [ 314.711, 479.032, 345.122, 517.721 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "1"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 345.122, 479.032, 375.534, 517.721 ],
+        "row number" : 4,
+        "column number" : 10,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 176,
+          "page number" : 8,
+          "bounding box" : [ 345.122, 479.032, 375.534, 517.721 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "2"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 375.534, 479.032, 405.945, 517.721 ],
+        "row number" : 4,
+        "column number" : 11,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 177,
+          "page number" : 8,
+          "bounding box" : [ 375.534, 479.032, 405.945, 517.721 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "3"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 405.945, 479.032, 436.356, 517.721 ],
+        "row number" : 4,
+        "column number" : 12,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 178,
+          "page number" : 8,
+          "bounding box" : [ 405.945, 479.032, 436.356, 517.721 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "7"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 436.356, 479.032, 466.767, 517.721 ],
+        "row number" : 4,
+        "column number" : 13,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 179,
+          "page number" : 8,
+          "bounding box" : [ 436.356, 479.032, 466.767, 517.721 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "3"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 466.767, 479.032, 497.179, 517.721 ],
+        "row number" : 4,
+        "column number" : 14,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 180,
+          "page number" : 8,
+          "bounding box" : [ 466.767, 479.032, 497.179, 517.721 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "4"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 8,
+        "bounding box" : [ 497.179, 479.032, 527.59, 517.721 ],
+        "row number" : 4,
+        "column number" : 15,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ ]
+      } ]
+    } ]
+  }, {
+    "type" : "paragraph",
+    "id" : 247,
+    "page number" : 8,
+    "bounding box" : [ 72.0, 449.158, 414.551, 459.267 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Örnek Puan hesaplama:  'soru' kelimesinin puanı 2+2+1+2 =7 puandır."
+  }, {
+    "type" : "heading",
+    "id" : 248,
+    "level" : "Doctitle",
+    "page number" : 8,
+    "bounding box" : [ 90.0, 409.356, 220.963, 419.23 ],
+    "heading level" : 1,
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "6. Harf Patlatma Mekaniği"
+  }, {
+    "type" : "paragraph",
+    "id" : 249,
+    "page number" : 8,
+    "bounding box" : [ 72.0, 349.75, 542.701, 391.361 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Geçerli bir kelime oluşturulduğunda, seçilen  harfler  oyun  alanından  kaldırılır.  Kaldırılan harflerin üstünde bulunan harfler aşağı doğru düşer. Bu işlem yerçekimi mantığı ile gerçekleştirilir."
+  }, {
+    "type" : "paragraph",
+    "id" : 250,
+    "page number" : 8,
+    "bounding box" : [ 72.0, 321.881, 294.92, 331.755 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Boş kalan alanlara üstten yeni harfler üretilir."
+  }, {
+    "type" : "paragraph",
+    "id" : 251,
+    "page number" : 8,
+    "bounding box" : [ 72.0, 246.407, 542.971, 303.887 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Oyunda oyuncuların uzun kelimeler oluşturması teşvik edilmektedir. Oluşturulan kelimenin harf sayısına  göre  özel  güçler  oluşmaktadır.  Bu  özel  güçler,  kelime  patlatıldıktan  sonra  son  harfin bulunduğu  konumda  özel  bir  simge  olarak  bırakılır.  Oyuncu  bu  simgeyi  tekrar  bir  kelime içerisinde kullandığında ilgili özel güç aktif hale gelir."
+  }, {
+    "type" : "paragraph",
+    "id" : 252,
+    "page number" : 8,
+    "bounding box" : [ 72.0, 218.538, 390.563, 228.412 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Aşağıdaki tabloda özel güç mekanikleri detaylı olarak verilmiştir:"
+  }, {
+    "type" : "table",
+    "id" : 253,
+    "level" : "4",
+    "page number" : 9,
+    "bounding box" : [ 71.237, 441.938, 541.986, 721.0 ],
+    "number of rows" : 5,
+    "number of columns" : 4,
+    "rows" : [ {
+      "type" : "table row",
+      "row number" : 1,
+      "cells" : [ {
+        "type" : "table cell",
+        "page number" : 9,
+        "bounding box" : [ 71.237, 665.187, 188.924, 721.0 ],
+        "row number" : 1,
+        "column number" : 1,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 182,
+          "page number" : 9,
+          "bounding box" : [ 71.237, 665.187, 188.924, 721.0 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Kelime Uzunluğu"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 9,
+        "bounding box" : [ 188.924, 665.187, 306.611, 721.0 ],
+        "row number" : 1,
+        "column number" : 2,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 183,
+          "page number" : 9,
+          "bounding box" : [ 188.924, 665.187, 306.611, 721.0 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Özel Güç Adı"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 9,
+        "bounding box" : [ 306.611, 665.187, 424.299, 721.0 ],
+        "row number" : 1,
+        "column number" : 3,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 184,
+          "page number" : 9,
+          "bounding box" : [ 306.611, 665.187, 424.299, 721.0 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Simge"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 9,
+        "bounding box" : [ 424.299, 665.187, 541.986, 721.0 ],
+        "row number" : 1,
+        "column number" : 4,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 185,
+          "page number" : 9,
+          "bounding box" : [ 424.299, 665.187, 541.986, 721.0 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Açıklama"
+        } ]
+      } ]
+    }, {
+      "type" : "table row",
+      "row number" : 2,
+      "cells" : [ {
+        "type" : "table cell",
+        "page number" : 9,
+        "bounding box" : [ 71.237, 609.375, 188.924, 665.187 ],
+        "row number" : 2,
+        "column number" : 1,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 186,
+          "page number" : 9,
+          "bounding box" : [ 71.237, 609.375, 188.924, 665.187 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "4 harf"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 9,
+        "bounding box" : [ 188.924, 609.375, 306.611, 665.187 ],
+        "row number" : 2,
+        "column number" : 2,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 187,
+          "page number" : 9,
+          "bounding box" : [ 188.924, 609.375, 306.611, 665.187 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Satır Temizleme"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 9,
+        "bounding box" : [ 306.611, 609.375, 424.299, 665.187 ],
+        "row number" : 2,
+        "column number" : 3,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 188,
+          "page number" : 9,
+          "bounding box" : [ 306.611, 609.375, 424.299, 665.187 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "A ⇆"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 9,
+        "bounding box" : [ 424.299, 609.375, 541.986, 665.187 ],
+        "row number" : 2,
+        "column number" : 4,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 189,
+          "page number" : 9,
+          "bounding box" : [ 424.299, 609.375, 541.986, 665.187 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Patlatılan son harf yerinde kalarak özel bir simgeye dönüşür. Bu harf tekrar kullanıldığında bulunduğu satır tamamen temizlenir."
+        } ]
+      } ]
+    }, {
+      "type" : "table row",
+      "row number" : 3,
+      "cells" : [ {
+        "type" : "table cell",
+        "page number" : 9,
+        "bounding box" : [ 71.237, 553.563, 188.924, 609.375 ],
+        "row number" : 3,
+        "column number" : 1,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 190,
+          "page number" : 9,
+          "bounding box" : [ 71.237, 553.563, 188.924, 609.375 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "5 harf"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 9,
+        "bounding box" : [ 188.924, 553.563, 306.611, 609.375 ],
+        "row number" : 3,
+        "column number" : 2,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 191,
+          "page number" : 9,
+          "bounding box" : [ 188.924, 553.563, 306.611, 609.375 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Alan Patlatma"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 9,
+        "bounding box" : [ 306.611, 553.563, 424.299, 609.375 ],
+        "row number" : 3,
+        "column number" : 3,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 192,
+          "page number" : 9,
+          "bounding box" : [ 306.611, 553.563, 424.299, 609.375 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "A ✹"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 9,
+        "bounding box" : [ 424.299, 553.563, 541.986, 609.375 ],
+        "row number" : 3,
+        "column number" : 4,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 193,
+          "page number" : 9,
+          "bounding box" : [ 424.299, 553.563, 541.986, 609.375 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Patlatılan son harf yerinde kalır ve bomba simgesine dönüşür. Bu harf tekrar kullanıldığında çevresindeki tüm komşu harfler yok edilir."
+        } ]
+      } ]
+    }, {
+      "type" : "table row",
+      "row number" : 4,
+      "cells" : [ {
+        "type" : "table cell",
+        "page number" : 9,
+        "bounding box" : [ 71.237, 497.75, 188.924, 553.563 ],
+        "row number" : 4,
+        "column number" : 1,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 194,
+          "page number" : 9,
+          "bounding box" : [ 71.237, 497.75, 188.924, 553.563 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "6 harf"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 9,
+        "bounding box" : [ 188.924, 497.75, 306.611, 553.563 ],
+        "row number" : 4,
+        "column number" : 2,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 195,
+          "page number" : 9,
+          "bounding box" : [ 188.924, 497.75, 306.611, 553.563 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Sütun Temizleme"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 9,
+        "bounding box" : [ 306.611, 497.75, 424.299, 553.563 ],
+        "row number" : 4,
+        "column number" : 3,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 196,
+          "page number" : 9,
+          "bounding box" : [ 306.611, 497.75, 424.299, 553.563 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "A ⇅"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 9,
+        "bounding box" : [ 424.299, 497.75, 541.986, 553.563 ],
+        "row number" : 4,
+        "column number" : 4,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 197,
+          "page number" : 9,
+          "bounding box" : [ 424.299, 497.75, 541.986, 553.563 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Patlatılan son harf özel simgeye dönüşür. Bu harf tekrar kullanıldığında bulunduğu sütun tamamen temizlenir."
+        } ]
+      } ]
+    }, {
+      "type" : "table row",
+      "row number" : 5,
+      "cells" : [ {
+        "type" : "table cell",
+        "page number" : 9,
+        "bounding box" : [ 71.237, 441.938, 188.924, 497.75 ],
+        "row number" : 5,
+        "column number" : 1,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 198,
+          "page number" : 9,
+          "bounding box" : [ 71.237, 441.938, 188.924, 497.75 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "7 harf ve üzeri"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 9,
+        "bounding box" : [ 188.924, 441.938, 306.611, 497.75 ],
+        "row number" : 5,
+        "column number" : 2,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 199,
+          "page number" : 9,
+          "bounding box" : [ 188.924, 441.938, 306.611, 497.75 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Mega Patlatma"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 9,
+        "bounding box" : [ 306.611, 441.938, 424.299, 497.75 ],
+        "row number" : 5,
+        "column number" : 3,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 200,
+          "page number" : 9,
+          "bounding box" : [ 306.611, 441.938, 424.299, 497.75 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "A ✪"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 9,
+        "bounding box" : [ 424.299, 441.938, 541.986, 497.75 ],
+        "row number" : 5,
+        "column number" : 4,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 201,
+          "page number" : 9,
+          "bounding box" : [ 424.299, 441.938, 541.986, 497.75 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Patlatılan son harf mega simgeye dönüşür. Bu harf tekrar kullanıldığında 2 birim çevresindeki tüm harfler yok edilir."
+        } ]
+      } ]
+    } ]
+  }, {
+    "type" : "heading",
+    "id" : 254,
+    "level" : "Doctitle",
+    "page number" : 9,
+    "bounding box" : [ 72.0, 405.087, 218.297, 414.961 ],
+    "heading level" : 1,
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "8. Kelime Kalmama Kontrolü"
+  }, {
+    "type" : "paragraph",
+    "id" : 255,
+    "page number" : 9,
+    "bounding box" : [ 72.0, 361.35, 542.643, 387.092 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Her hamle sonrasında grid üzerinde kelime kalıp kalmadığı kontrol edilir. Bu kontrol algoritmik olarak yapılır."
+  }, {
+    "type" : "paragraph",
+    "id" : 256,
+    "page number" : 9,
+    "bounding box" : [ 72.0, 270.006, 542.678, 343.355 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Grid  üzerindeki  her  harf  başlangıç  noktası  kabul  edilir.  Daha  sonra  komşu  harfler  kontrol edilerek kelime oluşturulmaya çalışılır. Oyunda grid oluşturulurken ve her hamle sonrasında arka planda çalışan bir kelime tarama algoritması bulunacaktır. Bu algoritma, grid üzerinde sözlükte geçerli  ve  oyun  kurallarına  uygun  şekilde oluşturulabilecek kelimeleri tespit eder. Tespit edilen kelime sayısı oyun ekranının üst kısmında kullanıcıya gösterilecektir."
+  }, {
+    "type" : "heading",
+    "id" : 257,
+    "level" : "Subtitle",
+    "page number" : 9,
+    "bounding box" : [ 72.0, 242.138, 153.316, 252.012 ],
+    "heading level" : 1,
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Örnek gösterim:"
+  }, {
+    "type" : "heading",
+    "id" : 258,
+    "level" : "Subtitle",
+    "page number" : 9,
+    "bounding box" : [ 72.0, 226.269, 278.344, 236.143 ],
+    "heading level" : 1,
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Gridde Oluşturulabilir Kelime Sayısı: 3"
+  }, {
+    "type" : "paragraph",
+    "id" : 259,
+    "page number" : 9,
+    "bounding box" : [ 72.0, 166.663, 542.578, 208.274 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Bu  mekanizmanın  amacı,  oyuncunun  o  anki  gridin  oynanabilir  durumda  olup  olmadığını anlayabilmesini sağlamaktır. Ayrıca sistem, grid üzerinde hiç kelime kalmaması riskini önlemek amacıyla minimum kelime kontrolü yapacaktır."
+  }, {
+    "type" : "paragraph",
+    "id" : 260,
+    "page number" : 9,
+    "bounding box" : [ 72.0, 138.795, 306.252, 148.668 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Bu kapsamda aşağıdaki kurallar uygulanacaktır:"
+  }, {
+    "type" : "paragraph",
+    "id" : 261,
+    "page number" : 9,
+    "bounding box" : [ 90.0, 95.057, 542.467, 120.8 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Oyun başlangıcında grid üretildikten hemen sonra sistem, grid üzerinde oluşturulabilecek kelimeleri analiz edecektir."
+  }, {
+    "type" : "list",
+    "id" : 64,
+    "level" : "2",
+    "page number" : 10,
+    "bounding box" : [ 90.0, 436.434, 539.965, 719.49 ],
+    "numbering style" : "unknown style",
+    "number of list items" : 8,
+    "list items" : [ {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 90.0, 690.333, 539.859, 719.49 ],
+      "font" : "TimesNewRomanPSMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "2. Eğer analiz sonucunda grid üzerinde en az 1 geçerli kelime bulunmuyorsa, grid mevcut haliyle kullanıcıya gösterilmeyecektir.",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 90.0, 658.595, 539.637, 687.753 ],
+      "font" : "TimesNewRomanPSMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "3. Bu durumda sistem, harfleri tamamen rastgele yeniden üretmek yerine kurallı harf üretimi uygulayacaktır.",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 90.0, 610.989, 539.965, 656.016 ],
+      "font" : "TimesNewRomanPSMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "4. Kurallı harf üretimi sırasında, Türkçe harf frekansları, komşuluk ilişkileri ve sözlük kontrolü dikkate alınarak grid üzerinde en az 1 anlamlı kelime oluşacak şekilde harf yerleşimi düzenlenecektir.",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 90.0, 579.252, 539.402, 608.41 ],
+      "font" : "TimesNewRomanPSMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "5. Her başarılı veya başarısız hamleden sonra grid yeniden analiz edilecek ve ekrandaki oluşturulabilir kelime sayısı güncellenecektir.",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 90.0, 547.515, 539.924, 576.672 ],
+      "font" : "TimesNewRomanPSMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "6. Yeni harflerin üstten düşmesiyle oluşan gridde de yine en az 1 geçerli kelime bulunup bulunmadığı kontrol edilecektir.",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 90.0, 499.909, 539.52, 544.935 ],
+      "font" : "TimesNewRomanPSMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "7. Eğer hamle sonrası gridde hiç kelime kalmadığı tespit edilirse, sistem otomatik olarak karıştırma, yeniden üretme veya kontrollü harf yerleştirme mekanizmalarından birini devreye alacaktır.",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 90.0, 468.171, 539.965, 497.329 ],
+      "font" : "TimesNewRomanPSMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "8. Kelime sayısı, kelimelerin ortak harf kullanamayacak şekilde oluşturulmasıyla bulunmaktadır.",
+      "kids" : [ ]
+    }, {
+      "type" : "list item",
+      "page number" : 10,
+      "bounding box" : [ 90.0, 436.434, 539.965, 465.592 ],
+      "font" : "TimesNewRomanPSMT",
+      "font size" : 12.0,
+      "text color" : "[0.0, 0.0, 0.0]",
+      "content" : "9. Kelime sayısı, kelimelerin ortak harf kullanamayacak şekilde oluşturulmasıyla bulunmaktadır.",
+      "kids" : [ ]
+    } ]
+  }, {
+    "type" : "paragraph",
+    "id" : 67,
+    "page number" : 10,
+    "bounding box" : [ 72.0, 376.828, 539.596, 421.854 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Bu sayede oyun alanının her zaman çözülebilir durumda kalması hedeflenmektedir. Böylece kullanıcı, kelime bulunamayan bir grid ile karşılaşmayacak ve oyun akışı kesintiye uğramayacaktır."
+  }, {
+    "type" : "paragraph",
+    "id" : 68,
+    "level" : "4",
+    "page number" : 10,
+    "bounding box" : [ 90.0, 336.959, 176.982, 350.249 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "9. Joker Mekaniği"
+  }, {
+    "type" : "paragraph",
+    "id" : 69,
+    "page number" : 10,
+    "bounding box" : [ 72.0, 283.354, 539.936, 328.38 ],
+    "font" : "TimesNewRomanPSMT",
+    "font size" : 12.0,
+    "text color" : "[0.0, 0.0, 0.0]",
+    "content" : "Oyun ekranında ayrıca markette alınan özel güçlere sahip joker elemanlar olacaktır. Bu jokerler oyun ekranın altında seçilebilir şekilde olacaktır. Marketten alındığında aktif olacak ve kullanılabilir olarak görülecektir. Jokerler ve özellikleri aşağıda listelenmiştir."
+  }, {
+    "type" : "table",
+    "id" : 262,
+    "level" : "5",
+    "page number" : 11,
+    "bounding box" : [ 71.511, 309.913, 541.565, 720.739 ],
+    "number of rows" : 7,
+    "number of columns" : 4,
+    "rows" : [ {
+      "type" : "table row",
+      "row number" : 1,
+      "cells" : [ {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 71.511, 662.05, 189.025, 720.739 ],
+        "row number" : 1,
+        "column number" : 1,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 203,
+          "page number" : 11,
+          "bounding box" : [ 71.511, 662.05, 189.025, 720.739 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Simgesi"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 189.025, 662.05, 306.538, 720.739 ],
+        "row number" : 1,
+        "column number" : 2,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 204,
+          "page number" : 11,
+          "bounding box" : [ 189.025, 662.05, 306.538, 720.739 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "İsmi"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 306.538, 662.05, 424.052, 720.739 ],
+        "row number" : 1,
+        "column number" : 3,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 205,
+          "page number" : 11,
+          "bounding box" : [ 306.538, 662.05, 424.052, 720.739 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Altın"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 424.052, 662.05, 541.565, 720.739 ],
+        "row number" : 1,
+        "column number" : 4,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 206,
+          "page number" : 11,
+          "bounding box" : [ 424.052, 662.05, 541.565, 720.739 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Açıklaması"
+        } ]
+      } ]
+    }, {
+      "type" : "table row",
+      "row number" : 2,
+      "cells" : [ {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 71.511, 603.36, 189.025, 662.05 ],
+        "row number" : 2,
+        "column number" : 1,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ ]
+      }, {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 189.025, 603.36, 306.538, 662.05 ],
+        "row number" : 2,
+        "column number" : 2,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 207,
+          "page number" : 11,
+          "bounding box" : [ 189.025, 603.36, 306.538, 662.05 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Balık"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 306.538, 603.36, 424.052, 662.05 ],
+        "row number" : 2,
+        "column number" : 3,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 208,
+          "page number" : 11,
+          "bounding box" : [ 306.538, 603.36, 424.052, 662.05 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "100"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 424.052, 603.36, 541.565, 662.05 ],
+        "row number" : 2,
+        "column number" : 4,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 209,
+          "page number" : 11,
+          "bounding box" : [ 424.052, 603.36, 541.565, 662.05 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Gridde rastgele olarak harfleri yok etmektedir. Rastgele yok olan harflerin üzerindeki harfler aşağıya düşmektedir."
+        } ]
+      } ]
+    }, {
+      "type" : "table row",
+      "row number" : 3,
+      "cells" : [ {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 71.511, 544.671, 189.025, 603.36 ],
+        "row number" : 3,
+        "column number" : 1,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ ]
+      }, {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 189.025, 544.671, 306.538, 603.36 ],
+        "row number" : 3,
+        "column number" : 2,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 210,
+          "page number" : 11,
+          "bounding box" : [ 189.025, 544.671, 306.538, 603.36 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Tekerlek"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 306.538, 544.671, 424.052, 603.36 ],
+        "row number" : 3,
+        "column number" : 3,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 211,
+          "page number" : 11,
+          "bounding box" : [ 306.538, 544.671, 424.052, 603.36 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "200"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 424.052, 544.671, 541.565, 603.36 ],
+        "row number" : 3,
+        "column number" : 4,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 212,
+          "page number" : 11,
+          "bounding box" : [ 424.052, 544.671, 541.565, 603.36 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Gridde seçilen harfin bulunduğu satır ve sütundaki tüm harfler yok olmaktadır."
+        } ]
+      } ]
+    }, {
+      "type" : "table row",
+      "row number" : 4,
+      "cells" : [ {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 71.511, 485.981, 189.025, 544.671 ],
+        "row number" : 4,
+        "column number" : 1,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ ]
+      }, {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 189.025, 485.981, 306.538, 544.671 ],
+        "row number" : 4,
+        "column number" : 2,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 213,
+          "page number" : 11,
+          "bounding box" : [ 189.025, 485.981, 306.538, 544.671 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Lolipop Kırıcı"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 306.538, 485.981, 424.052, 544.671 ],
+        "row number" : 4,
+        "column number" : 3,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 214,
+          "page number" : 11,
+          "bounding box" : [ 306.538, 485.981, 424.052, 544.671 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "75"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 424.052, 485.981, 541.565, 544.671 ],
+        "row number" : 4,
+        "column number" : 4,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 215,
+          "page number" : 11,
+          "bounding box" : [ 424.052, 485.981, 541.565, 544.671 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Gridde seçilen bir harfi yok etmek için kullanılmaktadır. Bu harf yok olduğunda yukarısındaki kelimeler aşağı düşmektedir."
+        } ]
+      } ]
+    }, {
+      "type" : "table row",
+      "row number" : 5,
+      "cells" : [ {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 71.511, 427.292, 189.025, 485.981 ],
+        "row number" : 5,
+        "column number" : 1,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ ]
+      }, {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 189.025, 427.292, 306.538, 485.981 ],
+        "row number" : 5,
+        "column number" : 2,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 216,
+          "page number" : 11,
+          "bounding box" : [ 189.025, 427.292, 306.538, 485.981 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Serbest Değiştirme"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 306.538, 427.292, 424.052, 485.981 ],
+        "row number" : 5,
+        "column number" : 3,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 217,
+          "page number" : 11,
+          "bounding box" : [ 306.538, 427.292, 424.052, 485.981 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "125"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 424.052, 427.292, 541.565, 485.981 ],
+        "row number" : 5,
+        "column number" : 4,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 218,
+          "page number" : 11,
+          "bounding box" : [ 424.052, 427.292, 541.565, 485.981 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Gridde birbirine temas eden iki harfin yer değiştirilmesini sağlamaktadır."
+        } ]
+      } ]
+    }, {
+      "type" : "table row",
+      "row number" : 6,
+      "cells" : [ {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 71.511, 368.602, 189.025, 427.292 ],
+        "row number" : 6,
+        "column number" : 1,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ ]
+      }, {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 189.025, 368.602, 306.538, 427.292 ],
+        "row number" : 6,
+        "column number" : 2,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 219,
+          "page number" : 11,
+          "bounding box" : [ 189.025, 368.602, 306.538, 427.292 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Harf Karıştırma"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 306.538, 368.602, 424.052, 427.292 ],
+        "row number" : 6,
+        "column number" : 3,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 220,
+          "page number" : 11,
+          "bounding box" : [ 306.538, 368.602, 424.052, 427.292 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "300"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 424.052, 368.602, 541.565, 427.292 ],
+        "row number" : 6,
+        "column number" : 4,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 221,
+          "page number" : 11,
+          "bounding box" : [ 424.052, 368.602, 541.565, 427.292 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Bu özellik seçildiğinde gridde bulunan harflerin rastgele bir şekilde karıştırılmasını sağlamaktadır."
+        } ]
+      } ]
+    }, {
+      "type" : "table row",
+      "row number" : 7,
+      "cells" : [ {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 71.511, 309.913, 189.025, 368.602 ],
+        "row number" : 7,
+        "column number" : 1,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ ]
+      }, {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 189.025, 309.913, 306.538, 368.602 ],
+        "row number" : 7,
+        "column number" : 2,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 222,
+          "page number" : 11,
+          "bounding box" : [ 189.025, 309.913, 306.538, 368.602 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Parti Güçlendiricisi"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 306.538, 309.913, 424.052, 368.602 ],
+        "row number" : 7,
+        "column number" : 3,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 223,
+          "page number" : 11,
+          "bounding box" : [ 306.538, 309.913, 424.052, 368.602 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "400"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 11,
+        "bounding box" : [ 424.052, 309.913, 541.565, 368.602 ],
+        "row number" : 7,
+        "column number" : 4,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 224,
+          "page number" : 11,
+          "bounding box" : [ 424.052, 309.913, 541.565, 368.602 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Bu özellik seçildiğinde gridde bulunan tüm harfler yok edilir ve tekrardan rastgele bir şekilde harfler yukarıdan aşağıya düşmektedir."
+        } ]
+      } ]
+    } ]
+  }, {
+    "type" : "image",
+    "id" : 263,
+    "page number" : 11,
+    "bounding box" : [ 109.687, 660.075, 136.617, 682.497 ],
+    "source" : "Yazlab 2- Proje 2_images/imageFile1.png"
+  }, {
+    "type" : "image",
+    "id" : 264,
+    "page number" : 11,
+    "bounding box" : [ 108.561, 596.021, 140.546, 628.101 ],
+    "source" : "Yazlab 2- Proje 2_images/imageFile2.png"
+  }, {
+    "type" : "image",
+    "id" : 265,
+    "page number" : 11,
+    "bounding box" : [ 104.239, 536.003, 140.256, 576.33 ],
+    "source" : "Yazlab 2- Proje 2_images/imageFile3.png"
+  }, {
+    "type" : "image",
+    "id" : 266,
+    "page number" : 11,
+    "bounding box" : [ 109.264, 473.072, 140.367, 503.991 ],
+    "source" : "Yazlab 2- Proje 2_images/imageFile4.png"
+  }, {
+    "type" : "image",
+    "id" : 267,
+    "page number" : 11,
+    "bounding box" : [ 105.146, 407.842, 142.461, 445.385 ],
+    "source" : "Yazlab 2- Proje 2_images/imageFile5.png"
+  }, {
+    "type" : "image",
+    "id" : 268,
+    "page number" : 11,
+    "bounding box" : [ 102.1, 343.85, 142.41, 379.609 ],
+    "source" : "Yazlab 2- Proje 2_images/imageFile6.png"
+  }, {
+    "type" : "heading",
+    "id" : 269,
+    "level" : "Doctitle",
+    "page number" : 11,
+    "bounding box" : [ 90.0, 245.816, 192.328, 255.689 ],
+    "heading level" : 1,
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "10. Combo Mekaniği"
+  }, {
+    "type" : "paragraph",
+    "id" : 270,
+    "page number" : 11,
+    "bounding box" : [ 72.0, 170.341, 542.801, 227.821 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Combo  Mekaniği, oyuncunun oluşturduğu ana kelimenin içinde yer alan anlamlı alt kelimeler üzerinden  puan  kazanmasını  sağlayan  bir  mekanizma  olarak  tasarlanmıştır.  Bu  mekanizma, oyuncuyu  daha  uzun  ve  stratejik  kelimeler  oluşturmaya  teşvik  etmekte,  oyun  deneyimini zenginleştirmektedir."
+  }, {
+    "type" : "paragraph",
+    "id" : 271,
+    "page number" : 11,
+    "bounding box" : [ 72.0, 142.473, 332.273, 152.347 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Combo oluşumu için izlenen temel kurallar şunlardır:"
+  }, {
+    "type" : "paragraph",
+    "id" : 272,
+    "page number" : 11,
+    "bounding box" : [ 90.0, 98.735, 541.541, 124.479 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Ana Kelime Seçimi: Oyuncu, grid üzerinde anlamlı bir kelime oluşturur ve bu kelime ana kelime olarak kabul edilir."
+  }, {
+    "type" : "paragraph",
+    "id" : 273,
+    "page number" : 11,
+    "bounding box" : [ 90.0, 82.866, 524.01, 92.74 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Alt Kelime Tespiti: Ana kelime içinde 3 harf veya daha uzun anlamlı kelimeler aranır."
+  }, {
+    "type" : "paragraph",
+    "id" : 274,
+    "page number" : 12,
+    "bounding box" : [ 90.0, 690.999, 521.572, 716.742 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Combo Sayımı: Bulunan her alt kelime, combo sayısını artırır. Ana kelime her zaman combo sayısına dahildir."
+  }, {
+    "type" : "paragraph",
+    "id" : 275,
+    "page number" : 12,
+    "bounding box" : [ 90.0, 675.131, 436.594, 685.005 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Tekrarlama Kısıtlaması: Aynı alt kelime birden fazla kez sayılamaz."
+  }, {
+    "type" : "paragraph",
+    "id" : 276,
+    "page number" : 12,
+    "bounding box" : [ 90.0, 659.263, 460.746, 669.137 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Harf Sırası : Alt kelimeler, ana kelimenin harf sırasına göre bulunmalıdır."
+  }, {
+    "type" : "heading",
+    "id" : 277,
+    "level" : "Subtitle",
+    "page number" : 12,
+    "bounding box" : [ 72.0, 631.394, 215.625, 641.268 ],
+    "heading level" : 1,
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Örnek Combo Hesaplamaları"
+  }, {
+    "type" : "table",
+    "id" : 278,
+    "level" : "6",
+    "page number" : 12,
+    "bounding box" : [ 71.251, 516.162, 541.387, 618.27 ],
+    "number of rows" : 4,
+    "number of columns" : 3,
+    "rows" : [ {
+      "type" : "table row",
+      "row number" : 1,
+      "cells" : [ {
+        "type" : "table cell",
+        "page number" : 12,
+        "bounding box" : [ 71.251, 592.743, 227.963, 618.27 ],
+        "row number" : 1,
+        "column number" : 1,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 226,
+          "page number" : 12,
+          "bounding box" : [ 71.251, 592.743, 227.963, 618.27 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Ana Kelime"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 12,
+        "bounding box" : [ 227.963, 592.743, 384.675, 618.27 ],
+        "row number" : 1,
+        "column number" : 2,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 227,
+          "page number" : 12,
+          "bounding box" : [ 227.963, 592.743, 384.675, 618.27 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "İç Kelimeler"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 12,
+        "bounding box" : [ 384.675, 592.743, 541.387, 618.27 ],
+        "row number" : 1,
+        "column number" : 3,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 228,
+          "page number" : 12,
+          "bounding box" : [ 384.675, 592.743, 541.387, 618.27 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "Combo Sayısı"
+        } ]
+      } ]
+    }, {
+      "type" : "table row",
+      "row number" : 2,
+      "cells" : [ {
+        "type" : "table cell",
+        "page number" : 12,
+        "bounding box" : [ 71.251, 567.216, 227.963, 592.743 ],
+        "row number" : 2,
+        "column number" : 1,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 229,
+          "page number" : 12,
+          "bounding box" : [ 71.251, 567.216, 227.963, 592.743 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "ADANA"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 12,
+        "bounding box" : [ 227.963, 567.216, 384.675, 592.743 ],
+        "row number" : 2,
+        "column number" : 2,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 230,
+          "page number" : 12,
+          "bounding box" : [ 227.963, 567.216, 384.675, 592.743 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "ADANA,DANA,ANA,ADA"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 12,
+        "bounding box" : [ 384.675, 567.216, 541.387, 592.743 ],
+        "row number" : 2,
+        "column number" : 3,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 231,
+          "page number" : 12,
+          "bounding box" : [ 384.675, 567.216, 541.387, 592.743 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "4 x combo"
+        } ]
+      } ]
+    }, {
+      "type" : "table row",
+      "row number" : 3,
+      "cells" : [ {
+        "type" : "table cell",
+        "page number" : 12,
+        "bounding box" : [ 71.251, 541.689, 227.963, 567.216 ],
+        "row number" : 3,
+        "column number" : 1,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 232,
+          "page number" : 12,
+          "bounding box" : [ 71.251, 541.689, 227.963, 567.216 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "MASAL"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 12,
+        "bounding box" : [ 227.963, 541.689, 384.675, 567.216 ],
+        "row number" : 3,
+        "column number" : 2,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 233,
+          "page number" : 12,
+          "bounding box" : [ 227.963, 541.689, 384.675, 567.216 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "MASAL,MASA,ASA,SAL"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 12,
+        "bounding box" : [ 384.675, 541.689, 541.387, 567.216 ],
+        "row number" : 3,
+        "column number" : 3,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 234,
+          "page number" : 12,
+          "bounding box" : [ 384.675, 541.689, 541.387, 567.216 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "4 x combo"
+        } ]
+      } ]
+    }, {
+      "type" : "table row",
+      "row number" : 4,
+      "cells" : [ {
+        "type" : "table cell",
+        "page number" : 12,
+        "bounding box" : [ 71.251, 516.162, 227.963, 541.689 ],
+        "row number" : 4,
+        "column number" : 1,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 235,
+          "page number" : 12,
+          "bounding box" : [ 71.251, 516.162, 227.963, 541.689 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "SARI"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 12,
+        "bounding box" : [ 227.963, 516.162, 384.675, 541.689 ],
+        "row number" : 4,
+        "column number" : 2,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 236,
+          "page number" : 12,
+          "bounding box" : [ 227.963, 516.162, 384.675, 541.689 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "SARI, ARI"
+        } ]
+      }, {
+        "type" : "table cell",
+        "page number" : 12,
+        "bounding box" : [ 384.675, 516.162, 541.387, 541.689 ],
+        "row number" : 4,
+        "column number" : 3,
+        "row span" : 1,
+        "column span" : 1,
+        "kids" : [ {
+          "type" : "paragraph",
+          "id" : 237,
+          "page number" : 12,
+          "bounding box" : [ 384.675, 516.162, 541.387, 541.689 ],
+          "font" : null,
+          "font size" : 12.0,
+          "content" : "2 x combo"
+        } ]
+      } ]
+    } ]
+  }, {
+    "type" : "paragraph",
+    "id" : 279,
+    "page number" : 12,
+    "bounding box" : [ 72.0, 474.711, 542.52, 500.453 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Burada combo puan hesaplanması sırasında normal harf hesaplaması gibi alt kelimelerin puanları da hesaplanarak puan hesaplaması yapılır."
+  }, {
+    "type" : "paragraph",
+    "id" : 280,
+    "page number" : 12,
+    "bounding box" : [ 72.0, 430.974, 542.338, 456.717 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Örneğin  SARI kelimesi bulundu.  2+1+1+2 = 6 Puan olması gerekirken ARI kelimesinin den de puan hesaplanıp eklenmektedir. 1+1+2=4 puanda gelir toplam olarak 10 puan eklenmektedir."
+  }, {
+    "type" : "heading",
+    "id" : 281,
+    "level" : "Doctitle",
+    "page number" : 12,
+    "bounding box" : [ 90.0, 391.105, 224.543, 400.979 ],
+    "heading level" : 1,
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "11. Oyun Bitirme Koşulları"
+  }, {
+    "type" : "paragraph",
+    "id" : 282,
+    "page number" : 12,
+    "bounding box" : [ 72.0, 363.236, 258.27, 373.11 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Oyun aşağıdaki durumlarda sona erer:"
+  }, {
+    "type" : "paragraph",
+    "id" : 283,
+    "page number" : 12,
+    "bounding box" : [ 90.0, 319.439, 543.0, 345.834 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Hamle sayısı bittiğinde oyun otomatik olarak biter ve oyun mevcut sonucu skor tablosuna yazılır ve ana ekrana geri döner."
+  }, {
+    "type" : "paragraph",
+    "id" : 284,
+    "page number" : 12,
+    "bounding box" : [ 90.0, 255.903, 542.941, 314.035 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Oyuncu geri diyerek oyundan çıkmak istediğinde ' oyuncuya çıkmak istediğinize emin misiniz' soru sorularak 'Evet' ve 'Hayır' seçenekleri sunulur. Hayır dediğinizde oyuna kaldığı yerden devam eder. 'Evet' dediğinde ise mevcut sonucu skor tablosuna yazılır ve ana ekrana döner."
+  }, {
+    "type" : "heading",
+    "id" : 285,
+    "level" : "Subtitle",
+    "page number" : 13,
+    "bounding box" : [ 72.0, 704.68, 226.947, 716.199 ],
+    "heading level" : 1,
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Ödev Teslimi ve Kurallar"
+  }, {
+    "type" : "paragraph",
+    "id" : 286,
+    "page number" : 13,
+    "bounding box" : [ 90.0, 630.689, 542.982, 688.82 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Proje  raporu  sadece  LaTeX  kullanılarak  yazılmalı  ve  pdf  formatında  sisteme yüklenmelidir. Sisteme ayrıca LaTeX eklentileri de yüklenmelidir. Proje raporunu sadece pdf formatında yükleyen öğrencilerin proje rapor puanı 0 (sıfır) olarak değerlendirilecektir."
+  }, {
+    "type" : "paragraph",
+    "id" : 287,
+    "page number" : 13,
+    "bounding box" : [ 90.0, 614.685, 299.953, 625.285 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Proje grupları en fazla 2 kişilik olabilir."
+  }, {
+    "type" : "paragraph",
+    "id" : 288,
+    "page number" : 13,
+    "bounding box" : [ 90.0, 598.755, 406.242, 609.355 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Her öğrenci kendi öğretim türü içerisinde grup oluşturacaktır."
+  }, {
+    "type" : "paragraph",
+    "id" : 289,
+    "page number" : 13,
+    "bounding box" : [ 90.0, 582.826, 399.217, 593.427 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Proje raporu IEEE formatında en az 4 sayfa hazırlanmalıdır."
+  }, {
+    "type" : "paragraph",
+    "id" : 290,
+    "page number" : 13,
+    "bounding box" : [ 90.0, 566.896, 513.539, 577.497 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Dersin takibi ve proje teslimi edestek2.kocaeli.edu.tr sistemi üzerinden yapılacaktır."
+  }, {
+    "type" : "paragraph",
+    "id" : 291,
+    "page number" : 13,
+    "bounding box" : [ 90.0, 535.173, 542.619, 561.568 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Proje ile  ilgili  sorular  yalnızca  edestek2.kocaeli.edu.tr  sitesindeki  forum  üzerinden Arş. Gör. Emin Ölmez ve Arş. Gör. İbrahim Şahan'a sorulabilir."
+  }, {
+    "type" : "paragraph",
+    "id" : 292,
+    "page number" : 13,
+    "bounding box" : [ 90.0, 519.17, 437.221, 529.771 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Proje teslim tarihine 3 gün kala gelen sorular yanıtlanmayacaktır."
+  }, {
+    "type" : "paragraph",
+    "id" : 293,
+    "page number" : 13,
+    "bounding box" : [ 90.0, 487.445, 542.777, 513.841 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Sunumlar 4-8  Mayıs  haftasında alınacak  olup  kesin  gün  ve  saat  bilgisi  daha  sonra duyurulacaktır."
+  }, {
+    "type" : "paragraph",
+    "id" : 294,
+    "page number" : 13,
+    "bounding box" : [ 90.0, 439.778, 542.648, 482.043 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Herkes projeden bireysel olarak sorumludur. Proje sunumunda kullandığınız herhangi bir satır  kodu  açıklamanız  ya  da  değiştirerek  hocalarımızın  yanında  tekrar  çalıştırmanız istenebilir. Sorulacak sorular puanlamaya dahil olacaktır."
+  }, {
+    "type" : "paragraph",
+    "id" : 295,
+    "page number" : 13,
+    "bounding box" : [ 90.0, 407.982, 542.549, 434.376 ],
+    "font" : null,
+    "font size" : 12.0,
+    "content" : "Projede arayüzün isterlerin açıkça görülebileceği seviyede tasarlanmasına özen gösterilmelidir."
+  } ]
+}
