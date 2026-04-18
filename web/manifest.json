@@ -1,6 +1,6 @@
 {
-    "name": "crush_word",
-    "short_name": "crush_word",
+    "name": "Word Burst",
+    "short_name": "Word Burst",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
