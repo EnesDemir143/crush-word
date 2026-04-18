@@ -11,7 +11,10 @@ import 'package:crush_word/src/core/gameplay/services/board_resolver.dart';
 import 'package:crush_word/src/core/gameplay/services/scoring_engine.dart';
 import 'package:crush_word/src/core/gameplay/services/word_validator.dart';
 import 'package:crush_word/src/core/models/game_config.dart';
+import 'package:crush_word/src/core/models/game_result.dart';
 import 'package:crush_word/src/core/repositories/dictionary_repository.dart';
+import 'package:crush_word/src/core/repositories/game_history_repository.dart';
+import 'package:crush_word/src/core/repositories/session_checkpoint_repository.dart';
 
 /// Lightweight feedback state shown after an invalid attempt.
 ///
@@ -35,6 +38,9 @@ class GameController extends ChangeNotifier {
     WordValidator? wordValidator,
     ScoringEngine? scoringEngine,
     BoardResolver? boardResolver,
+    GameHistoryRepository? gameHistoryRepository,
+    SessionCheckpointRepository? sessionCheckpointRepository,
+    DateTime Function()? clock,
     GameSession? initialSession,
   }) : _config = config,
        _rulesLoader = rulesLoader ?? const GameRulesLoader(),
@@ -44,6 +50,11 @@ class GameController extends ChangeNotifier {
        _wordValidator = wordValidator,
        _scoringEngine = scoringEngine,
        _boardResolver = boardResolver,
+       _gameHistoryRepository =
+           gameHistoryRepository ?? GameHistoryRepository(),
+       _sessionCheckpointRepository =
+           sessionCheckpointRepository ?? SessionCheckpointRepository(),
+       _clock = clock ?? DateTime.now,
        _session = initialSession;
 
   factory GameController.fromSession(
@@ -55,6 +66,9 @@ class GameController extends ChangeNotifier {
     WordValidator? wordValidator,
     ScoringEngine? scoringEngine,
     BoardResolver? boardResolver,
+    GameHistoryRepository? gameHistoryRepository,
+    SessionCheckpointRepository? sessionCheckpointRepository,
+    DateTime Function()? clock,
   }) {
     return GameController(
       config: session.config,
@@ -65,6 +79,9 @@ class GameController extends ChangeNotifier {
       wordValidator: wordValidator,
       scoringEngine: scoringEngine,
       boardResolver: boardResolver,
+      gameHistoryRepository: gameHistoryRepository,
+      sessionCheckpointRepository: sessionCheckpointRepository,
+      clock: clock,
       initialSession: session,
     );
   }
@@ -74,6 +91,9 @@ class GameController extends ChangeNotifier {
   final BoardGenerator _boardGenerator;
   final DictionaryRepository _dictionaryRepository;
   final BoardAnalyzer _boardAnalyzer;
+  final GameHistoryRepository _gameHistoryRepository;
+  final SessionCheckpointRepository _sessionCheckpointRepository;
+  final DateTime Function() _clock;
 
   /// Lazily initialised word validator — uses the injected instance or
   /// creates one from the dictionary repository.
@@ -119,6 +139,9 @@ class GameController extends ChangeNotifier {
   /// Whether a finalization is already running (prevents double-taps).
   bool _isFinalizing = false;
 
+  /// Guards terminal result persistence against duplicate writes.
+  String? _persistedResultId;
+
   GameConfig get config => _config;
   GameSession? get session => _session;
   bool get hasSession => _session != null;
@@ -128,6 +151,7 @@ class GameController extends ChangeNotifier {
   List<String> get lastRemovedCellIds => _lastRemovedCellIds;
   int get lastWordScore => _lastWordScore;
   bool get isFinalizing => _isFinalizing;
+  bool get isGameOver => movesLeft <= 0;
 
   int get score => _session?.score ?? 0;
   int get movesLeft => _session?.movesLeft ?? _config.moveLimit;
@@ -152,11 +176,13 @@ class GameController extends ChangeNotifier {
 
   Future<void> load({bool force = false}) async {
     if (_session != null && !force) {
+      await _persistCheckpointIfActive(_session!);
       return;
     }
 
     _isLoading = true;
     _errorMessage = null;
+    _persistedResultId = null;
     notifyListeners();
 
     try {
@@ -192,6 +218,8 @@ class GameController extends ChangeNotifier {
         dictionary: dictionary,
         rules: rules,
       );
+
+      await _persistCheckpointIfActive(_session!);
     } catch (_) {
       _errorMessage =
           'Oyun tahtası kurulamadı. '
@@ -287,77 +315,94 @@ class GameController extends ChangeNotifier {
       final List<String> letters = activeSession.selectedCellIds
           .map((String cellId) => _cellById(activeSession, cellId).letter)
           .toList(growable: false);
-
-      final WordValidationResult result = await _validator.validate(letters);
-
-      // Both valid and invalid attempts consume one move (GRID-06).
       final int newMovesLeft = (activeSession.movesLeft - 1).clamp(0, 999);
+      GameSession updatedSession;
 
-      if (result.isValid) {
-        // ── Scoring ────────────────────────────────────────
-        int wordScore = 0;
-        if (_scoringEngine != null) {
-          final ScoringResult scoring =
-              _scoringEngine!.score(result.word);
-          wordScore = scoring.totalScore;
-        }
+      try {
+        final WordValidationResult result = await _validator.validate(letters);
 
-        // ── Board resolution (clear → gravity → refill) ──
-        List<BoardCell> newBoard = activeSession.board;
-        final GameRulesConfig? rules = _cachedRules;
-        if (rules != null) {
-          final BoardResolveResult resolved = _resolver.resolve(
-            board: activeSession.board,
-            selectedCellIds: activeSession.selectedCellIds,
-            gridSize: activeSession.gridSize,
-            rules: rules.boardGeneration,
-          );
-          newBoard = resolved.board;
-          _lastRemovedCellIds = activeSession.selectedCellIds;
+        if (result.isValid) {
+          int wordScore = 0;
+          if (_scoringEngine != null) {
+            final ScoringResult scoring = _scoringEngine!.score(result.word);
+            wordScore = scoring.totalScore;
+          }
+
+          List<BoardCell> newBoard = activeSession.board;
+          final GameRulesConfig? rules = _cachedRules;
+          if (rules != null) {
+            final BoardResolveResult resolved = _resolver.resolve(
+              board: activeSession.board,
+              selectedCellIds: activeSession.selectedCellIds,
+              gridSize: activeSession.gridSize,
+              rules: rules.boardGeneration,
+            );
+            newBoard = resolved.board;
+            _lastRemovedCellIds = activeSession.selectedCellIds;
+          } else {
+            _lastRemovedCellIds = const <String>[];
+          }
+
           _lastWordScore = wordScore;
+          updatedSession = activeSession.copyWith(
+            board: newBoard,
+            selectedCellIds: const <String>[],
+            movesLeft: newMovesLeft,
+            score: activeSession.score + wordScore,
+            wordsFoundCount: activeSession.wordsFoundCount + 1,
+            longestWord: _resolveLongestWord(
+              current: activeSession.longestWord,
+              candidate: result.word,
+            ),
+          );
+          _lastInvalidFeedback = null;
+        } else {
+          updatedSession = activeSession.copyWith(
+            selectedCellIds: const <String>[],
+            movesLeft: newMovesLeft,
+          );
+          _lastRemovedCellIds = const <String>[];
+          _lastWordScore = 0;
+          _lastInvalidFeedback = InvalidAttemptFeedback(
+            reason: result.reason,
+            word: result.word,
+          );
         }
-
-        _session = activeSession.copyWith(
-          board: newBoard,
-          selectedCellIds: const <String>[],
-          movesLeft: newMovesLeft,
-          score: activeSession.score + wordScore,
-        );
-        _lastInvalidFeedback = null;
-      } else {
-        // Invalid word: revert selection, consume the move,
-        // show feedback.
-        _session = activeSession.copyWith(
+      } catch (error) {
+        // On unexpected error (e.g. dictionary load failure), still
+        // consume the move and clear selection so the UI doesn't freeze.
+        debugPrint('endSelection error: $error');
+        updatedSession = activeSession.copyWith(
           selectedCellIds: const <String>[],
           movesLeft: newMovesLeft,
         );
+        _lastRemovedCellIds = const <String>[];
+        _lastWordScore = 0;
         _lastInvalidFeedback = InvalidAttemptFeedback(
-          reason: result.reason,
-          word: result.word,
+          reason: WordValidationReason.notInDictionary,
+          word: activeSession.selectedCellIds
+              .map((String cellId) => _cellById(activeSession, cellId).letter)
+              .join()
+              .toLowerCase(),
         );
       }
 
-      notifyListeners();
-    } catch (error) {
-      // On unexpected error (e.g. dictionary load failure), still
-      // consume the move and clear selection so the UI doesn't freeze.
-      debugPrint('endSelection error: $error');
-      final int newMovesLeft = (activeSession.movesLeft - 1).clamp(0, 999);
-      _session = activeSession.copyWith(
-        selectedCellIds: const <String>[],
-        movesLeft: newMovesLeft,
-      );
-      _lastInvalidFeedback = InvalidAttemptFeedback(
-        reason: WordValidationReason.notInDictionary,
-        word: activeSession.selectedCellIds
-            .map((String cellId) => _cellById(activeSession, cellId).letter)
-            .join()
-            .toLowerCase(),
-      );
+      _session = updatedSession;
+      await _syncPersistenceAfterMutation(updatedSession);
       notifyListeners();
     } finally {
       _isFinalizing = false;
     }
+  }
+
+  Future<void> confirmExit() async {
+    final GameSession? activeSession = _session;
+    if (activeSession == null) {
+      return;
+    }
+
+    await _persistCurrentResultIfNeeded(activeSession);
+    await _clearCheckpointSafely();
   }
 
   BoardCell _cellById(GameSession activeSession, String cellId) {
@@ -373,5 +418,73 @@ class GameController extends ChangeNotifier {
     return rowDelta <= 1 &&
         columnDelta <= 1 &&
         (rowDelta != 0 || columnDelta != 0);
+  }
+
+  Future<void> _syncPersistenceAfterMutation(GameSession session) async {
+    if (session.movesLeft <= 0) {
+      await _persistCurrentResultIfNeeded(session);
+      await _clearCheckpointSafely();
+      return;
+    }
+
+    await _persistCheckpointIfActive(session);
+  }
+
+  Future<void> _persistCheckpointIfActive(GameSession session) async {
+    if (session.movesLeft <= 0) {
+      return;
+    }
+
+    try {
+      await _sessionCheckpointRepository.save(session);
+    } catch (error) {
+      debugPrint('checkpoint save error: $error');
+    }
+  }
+
+  Future<void> _persistCurrentResultIfNeeded(GameSession session) async {
+    if (_persistedResultId != null) {
+      return;
+    }
+
+    final DateTime completedAt = _clock();
+    final GameResult result = GameResult(
+      id: 'result_${completedAt.microsecondsSinceEpoch}',
+      config: session.config,
+      score: session.score,
+      wordsFoundCount: session.wordsFoundCount,
+      longestWord: session.longestWord,
+      duration: _resolveDuration(
+        startedAt: session.startedAt,
+        completedAt: completedAt,
+      ),
+      completedAt: completedAt,
+    );
+
+    await _gameHistoryRepository.saveResult(result);
+    _persistedResultId = result.id;
+  }
+
+  Future<void> _clearCheckpointSafely() async {
+    try {
+      await _sessionCheckpointRepository.clear();
+    } catch (error) {
+      debugPrint('checkpoint clear error: $error');
+    }
+  }
+
+  Duration _resolveDuration({
+    required DateTime startedAt,
+    required DateTime completedAt,
+  }) {
+    final Duration duration = completedAt.difference(startedAt);
+    return duration.isNegative ? Duration.zero : duration;
+  }
+
+  String _resolveLongestWord({
+    required String current,
+    required String candidate,
+  }) {
+    return candidate.length > current.length ? candidate : current;
   }
 }
