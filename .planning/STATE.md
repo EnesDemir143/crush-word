@@ -9,9 +9,9 @@ See: .planning/PROJECT.md (updated 2026-04-18)
 
 ## Current Position
 
-Phase: 2 of 7 (Game Setup and Board Foundation)
+Phase: 2 of 8 (Game Setup and Board Foundation)
 Plan: 2 of 3 in current phase
-Status: Phase 2 is in progress; 02-01 and 02-02 completed, 02-03 is next
+Status: Phase 2 is in progress; 02-01 and 02-02 completed, 02-03 is next, then inserted Phase 02.1 initial solvability gate runs before Phase 3
 Last activity: 2026-04-18 - Completed Phase 02-02 with weighted board generation, session models, config updates and manual frequency-group review.
 
 Progress: [██████░░░░] 67%
@@ -50,8 +50,10 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 - Phase 01.1 inserted after Phase 1: Requirements, Architecture and Persistence Eval Gate (URGENT)
 - Phase 01.1 completed on 2026-04-18 and unblocked Phase 2 with explicit eval matrix + manual gate rules
+- Phase 02.1 inserted after Phase 2: Initial Board Solvability Gate to pull first-render dead-board recovery earlier than the rest of Phase 4
 - Phase 02-01 completed on 2026-04-18 after user-approved manual gate
-- Phase 02-02 completed on 2026-04-18 with weighted board generation, session models and deterministic coverage; current next target is 02-03 board rendering + drag path capture
+- Phase 02-02 completed on 2026-04-18 with weighted board generation, session models and deterministic coverage
+- Current next target is still `02-03`; immediately after Phase 2, `02.1-01` should front-load the first-render solvability gate before Phase 3
 
 ### Pending Todos
 
@@ -66,5 +68,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-04-18 00:00
-Stopped at: Completed Phase 02-02; next work should render the board UI and drag path capture on top of the approved session model
+Stopped at: Completed Phase 02-02; next work should render the board UI and drag path capture, then execute the inserted `02.1-01` initial solvability gate before Phase 3
 Resume file: None

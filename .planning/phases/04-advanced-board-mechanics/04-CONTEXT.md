@@ -6,7 +6,7 @@
 <domain>
 ## Phase Boundary
 
-Bu faz, board'un her zaman oynanabilir kalmasi, olusturulabilir kelime sayisinin hesaplanmasi, combo puanlamasi ve uzun kelimelerden dogan ozel guclerin uretilip kullanilmasini kapsar. Marketten satin alinan jokerler bu fazin disinda kalir.
+Bu faz, Phase 02.1'de one cekilen initial-session guard'in ustune cikarak hamle sonrasi board continuity, olusturulabilir kelime sayisinin hesaplanmasi, combo puanlamasi ve uzun kelimelerden dogan ozel guclerin uretilip kullanilmasini kapsar. Marketten satin alinan jokerler bu fazin disinda kalir.
 
 </domain>
 
@@ -14,12 +14,13 @@ Bu faz, board'un her zaman oynanabilir kalmasi, olusturulabilir kelime sayisinin
 ## Implementation Decisions
 
 ### Playable-word analysis
-- Analiz, board baslangicinda ve her hamle sonrasinda calisacak.
+- Initial-session guard Phase `02.1-01`'de kurulur; bu faz ayni analyzer'i board degisen her hamle sonrasina genisletir.
 - Kullaniciya gosterilen sayi, ortak harf kullanmayan cozumlere gore hesaplanacak.
 - `BoardAnalyzer`, packaged dictionary uzerinden trie/prefix yapisi kurup board'u DFS + backtracking ile tarayacak.
 - Prefix sozlukte yoksa dal erken kesilecek; boylece adjacency aramasi brute-force tam taramaya donusmeyecek.
 
 ### Dead-board recovery
+- Initial dead-board'in ilk render oncesi engellenmesi Phase `02.1-01`'in owner'ligidir.
 - Birinci tercih harfleri karistirmak.
 - Hala cozum yoksa kontrollu yeniden uretim devreye girecek.
 
@@ -63,6 +64,7 @@ Bu faz, board'un her zaman oynanabilir kalmasi, olusturulabilir kelime sayisinin
 ### Reusable Assets
 - Phase 3 scoring ve board update pipeline'i, combo ve power hesaplarinin uzerine insa edilecek.
 - Phase 2 board generator'i dead-board recovery stratejisinde yeniden kullanilacak.
+- Phase 02.1'de kurulacak initial analyzer/recovery baseline'i bu fazda post-move continuity'ye genisletilecek.
 
 ### Established Patterns
 - Oyun motoru kurallari saf servisler halinde kalmali; UI sadece sonuc state'ini gostermeli.

@@ -106,7 +106,7 @@
 | SCORE-01 | Phase 3 | Pending |
 | END-01 | Phase 3 | Pending |
 | END-02 | Phase 3 | Pending |
-| GRID-02 | Phase 4 | Pending |
+| GRID-02 | Phase 02.1 + Phase 4 | Pending |
 | GRID-08 | Phase 4 | Pending |
 | POWER-01 | Phase 4 | Pending |
 | POWER-02 | Phase 4 | Pending |
@@ -128,7 +128,7 @@
 
 ## Planning Notes
 
-- `GRID-02 ownership`: authoritative solvability/fallback owner'i Phase 4 / `04-01`'dir; Phase 2 yalnizca board/session scaffolding hazirlar.
+- `GRID-02 ownership`: initial-session solvability guard owner'i Phase `02.1-01`'dir; Phase `04-01` ise post-move recheck, recovery continuity ve visible count integration owner'i olarak kalir.
 - `COMBO-01 note`: compliant implementasyon benzersiz ve sirayi koruyan alt kelimeleri hedefler; substring-only yaklasim yeterli degildir.
 - `MKT-05 ownership`: Phase 5, market fiyat/aciklama verisi ile gameplay effect'lerini tek canonical joker katalogu uzerinden senkron tutmalidir.
 - `HIST-01/HIST-02 ownership`: oyuncuya gorunen aggregate + newest-first davranisi Phase 5 / `05-03` owner'ligindedir; Phase 3 repository sirasini sadece veri onkosulu olarak hazirlar.
