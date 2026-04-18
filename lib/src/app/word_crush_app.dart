@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:crush_word/src/app/app_routes.dart';
 import 'package:crush_word/src/app/app_router.dart';
 import 'package:crush_word/src/core/repositories/profile_repository.dart';
 import 'package:crush_word/src/core/theme/app_theme.dart';
