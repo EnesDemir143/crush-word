@@ -9,7 +9,7 @@
 
 - [ ] **PLAT-01**: Uygulama Android veya iOS odakli mobil calisir ve sunum emulator ya da fiziksel telefon uzerinden yapilabilir; web/masaustu akisi zorunlu tutulmaz.
 - [ ] **PLAT-02**: Kelime dogrulamasi icin uygulama icine paketlenmis Turkce bir sozluk/kelime listesi kullanilir.
-- [ ] **PLAT-03**: Oyun alani kare grid yapisinda olur ve her hucre bir harf tasir.
+- [x] **PLAT-03**: Oyun alani kare grid yapisinda olur ve her hucre bir harf tasir.
 
 ### Kullanici ve Ana Ekran
 
@@ -20,13 +20,13 @@
 
 ### Yeni Oyun ve Kurulum
 
-- [ ] **SETUP-01**: `Yeni Oyun` secimi oyun ayarlari akisini acar.
-- [ ] **SETUP-02**: Grid secenekleri tam olarak `6x6 = Zor`, `8x8 = Orta`, `10x10 = Kolay` seklinde sunulur.
-- [ ] **SETUP-03**: Hamle secenekleri zorluga uygun olarak `15/20/25` seklinde sunulur ve secim tamamlaninca oyun baslar.
+- [x] **SETUP-01**: `Yeni Oyun` secimi oyun ayarlari akisini acar.
+- [x] **SETUP-02**: Grid secenekleri tam olarak `6x6 = Zor`, `8x8 = Orta`, `10x10 = Kolay` seklinde sunulur.
+- [x] **SETUP-03**: Hamle secenekleri zorluga uygun olarak `15/20/25` seklinde sunulur ve secim tamamlaninca oyun baslar.
 
 ### Grid ve Kelime Kurallari
 
-- [ ] **GRID-01**: Harfler Turkce frekans mantigina gore agirlikli uretilir; duz uniform rastgelelik kullanilmaz.
+- [x] **GRID-01**: Harfler Turkce frekans mantigina gore agirlikli uretilir; duz uniform rastgelelik kullanilmaz.
 - [ ] **GRID-02**: Baslangic board'u ve hamle sonrasi/refill board'lari her zaman en az bir gecerli kelime barindiracak sekilde analiz edilir; gerekirse otomatik cozum uygulanir.
 - [ ] **GRID-03**: Oyuncu herhangi bir hucreden baslayip 8 yonlu komsu hucreler uzerinden ayni hucreyi tekrar kullanmadan secim yapabilir.
 - [ ] **GRID-04**: 3 harften kisa secimler gecersiz sayilir.
@@ -93,11 +93,11 @@
 | USER-02 | Phase 1 | Pending |
 | HOME-01 | Phase 1 | Pending |
 | HOME-02 | Phase 1 | Pending |
-| PLAT-03 | Phase 2 | Pending |
-| SETUP-01 | Phase 2 | Pending |
-| SETUP-02 | Phase 2 | Pending |
-| SETUP-03 | Phase 2 | Pending |
-| GRID-01 | Phase 2 | Pending |
+| PLAT-03 | Phase 2 | Completed |
+| SETUP-01 | Phase 2 | Completed |
+| SETUP-02 | Phase 2 | Completed |
+| SETUP-03 | Phase 2 | Completed |
+| GRID-01 | Phase 2 | Completed |
 | GRID-03 | Phase 2 | Pending |
 | GRID-04 | Phase 3 | Pending |
 | GRID-05 | Phase 3 | Pending |
@@ -106,7 +106,7 @@
 | SCORE-01 | Phase 3 | Pending |
 | END-01 | Phase 3 | Pending |
 | END-02 | Phase 3 | Pending |
-| GRID-02 | Phase 4 | Pending |
+| GRID-02 | Phase 02.1 + Phase 4 | Pending |
 | GRID-08 | Phase 4 | Pending |
 | POWER-01 | Phase 4 | Pending |
 | POWER-02 | Phase 4 | Pending |
@@ -128,7 +128,7 @@
 
 ## Planning Notes
 
-- `GRID-02 ownership`: authoritative solvability/fallback owner'i Phase 4 / `04-01`'dir; Phase 2 yalnizca board/session scaffolding hazirlar.
+- `GRID-02 ownership`: initial-session solvability guard owner'i Phase `02.1-01`'dir; Phase `04-01` ise post-move recheck, recovery continuity ve visible count integration owner'i olarak kalir.
 - `COMBO-01 note`: compliant implementasyon benzersiz ve sirayi koruyan alt kelimeleri hedefler; substring-only yaklasim yeterli degildir.
 - `MKT-05 ownership`: Phase 5, market fiyat/aciklama verisi ile gameplay effect'lerini tek canonical joker katalogu uzerinden senkron tutmalidir.
 - `HIST-01/HIST-02 ownership`: oyuncuya gorunen aggregate + newest-first davranisi Phase 5 / `05-03` owner'ligindedir; Phase 3 repository sirasini sadece veri onkosulu olarak hazirlar.

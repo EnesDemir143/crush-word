@@ -12,7 +12,8 @@ Bu roadmap, varsayilan Flutter starter uygulamasini ders dokumanindaki zorunlu k
 
 - [x] **Phase 1: Foundation and Shell** - Starter uygulamayi urun kabuguna, kalici kullanici akisina ve ortak temel modellere donustur.
 - [x] **Phase 01.1: Requirements, Architecture and Persistence Eval Gate** - Phase 2'ye gecmeden once kaynak dokuman, kurallar, SQLite/persistence mimarisi ve riskli oyun davranislarinin ownership/validation planini dondur.
-- [ ] **Phase 2: Game Setup and Board Foundation** - Yeni oyun ayarlari, agirlikli harf uretimi ve board UI temelini kur.
+- [x] **Phase 2: Game Setup and Board Foundation** - Yeni oyun ayarlari, agirlikli harf uretimi ve board UI temelini kur.
+- [x] **Phase 02.1: Initial Board Solvability Gate** - Phase 2 tamamlanir tamamlanmaz ilk gosterilen board'un dead gelmesini engelle ve ilk render oncesi recovery kapisini kapat.
 - [ ] **Phase 3: Core Gameplay and Session Results** - Kelime dogrulama, puanlama, refill ve oyun sonu kayit akislarini tamamla.
 - [ ] **Phase 4: Advanced Board Mechanics** - Her zaman oynanabilir board, combo ve ozel guc davranislarini ekle.
 - [ ] **Phase 5: Market and Score History** - Joker ekonomisi, market kullanimi ve skor tablosu ekranlarini tamamla.
@@ -88,13 +89,32 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 02-01: Build new game settings flow and session bootstrap
-- [ ] 02-02: Implement weighted board generator and playable initial seed
-- [ ] 02-03: Render the board UI and drag-path capture behavior
+- [x] 02-01: Build new game settings flow and session bootstrap
+- [x] 02-02: Implement weighted board generator and playable initial seed
+- [x] 02-03: Render the board UI and drag-path capture behavior
+
+### Phase 02.1: Initial Board Solvability Gate (INSERTED)
+**Goal**: Phase 2 board'u gorunur olur olmaz, ilk oturumun dead board ile acilmasini engellemek ve kullaniciya ilk kez gosterilen gridde en az bir gecerli kelime oldugunu garanti etmek.
+**Depends on**: Phase 2
+**Requirements**: [GRID-02]
+**Success Criteria** (what must be TRUE):
+  1. Yeni oyun baslatildiginda ilk board kullaniciya gosterilmeden once analyzer ile en az bir gecerli kelime icerdigi kontrol edilir.
+  2. Ilk generate edilen board dead ise oyuncuya hic gosterilmeden shuffle veya kontrollu yeniden uretimle recover edilir.
+  3. Bu faz yalnizca first-render solvability guard'ini sahiplenir; visible playable-word count ve post-move recheck daha sonraki owner'da kalir.
+**Ownership note**: Bu faz `GRID-02`'nin initial-session guard alt alanini one ceker. Phase 4 / `04-01` ise post-move recovery continuity ve `GRID-08` visible count owner'i olarak kalir.
+**Manual gate note**: crafted bir dead start board'un ilk render oncesi recover edildigi kullaniciya acikca raporlanir.
+**Canonical refs**:
+  - `docs/Yazlab 2- Proje 2.pdf`
+  - `.agent/rules/06-grid-gecerlilik-ve-jokerler.md`
+  - `.planning/phases/04-advanced-board-mechanics/04-CONTEXT.md`
+**Plans**: 1 plan
+
+Plans:
+- [x] 02.1-01: Add initial-session playable-board analyzer and recovery gate
 
 ### Phase 3: Core Gameplay and Session Results
 **Goal**: Kelime gecerliligi, hamle dusumu, puanlama, gravity/refill ve oyun sonucu kaydetme akislarini eksiksiz hale getirmek.
-**Depends on**: Phase 2
+**Depends on**: Phase 02.1
 **Requirements**: [GRID-04, GRID-05, GRID-06, GRID-07, SCORE-01, END-01, END-02]
 **Success Criteria** (what must be TRUE):
   1. Parmak kaldirildiginda secim tamamlanir ve kelime sozlukte dogrulanir.
@@ -115,15 +135,16 @@ Plans:
 - [ ] 03-03: Persist game results and exit/endgame flows
 
 ### Phase 4: Advanced Board Mechanics
-**Goal**: Board'un her zaman oynanabilir kalmasini, combo puanlamasini ve uzun kelime ozel guclerini eklemek.
+**Goal**: Hamle sonrasi board continuity count'ini, combo puanlamasini ve uzun kelime ozel guclerini eklemek.
 **Depends on**: Phase 3
 **Requirements**: [GRID-02, GRID-08, POWER-01, POWER-02, POWER-03, POWER-04, POWER-05, COMBO-01]
 **Success Criteria** (what must be TRUE):
-  1. Baslangic ve hamle sonrasi board'larda en az bir gecerli kelime kalir; yoksa otomatik cozum uygulanir.
+  1. Hamle sonrasi/refill sonrasi board'larda en az bir gecerli kelime kalir; yoksa otomatik cozum uygulanir.
   2. Oyun ekrani ortak harf kullanmayan cozum mantigiyla hesaplanan guncel olusturulabilir kelime sayisini gosterir.
   3. Combo puani, ana kelime icindeki benzersiz ve sirayi koruyan alt kelimelerin puanlarini da toplama ekler.
   4. 4/5/6/7+ harfli kelimeler dogru guc tile'ini son harfte olusturur.
   5. Guc tasiyan hucre sonradan kullanildiginda dogru board etkisi tetiklenir.
+**Ownership note**: `02.1-01` ilk render solvability guard'ini one ceker; `04-01` ayni analyzer/recovery hattini post-move continuity ve visible count owner'ligi icin genisletir.
 **Manual gate note**: `04-01` ve `04-03` sonlarinda oyuncuya gorunen count/power davranisi kisa smoke-check ile teyit edilir; power threshold degerleri config'e ilk yazildiginda manuel source check yapilir.
 **Canonical refs**:
   - `docs/Yazlab 2- Proje 2.pdf`
@@ -132,7 +153,7 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 04-01: Build playable-word analyzer and dead-board recovery
+- [ ] 04-01: Extend playable-word analyzer to post-move recovery and visible count
 - [ ] 04-02: Implement combo detection and combo scoring
 - [ ] 04-03: Add power-tile creation, storage and activation effects
 
@@ -183,13 +204,14 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 1.1 -> 2 -> 3 -> 4 -> 5 -> 6
+Phases execute in numeric order: 1 -> 1.1 -> 2 -> 2.1 -> 3 -> 4 -> 5 -> 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation and Shell | 3/3 | Completed | 2026-04-07 |
 | 01.1 Requirements, Architecture and Persistence Eval Gate | 3/3 | Completed | 2026-04-18 |
-| 2. Game Setup and Board Foundation | 0/3 | Not started | - |
+| 2. Game Setup and Board Foundation | 3/3 | Completed | 2026-04-18 |
+| 02.1 Initial Board Solvability Gate | 1/1 | Completed | 2026-04-18 |
 | 3. Core Gameplay and Session Results | 0/3 | Not started | - |
 | 4. Advanced Board Mechanics | 0/3 | Not started | - |
 | 5. Market and Score History | 0/3 | Not started | - |

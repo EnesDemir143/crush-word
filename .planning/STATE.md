@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md (updated 2026-04-18)
 
 **Core value:** Oyuncuya her zaman oynanabilir kalan, kurallari acikca gorunen ve ders dokumanindaki tum zorunlu maddeleri eksiksiz yerine getiren bir mobil kelime oyunu sunmak.
-**Current focus:** Phase 2 - Game Setup and Board Foundation
+**Current focus:** Phase 3 - Core Gameplay and Session Results
 
 ## Current Position
 
-Phase: 2 of 7 (Game Setup and Board Foundation)
-Plan: 1 of 3 in current phase
-Status: Phase 01.1 completed; Phase 2 can start under eval matrix + manual gate rules
-Last activity: 2026-04-18 - Completed Phase 01.1 with spec audit, data architecture freeze, eval matrix and manual checklist.
+Phase: 3 of 8 (Core Gameplay and Session Results)
+Plan: 0 of 3 in current phase
+Status: Phase 2 and Phase 02.1 fully completed; Phase 3 is next
+Last activity: 2026-04-18 - Completed Phase 02.1-01 with trie-backed board analyzer, dead-board recovery, controller solvability gate and 14 unit tests. Manual gate approved.
 
-Progress: [███░░░░░░░] 29%
+Progress: [████████░░] 80%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
+- Total plans completed: 9
 - Average duration: planning + implementation karisik; direct compare edilmemeli
 - Total execution time: Tracking not normalized after inserted eval gate
 
@@ -29,10 +29,11 @@ Progress: [███░░░░░░░] 29%
 |-------|-------|-------|----------|
 | 1. Foundation and Shell | 3 | 1.3h | 26.7m |
 | 01.1 Requirements, Architecture and Persistence Eval Gate | 3 | planning-only | n/a |
+| 2. Game Setup and Board Foundation | 3 | execution tracked in summaries | n/a |
 
 **Recent Trend:**
-- Last 5 plans: 01-02, 01-03, 01.1-01, 01.1-02, 01.1-03
-- Trend: Foundation ve eval gate tamamlandi; gameplay implementation Phase 2 ile guvenli kontrat uzerinden baslayabilir
+- Last 5 plans: 02-01, 02-02, 02-03, 02.1-01 (all completed)
+- Trend: Phase 2 ve Phase 02.1 tamamen kapandi; board render, weighted generation, drag selection ve initial solvability gate tamamlandi. Siradaki is core gameplay (kelime dogrulama, puanlama, gravity/refill).
 
 ## Accumulated Context
 
@@ -41,7 +42,7 @@ Progress: [███░░░░░░░] 29%
 Decisions are logged in PROJECT.md Key Decisions table.
 
 - Phase 0: Yerel depolama ve paketlenmis sozluk kullanilacak.
-- Phase 0: Agir state-management veya backend katmani eklenmeyecek.
+- Phase 0: Agir framework yerine basit controller + model yaklaşimi korunmali.
 - Phase 0: Kullanici adi ve hafif ayarlar `shared_preferences`, skor gecmisi/altin/joker envanteri ise `sqflite` uzerinden tutulacak.
 - Phase 0: Sunum ve rapor hazirligi roadmap'in resmi parcasi olarak tutulacak.
 
@@ -49,6 +50,12 @@ Decisions are logged in PROJECT.md Key Decisions table.
 
 - Phase 01.1 inserted after Phase 1: Requirements, Architecture and Persistence Eval Gate (URGENT)
 - Phase 01.1 completed on 2026-04-18 and unblocked Phase 2 with explicit eval matrix + manual gate rules
+- Phase 02.1 inserted after Phase 2: Initial Board Solvability Gate to pull first-render dead-board recovery earlier than the rest of Phase 4
+- Phase 02-01 completed on 2026-04-18 after user-approved manual gate
+- Phase 02-02 completed on 2026-04-18 with weighted board generation, session models and deterministic coverage
+- Phase 02-03 completed on 2026-04-18 with board UI render, drag selection, adjacency guard and responsive width-first grid layout
+- Phase 02.1 completed on 2026-04-18 with trie-backed board analyzer, dead-board recovery service, controller solvability gate and 14 unit tests
+- Current next target is Phase 3 `03-01`; core gameplay starts
 
 ### Pending Todos
 
@@ -57,11 +64,11 @@ None yet.
 ### Blockers/Concerns
 
 - Phase 2 ve sonrasi implementasyonlarda `01.1-EVAL-MATRIX.md` ve `01.1-MANUAL-CHECKLIST.md` zorunlu referans kabul edilmeli.
-- Harf puan tablosu, joker fiyatlari, zorluk-grid-hamle eslesmesi ve power threshold'lari ilk canonical source yazildigi anda kullaniciyla manuel teyit gerektiriyor.
+- Harf puan tablosu, joker fiyatlari ve power threshold'lari canonical source yazildigi anda kullanicyla manuel teyit gerektiriyor.
 - Resume behavior, newest-first history ve kullaniciya gorunen aggregate/power/count alanlari icin feature-cikisinda kisa smoke-check gerekecek.
 
 ## Session Continuity
 
-Last session: 2026-04-18 00:00
-Stopped at: Completed Phase 01.1; next work should begin Phase 2 and honor manual gates at the documented checkpoints
+Last session: 2026-04-18 13:53
+Stopped at: Phase 2 + Phase 02.1 fully completed; next work is Phase 3 core gameplay (word validation, scoring, gravity/refill, game end)
 Resume file: None

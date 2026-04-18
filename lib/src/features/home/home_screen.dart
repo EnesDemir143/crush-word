@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:crush_word/src/app/app_router.dart';
 import 'package:crush_word/src/core/models/app_user.dart';
 import 'package:crush_word/src/core/repositories/profile_repository.dart';
+import 'package:crush_word/src/features/home/home_menu_destinations.dart';
 import 'package:crush_word/src/features/onboarding/username_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -100,8 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
-              for (final AppDestination destination
-                  in AppRouter.primaryDestinations) ...[
+              for (final AppDestination destination in primaryDestinations) ...[
                 _MenuActionButton(destination: destination),
                 const SizedBox(height: 14),
               ],
