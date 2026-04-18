@@ -1,31 +1,44 @@
 import 'package:flutter/foundation.dart';
 
+import 'package:crush_word/src/core/config/game_rules_config.dart';
 import 'package:crush_word/src/core/config/game_rules_loader.dart';
 import 'package:crush_word/src/core/gameplay/models/board_cell.dart';
 import 'package:crush_word/src/core/gameplay/models/game_session.dart';
+import 'package:crush_word/src/core/gameplay/services/board_analyzer.dart';
 import 'package:crush_word/src/core/gameplay/services/board_generator.dart';
+import 'package:crush_word/src/core/gameplay/services/board_recovery.dart';
 import 'package:crush_word/src/core/models/game_config.dart';
+import 'package:crush_word/src/core/repositories/dictionary_repository.dart';
 
 class GameController extends ChangeNotifier {
   GameController({
     required GameConfig config,
     GameRulesLoader? rulesLoader,
     BoardGenerator? boardGenerator,
+    DictionaryRepository? dictionaryRepository,
+    BoardAnalyzer? boardAnalyzer,
     GameSession? initialSession,
   }) : _config = config,
        _rulesLoader = rulesLoader ?? const GameRulesLoader(),
        _boardGenerator = boardGenerator ?? BoardGenerator(),
+       _dictionaryRepository =
+           dictionaryRepository ?? DictionaryRepository(),
+       _boardAnalyzer = boardAnalyzer ?? BoardAnalyzer(),
        _session = initialSession;
 
   factory GameController.fromSession(
     GameSession session, {
     GameRulesLoader? rulesLoader,
     BoardGenerator? boardGenerator,
+    DictionaryRepository? dictionaryRepository,
+    BoardAnalyzer? boardAnalyzer,
   }) {
     return GameController(
       config: session.config,
       rulesLoader: rulesLoader,
       boardGenerator: boardGenerator,
+      dictionaryRepository: dictionaryRepository,
+      boardAnalyzer: boardAnalyzer,
       initialSession: session,
     );
   }
@@ -33,6 +46,8 @@ class GameController extends ChangeNotifier {
   final GameConfig _config;
   final GameRulesLoader _rulesLoader;
   final BoardGenerator _boardGenerator;
+  final DictionaryRepository _dictionaryRepository;
+  final BoardAnalyzer _boardAnalyzer;
 
   GameSession? _session;
   bool _isLoading = false;
@@ -76,11 +91,31 @@ class GameController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final rules = await _rulesLoader.load();
-      _session = _boardGenerator.createSession(config: _config, rules: rules);
+      final GameRulesConfig rules = await _rulesLoader.load();
+      final Set<String> dictionary =
+          await _dictionaryRepository.loadWords();
+
+      GameSession session = _boardGenerator.createSession(
+        config: _config,
+        rules: rules,
+      );
+
+      // Initial-board solvability gate: guarantee at least one
+      // valid word before the player ever sees the board.
+      final BoardRecovery recovery = BoardRecovery(
+        analyzer: _boardAnalyzer,
+        boardGenerator: _boardGenerator,
+      );
+
+      _session = recovery.ensurePlayable(
+        session: session,
+        dictionary: dictionary,
+        rules: rules,
+      );
     } catch (_) {
       _errorMessage =
-          'Oyun tahtası kurulamadı. Kurallar dosyası tekrar yüklenmeli.';
+          'Oyun tahtası kurulamadı. '
+          'Kurallar dosyası tekrar yüklenmeli.';
     } finally {
       _isLoading = false;
       notifyListeners();
