@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:crush_word/src/app/app_routes.dart';
 import 'package:crush_word/src/core/models/game_config.dart';
+import 'package:crush_word/src/features/game/game_screen.dart';
 import 'package:crush_word/src/features/game_setup/new_game_screen.dart';
 
 class GameSetupRoutes {
@@ -26,7 +27,7 @@ class GameSetupRoutes {
         return MaterialPageRoute<void>(
           builder: (_) => config == null
               ? const _InvalidGameSessionScreen()
-              : GameSessionBootstrapScreen(config: config),
+              : GameScreen(config: config),
           settings: settings,
         );
       default:
