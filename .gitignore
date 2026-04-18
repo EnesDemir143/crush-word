@@ -190,3 +190,15 @@ assets/dictionary/hunspell-tr-main/
 graphify-out/cache/
 graphify-out/graph.html
 graphify-out/graph.json
+
+.claude/
+.codebuddy/
+.continue/
+.dart_tool/
+.junie/
+.kiro/
+.agents/
+.cursor/
+.augment/
+
+CLAUDE.md
