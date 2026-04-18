@@ -70,11 +70,20 @@ class _NewGameScreenState extends State<NewGameScreen> {
             }
           },
           child: Scaffold(
+            backgroundColor: Colors.transparent,
             appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              surfaceTintColor: Colors.transparent,
+              foregroundColor: const Color(0xFF3A3025),
+              elevation: 0,
               title: Text(
                 _controller.step == GameSetupStep.difficulty
                     ? 'Yeni Oyun'
                     : 'Hamle Sayısı',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF3A3025),
+                ),
               ),
               leading: _controller.canStepBack
                   ? IconButton(
@@ -83,10 +92,25 @@ class _NewGameScreenState extends State<NewGameScreen> {
                     )
                   : null,
             ),
-            body: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: _buildBody(context),
+            extendBodyBehindAppBar: false,
+            body: DecoratedBox(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: <Color>[
+                    Color(0xFFFDF8F0),
+                    Color(0xFFF5EBDA),
+                    Color(0xFFEDE0CB),
+                  ],
+                ),
+              ),
+              child: SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: _buildBody(context),
+                ),
               ),
             ),
           ),
@@ -147,6 +171,10 @@ class _NewGameScreenState extends State<NewGameScreen> {
   }
 }
 
+// ─────────────────────────────────────────────────────────────
+// Difficulty step
+// ─────────────────────────────────────────────────────────────
+
 class _DifficultyStep extends StatelessWidget {
   const _DifficultyStep({
     required this.options,
@@ -155,6 +183,12 @@ class _DifficultyStep extends StatelessWidget {
 
   final List<GameSetupOption> options;
   final ValueChanged<GameSetupOption> onOptionSelected;
+
+  static const Map<String, List<Color>> _gradients = <String, List<Color>>{
+    'easy': <Color>[Color(0xFF2E8B7A), Color(0xFF3FAF9A)],
+    'medium': <Color>[Color(0xFFD4A017), Color(0xFFE6B533)],
+    'hard': <Color>[Color(0xFFB03A3A), Color(0xFFD04545)],
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -165,30 +199,141 @@ class _DifficultyStep extends StatelessWidget {
         Text(
           'Grid boyutunu seç',
           style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w800,
+            color: const Color(0xFF3A3025),
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         Text(
-          'Kaynak dokümandaki birebir eşleşme uygulanır: 6x6 = Zor, 8x8 = Orta, 10x10 = Kolay.',
-          style: theme.textTheme.bodyLarge?.copyWith(height: 1.5),
+          '6×6 Zor • 8×8 Orta • 10×10 Kolay',
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: const Color(0xFF7A6F62),
+          ),
         ),
         const SizedBox(height: 24),
         for (final GameSetupOption option in options) ...[
-          _SetupOptionCard(
+          _DifficultyCard(
             key: Key('setup-difficulty-${option.difficulty.name}'),
-            title: option.gridLabel,
-            badgeLabel: option.label,
-            description:
-                'Bu seçimden sonra bağımsız hamle seçim ekranı açılır.',
+            option: option,
+            gradientColors:
+                _gradients[option.difficulty.name] ??
+                const <Color>[Color(0xFF2E8B7A), Color(0xFF3FAF9A)],
             onTap: () => onOptionSelected(option),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
         ],
       ],
     );
   }
 }
+
+class _DifficultyCard extends StatefulWidget {
+  const _DifficultyCard({
+    super.key,
+    required this.option,
+    required this.gradientColors,
+    required this.onTap,
+  });
+
+  final GameSetupOption option;
+  final List<Color> gradientColors;
+  final VoidCallback onTap;
+
+  @override
+  State<_DifficultyCard> createState() => _DifficultyCardState();
+}
+
+class _DifficultyCardState extends State<_DifficultyCard> {
+  bool _pressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _pressed = true),
+      onTapUp: (_) {
+        setState(() => _pressed = false);
+        widget.onTap();
+      },
+      onTapCancel: () => setState(() => _pressed = false),
+      child: AnimatedScale(
+        scale: _pressed ? 0.97 : 1.0,
+        duration: const Duration(milliseconds: 120),
+        curve: Curves.easeOutCubic,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: widget.gradientColors,
+            ),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: widget.gradientColors.first.withValues(alpha: 0.25),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+            child: Row(
+              children: <Widget>[
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.18),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Icon(
+                      Icons.grid_4x4_rounded,
+                      color: Colors.white,
+                      size: 28,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        widget.option.gridLabel,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        widget.option.label,
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.8),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: Colors.white.withValues(alpha: 0.6),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// Move count step
+// ─────────────────────────────────────────────────────────────
 
 class _MoveCountStep extends StatelessWidget {
   const _MoveCountStep({
@@ -210,28 +355,45 @@ class _MoveCountStep extends StatelessWidget {
         Text(
           'Hamle sayısını seç',
           style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w800,
+            color: const Color(0xFF3A3025),
           ),
         ),
-        const SizedBox(height: 12),
-        Text(
-          '${option.gridLabel} seçildi. Şimdi hamle ekranından istediğin hamle paketini seç.',
-          style: theme.textTheme.bodyLarge?.copyWith(height: 1.5),
-        ),
         const SizedBox(height: 8),
-        Text(
-          'Hamle ekranında sadece kaynak dokümandaki üç izinli seçenek gösterilir.',
-          style: theme.textTheme.bodyMedium,
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: const Color(0xFF1A5D57).withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                const Icon(
+                  Icons.grid_4x4_rounded,
+                  size: 16,
+                  color: Color(0xFF1A5D57),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  '${option.gridLabel} • ${option.label}',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF1A5D57),
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
         const SizedBox(height: 24),
         for (final GameMoveCountOption moveCountOption in moveCountOptions) ...[
-          FilledButton(
+          _MoveCountCard(
             key: Key('setup-move-${moveCountOption.moveLimit}'),
-            onPressed: () => onMoveSelected(moveCountOption),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              child: Text(moveCountOption.ctaLabel),
-            ),
+            moveCountOption: moveCountOption,
+            onTap: () => onMoveSelected(moveCountOption),
           ),
           const SizedBox(height: 12),
         ],
@@ -240,58 +402,112 @@ class _MoveCountStep extends StatelessWidget {
   }
 }
 
-class _SetupOptionCard extends StatelessWidget {
-  const _SetupOptionCard({
+class _MoveCountCard extends StatefulWidget {
+  const _MoveCountCard({
     super.key,
-    required this.title,
-    required this.badgeLabel,
-    required this.description,
+    required this.moveCountOption,
     required this.onTap,
   });
 
-  final String title;
-  final String badgeLabel;
-  final String description;
+  final GameMoveCountOption moveCountOption;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
+  State<_MoveCountCard> createState() => _MoveCountCardState();
+}
 
-    return Card(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      title,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  Chip(label: Text(badgeLabel)),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Text(
-                description,
-                style: theme.textTheme.bodyMedium?.copyWith(height: 1.4),
+class _MoveCountCardState extends State<_MoveCountCard> {
+  bool _pressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _pressed = true),
+      onTapUp: (_) {
+        setState(() => _pressed = false);
+        widget.onTap();
+      },
+      onTapCancel: () => setState(() => _pressed = false),
+      child: AnimatedScale(
+        scale: _pressed ? 0.97 : 1.0,
+        duration: const Duration(milliseconds: 120),
+        curve: Curves.easeOutCubic,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(18),
+            color: Colors.white,
+            border: Border.all(
+              color: const Color(0xFF1A5D57).withValues(alpha: 0.12),
+            ),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: const Color(0xFF0F172A).withValues(alpha: 0.06),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
               ),
             ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            child: Row(
+              children: <Widget>[
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: <Color>[Color(0xFF1A5D57), Color(0xFF2E8B7A)],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Icon(
+                      Icons.swipe_rounded,
+                      color: Colors.white,
+                      size: 22,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        '${widget.moveCountOption.moveLimit} Hamle',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF3A3025),
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        widget.moveCountOption.ctaLabel,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF7A6F62),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(
+                  Icons.play_arrow_rounded,
+                  color: Color(0xFF2E8B7A),
+                  size: 28,
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 }
+
+// ─────────────────────────────────────────────────────────────
+// Session bootstrap (legacy - kept for routing compatibility)
+// ─────────────────────────────────────────────────────────────
 
 class GameSessionBootstrapScreen extends StatelessWidget {
   const GameSessionBootstrapScreen({super.key, required this.config});

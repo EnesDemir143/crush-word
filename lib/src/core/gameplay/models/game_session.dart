@@ -9,9 +9,13 @@ class GameSession {
     required List<BoardCell> board,
     required this.movesLeft,
     this.score = 0,
+    this.wordsFoundCount = 0,
+    this.longestWord = '',
+    DateTime? startedAt,
     List<String> selectedCellIds = const <String>[],
     Map<String, int> jokerInventory = const <String, int>{},
   }) : board = List<BoardCell>.unmodifiable(board),
+       startedAt = startedAt ?? DateTime.now(),
        selectedCellIds = List<String>.unmodifiable(selectedCellIds),
        jokerInventory = Map<String, int>.unmodifiable(jokerInventory) {
     final int expectedCellCount = config.gridSize * config.gridSize;
@@ -29,6 +33,9 @@ class GameSession {
   final List<BoardCell> board;
   final int movesLeft;
   final int score;
+  final int wordsFoundCount;
+  final String longestWord;
+  final DateTime startedAt;
   final List<String> selectedCellIds;
   final Map<String, int> jokerInventory;
 
@@ -53,6 +60,9 @@ class GameSession {
     List<BoardCell>? board,
     int? movesLeft,
     int? score,
+    int? wordsFoundCount,
+    String? longestWord,
+    DateTime? startedAt,
     List<String>? selectedCellIds,
     Map<String, int>? jokerInventory,
   }) {
@@ -61,6 +71,9 @@ class GameSession {
       board: board ?? this.board,
       movesLeft: movesLeft ?? this.movesLeft,
       score: score ?? this.score,
+      wordsFoundCount: wordsFoundCount ?? this.wordsFoundCount,
+      longestWord: longestWord ?? this.longestWord,
+      startedAt: startedAt ?? this.startedAt,
       selectedCellIds: selectedCellIds ?? this.selectedCellIds,
       jokerInventory: jokerInventory ?? this.jokerInventory,
     );
@@ -72,6 +85,9 @@ class GameSession {
       'board': board.map((BoardCell cell) => cell.toJson()).toList(),
       'movesLeft': movesLeft,
       'score': score,
+      'wordsFoundCount': wordsFoundCount,
+      'longestWord': longestWord,
+      'startedAt': startedAt.toIso8601String(),
       'selectedCellIds': selectedCellIds,
       'jokerInventory': jokerInventory,
     };
@@ -82,6 +98,9 @@ class GameSession {
     final Object? boardJson = json['board'];
     final int? movesLeft = (json['movesLeft'] as num?)?.toInt();
     final int score = (json['score'] as num?)?.toInt() ?? 0;
+    final int wordsFoundCount = (json['wordsFoundCount'] as num?)?.toInt() ?? 0;
+    final String longestWord = (json['longestWord'] as String?)?.trim() ?? '';
+    final String? startedAtRaw = json['startedAt'] as String?;
     final Object? selectedCellIdsJson = json['selectedCellIds'];
     final Object? jokerInventoryJson = json['jokerInventory'];
 
@@ -126,6 +145,11 @@ class GameSession {
       board: board,
       movesLeft: movesLeft,
       score: score,
+      wordsFoundCount: wordsFoundCount,
+      longestWord: longestWord,
+      startedAt: startedAtRaw == null || startedAtRaw.trim().isEmpty
+          ? null
+          : DateTime.parse(startedAtRaw),
       selectedCellIds: selectedCellIds,
       jokerInventory: jokerInventory,
     );
@@ -138,6 +162,9 @@ class GameSession {
         listEquals(other.board, board) &&
         other.movesLeft == movesLeft &&
         other.score == score &&
+        other.wordsFoundCount == wordsFoundCount &&
+        other.longestWord == longestWord &&
+        other.startedAt == startedAt &&
         listEquals(other.selectedCellIds, selectedCellIds) &&
         mapEquals(other.jokerInventory, jokerInventory);
   }
@@ -148,6 +175,9 @@ class GameSession {
     Object.hashAll(board),
     movesLeft,
     score,
+    wordsFoundCount,
+    longestWord,
+    startedAt,
     Object.hashAll(selectedCellIds),
     Object.hashAll(
       jokerInventory.entries.map(

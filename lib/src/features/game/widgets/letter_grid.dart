@@ -13,6 +13,7 @@ class LetterGrid extends StatefulWidget {
     required this.onSelectionStart,
     required this.onSelectionExtend,
     this.onSelectionEnd,
+    this.lastRemovedCellIds = const <String>[],
   });
 
   final GameSession session;
@@ -21,12 +22,36 @@ class LetterGrid extends StatefulWidget {
   final ValueChanged<BoardCell> onSelectionExtend;
   final VoidCallback? onSelectionEnd;
 
+  /// Cell IDs that were just removed — triggers pop animation.
+  final List<String> lastRemovedCellIds;
+
   @override
   State<LetterGrid> createState() => _LetterGridState();
 }
 
 class _LetterGridState extends State<LetterGrid> {
   String? _lastDraggedCellId;
+
+  /// Tracks which cell IDs are "new" for entrance animation.
+  Set<String> _animatingCellIds = <String>{};
+
+  /// Incremented to give each board update a unique animation key.
+  int _boardVersion = 0;
+
+  @override
+  void didUpdateWidget(covariant LetterGrid oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // When cells were removed, all cells on the new board are
+    // candidates for entrance animation.
+    if (widget.lastRemovedCellIds.isNotEmpty &&
+        oldWidget.lastRemovedCellIds != widget.lastRemovedCellIds) {
+      _boardVersion++;
+      _animatingCellIds = widget.session.board
+          .map((BoardCell c) => c.id)
+          .toSet();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +64,8 @@ class _LetterGridState extends State<LetterGrid> {
     return Semantics(
       container: true,
       label:
-          '${widget.session.gridSize} çarpı ${widget.session.gridSize} '
-          'oyun tahtası',
+          '${widget.session.gridSize} çarpı '
+          '${widget.session.gridSize} oyun tahtası',
       child: AspectRatio(
         aspectRatio: 1,
         child: LayoutBuilder(
@@ -101,9 +126,9 @@ class _LetterGridState extends State<LetterGrid> {
                                       )
                                       .toList(growable: false)
                                     ..sort(
-                                      (BoardCell left, BoardCell right) =>
-                                          selectionOrder[left.id]!.compareTo(
-                                            selectionOrder[right.id]!,
+                                      (BoardCell l, BoardCell r) =>
+                                          selectionOrder[l.id]!.compareTo(
+                                            selectionOrder[r.id]!,
                                           ),
                                     ),
                               gridLayout: gridLayout,
@@ -114,12 +139,14 @@ class _LetterGridState extends State<LetterGrid> {
                         for (final BoardCell cell in widget.session.board)
                           Positioned.fromRect(
                             rect: gridLayout.rectFor(cell),
-                            child: _LetterCell(
+                            child: _AnimatedLetterCell(
                               key: Key('letter-cell-${cell.id}'),
                               cell: cell,
                               selectionIndex: selectionOrder[cell.id],
                               cellExtent: gridLayout.cellExtent,
                               showSelectionIndex: gridLayout.showSelectionIndex,
+                              animate: _animatingCellIds.contains(cell.id),
+                              boardVersion: _boardVersion,
                             ),
                           ),
                       ],
@@ -158,9 +185,59 @@ class _LetterGridState extends State<LetterGrid> {
   }
 }
 
+/// Wraps _LetterCell with a pop-in entrance animation.
+class _AnimatedLetterCell extends StatelessWidget {
+  const _AnimatedLetterCell({
+    super.key,
+    required this.cell,
+    required this.selectionIndex,
+    required this.cellExtent,
+    required this.showSelectionIndex,
+    required this.animate,
+    required this.boardVersion,
+  });
+
+  final BoardCell cell;
+  final int? selectionIndex;
+  final double cellExtent;
+  final bool showSelectionIndex;
+  final bool animate;
+  final int boardVersion;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!animate) {
+      return _LetterCell(
+        cell: cell,
+        selectionIndex: selectionIndex,
+        cellExtent: cellExtent,
+        showSelectionIndex: showSelectionIndex,
+      );
+    }
+
+    return TweenAnimationBuilder<double>(
+      key: ValueKey<String>('anim-${cell.id}-v$boardVersion'),
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.elasticOut,
+      tween: Tween<double>(begin: 0, end: 1),
+      builder: (BuildContext context, double value, Widget? child) {
+        return Opacity(
+          opacity: value.clamp(0, 1),
+          child: Transform.scale(scale: value.clamp(0, 1), child: child),
+        );
+      },
+      child: _LetterCell(
+        cell: cell,
+        selectionIndex: selectionIndex,
+        cellExtent: cellExtent,
+        showSelectionIndex: showSelectionIndex,
+      ),
+    );
+  }
+}
+
 class _LetterCell extends StatelessWidget {
   const _LetterCell({
-    super.key,
     required this.cell,
     required this.selectionIndex,
     required this.cellExtent,
@@ -186,79 +263,86 @@ class _LetterCell extends StatelessWidget {
           'Satır ${cell.row + 1}, sütun ${cell.column + 1}, '
           '${cell.letter} harfi'
           '${isSelected ? ', seçili ${selectionIndex! + 1}. sıra' : ''}',
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 140),
-        curve: Curves.easeOutCubic,
-        padding: EdgeInsets.all(contentPadding),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: isSelected
-                ? const <Color>[Color(0xFF1D6D67), Color(0xFF0F4E4A)]
-                : const <Color>[Color(0xFFFFFCF7), Color(0xFFF2E6D5)],
-          ),
-          borderRadius: BorderRadius.circular(borderRadius),
-          border: Border.all(
-            color: isSelected
-                ? const Color(0xFFFFE3A4)
-                : theme.colorScheme.primary.withValues(alpha: 0.08),
-            width: isSelected ? 2.2 : 1.1,
-          ),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-              color: const Color(
-                0xFF0F172A,
-              ).withValues(alpha: isSelected ? 0.16 : 0.07),
-              blurRadius: isSelected ? 14 : 8,
-              offset: const Offset(0, 5),
+      child: AnimatedScale(
+        scale: isSelected ? 1.08 : 1.0,
+        duration: const Duration(milliseconds: 160),
+        curve: Curves.easeOutBack,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 140),
+          curve: Curves.easeOutCubic,
+          padding: EdgeInsets.all(contentPadding),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: isSelected
+                  ? const <Color>[Color(0xFF1D6D67), Color(0xFF0F4E4A)]
+                  : const <Color>[Color(0xFFFFFCF7), Color(0xFFF2E6D5)],
             ),
-          ],
-        ),
-        child: Stack(
-          children: <Widget>[
-            Center(
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  cell.letter,
-                  maxLines: 1,
-                  style: TextStyle(
-                    color: isSelected ? Colors.white : const Color(0xFF2B2721),
-                    fontSize: fontSize,
-                    fontWeight: FontWeight.w900,
-                    height: 1,
+            borderRadius: BorderRadius.circular(borderRadius),
+            border: Border.all(
+              color: isSelected
+                  ? const Color(0xFFFFE3A4)
+                  : theme.colorScheme.primary.withValues(alpha: 0.08),
+              width: isSelected ? 2.2 : 1.1,
+            ),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: const Color(
+                  0xFF0F172A,
+                ).withValues(alpha: isSelected ? 0.16 : 0.07),
+                blurRadius: isSelected ? 14 : 8,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Stack(
+            children: <Widget>[
+              Center(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    cell.letter,
+                    maxLines: 1,
+                    style: TextStyle(
+                      color: isSelected
+                          ? Colors.white
+                          : const Color(0xFF2B2721),
+                      fontSize: fontSize,
+                      fontWeight: FontWeight.w900,
+                      height: 1,
+                    ),
                   ),
                 ),
               ),
-            ),
-            if (isSelected && showSelectionIndex)
-              Positioned(
-                right: math.max(4, cellExtent * 0.08),
-                top: math.max(4, cellExtent * 0.08),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.18),
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: math.max(4, cellExtent * 0.08),
-                      vertical: math.max(2, cellExtent * 0.03),
+              if (isSelected && showSelectionIndex)
+                Positioned(
+                  right: math.max(4, cellExtent * 0.08),
+                  top: math.max(4, cellExtent * 0.08),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.18),
+                      borderRadius: BorderRadius.circular(999),
                     ),
-                    child: Text(
-                      '${selectionIndex! + 1}',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: (cellExtent * 0.18).clamp(9, 13),
-                        fontWeight: FontWeight.w800,
-                        height: 1,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: math.max(4, cellExtent * 0.08),
+                        vertical: math.max(2, cellExtent * 0.03),
+                      ),
+                      child: Text(
+                        '${selectionIndex! + 1}',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: (cellExtent * 0.18).clamp(9, 13),
+                          fontWeight: FontWeight.w800,
+                          height: 1,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -37,7 +37,7 @@ class BoardGenerator {
         (int index) => BoardCell(
           row: index ~/ gridSize,
           column: index % gridSize,
-          letter: _pickWeightedLetter(rules.boardGeneration),
+          letter: pickWeightedLetter(rules.boardGeneration),
         ),
         growable: false,
       ),
@@ -45,7 +45,11 @@ class BoardGenerator {
     );
   }
 
-  String _pickWeightedLetter(GameBoardGenerationRules rules) {
+  /// Pick a single letter using the weighted frequency groups.
+  ///
+  /// Exposed publicly so that [BoardResolver] can reuse the same
+  /// weighting logic for refill letters.
+  String pickWeightedLetter(GameBoardGenerationRules rules) {
     final int threshold = _randomSource.nextInt(rules.totalWeight);
     int cursor = 0;
 
@@ -59,7 +63,8 @@ class BoardGenerator {
     }
 
     throw StateError(
-      'Weighted letter selection failed even though total weight is positive.',
+      'Weighted letter selection failed even though '
+      'total weight is positive.',
     );
   }
 }

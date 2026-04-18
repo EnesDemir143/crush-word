@@ -14,35 +14,74 @@ class _ScoreHistoryScreenPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
-
     return Scaffold(
-      appBar: AppBar(title: const Text('Skor Tablosu')),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 360),
-          child: Padding(
-            padding: const EdgeInsets.all(24),
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        foregroundColor: const Color(0xFF3A3025),
+        elevation: 0,
+        title: const Text(
+          'Skor Tablosu',
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            color: Color(0xFF3A3025),
+          ),
+        ),
+      ),
+      extendBodyBehindAppBar: false,
+      body: DecoratedBox(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: <Color>[
+              Color(0xFFFDF8F0),
+              Color(0xFFF5EBDA),
+              Color(0xFFEDE0CB),
+            ],
+          ),
+        ),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 320),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.construction_rounded,
-                  size: 52,
-                  color: theme.colorScheme.primary,
+              children: <Widget>[
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: <Color>[Color(0xFF4A3B6B), Color(0xFF7C5DA6)],
+                    ),
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.all(20),
+                    child: Icon(
+                      Icons.emoji_events_rounded,
+                      size: 44,
+                      color: Colors.white,
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 16),
-                Text(
-                  'Skor Tablosu',
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
+                const SizedBox(height: 24),
+                const Text(
+                  'Çok Yakında',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF3A3025),
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 12),
-                Text(
-                  'Skor geçmişi görünümü için navigasyon hedefi hazır durumda.',
-                  style: theme.textTheme.bodyLarge,
+                const SizedBox(height: 8),
+                const Text(
+                  'Skor geçmişin burada listelenecek.',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Color(0xFF7A6F62),
+                    height: 1.5,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ],
