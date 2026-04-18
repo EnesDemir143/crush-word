@@ -7,6 +7,7 @@ import 'package:crush_word/src/core/gameplay/models/game_session.dart';
 import 'package:crush_word/src/core/gameplay/services/word_validator.dart';
 import 'package:crush_word/src/core/models/game_config.dart';
 import 'package:crush_word/src/features/game/game_controller.dart';
+import 'package:crush_word/src/features/game/exit_confirmation_dialog.dart';
 import 'package:crush_word/src/features/game/widgets/game_header.dart';
 import 'package:crush_word/src/features/game/widgets/letter_grid.dart';
 
@@ -23,6 +24,7 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   late final GameController _controller;
   late final bool _ownsController;
+  bool _allowPop = false;
 
   @override
   void initState() {
@@ -47,81 +49,128 @@ class _GameScreenState extends State<GameScreen> {
       animation: _controller,
       builder: (BuildContext context, _) {
         final GameSession? session = _controller.session;
+        final bool requiresExitConfirmation =
+            _controller.hasSession && !_controller.isGameOver && !_allowPop;
 
-        return Scaffold(
-          backgroundColor: const Color(0xFFF6EFE3),
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            surfaceTintColor: Colors.transparent,
-            foregroundColor: const Color(0xFF3A3025),
-            elevation: 0,
-          ),
-          extendBodyBehindAppBar: true,
-          body: DecoratedBox(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: <Color>[
-                  Color(0xFFF6EFE3),
-                  Color(0xFFEDE6D8),
-                  Color(0xFFDCE8E0),
+        return PopScope<void>(
+          canPop: !requiresExitConfirmation,
+          onPopInvokedWithResult: (bool didPop, void _) {
+            if (!didPop && requiresExitConfirmation) {
+              unawaited(_handleExitAttempt());
+            }
+          },
+          child: Scaffold(
+            backgroundColor: const Color(0xFFF6EFE3),
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              surfaceTintColor: Colors.transparent,
+              foregroundColor: const Color(0xFF3A3025),
+              elevation: 0,
+            ),
+            extendBodyBehindAppBar: true,
+            body: DecoratedBox(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: <Color>[
+                    Color(0xFFF6EFE3),
+                    Color(0xFFEDE6D8),
+                    Color(0xFFDCE8E0),
+                  ],
+                ),
+              ),
+              child: Stack(
+                children: <Widget>[
+                  const _BackgroundGlow(
+                    alignment: Alignment.topLeft,
+                    color: Color(0x3395C9A3),
+                    diameter: 240,
+                  ),
+                  const _BackgroundGlow(
+                    alignment: Alignment.centerRight,
+                    color: Color(0x33D29A5A),
+                    diameter: 280,
+                  ),
+                  const _BackgroundGlow(
+                    alignment: Alignment.bottomLeft,
+                    color: Color(0x33538F87),
+                    diameter: 220,
+                  ),
+                  SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                      child: switch ((session, _controller.isLoading)) {
+                        (null, true) => const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                        (null, false) => _GameLoadError(
+                          message:
+                              _controller.errorMessage ??
+                              'Oyun tahtası yüklenemedi.',
+                          onRetry: () => _controller.load(force: true),
+                        ),
+                        _ => _GameBody(
+                          session: session!,
+                          controller: _controller,
+                          onReturnHome: _returnHome,
+                        ),
+                      },
+                    ),
+                  ),
                 ],
               ),
-            ),
-            child: Stack(
-              children: <Widget>[
-                const _BackgroundGlow(
-                  alignment: Alignment.topLeft,
-                  color: Color(0x3395C9A3),
-                  diameter: 240,
-                ),
-                const _BackgroundGlow(
-                  alignment: Alignment.centerRight,
-                  color: Color(0x33D29A5A),
-                  diameter: 280,
-                ),
-                const _BackgroundGlow(
-                  alignment: Alignment.bottomLeft,
-                  color: Color(0x33538F87),
-                  diameter: 220,
-                ),
-                SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                    child: switch ((session, _controller.isLoading)) {
-                      (null, true) => const Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                      (null, false) => _GameLoadError(
-                        message:
-                            _controller.errorMessage ??
-                            'Oyun tahtası yüklenemedi.',
-                        onRetry: () => _controller.load(force: true),
-                      ),
-                      _ => _GameBody(
-                        session: session!,
-                        controller: _controller,
-                      ),
-                    },
-                  ),
-                ),
-              ],
             ),
           ),
         );
       },
     );
   }
+
+  Future<void> _handleExitAttempt() async {
+    final bool shouldExit =
+        await showExitConfirmationDialog(context) ?? false;
+
+    if (!shouldExit) {
+      return;
+    }
+
+    await _controller.confirmExit();
+    if (!mounted) {
+      return;
+    }
+
+    _returnHome();
+  }
+
+  void _returnHome() {
+    if (!_allowPop) {
+      setState(() {
+        _allowPop = true;
+      });
+    }
+
+    if (Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+      return;
+    }
+
+    Navigator.of(context).maybePop();
+  }
 }
 
 class _GameBody extends StatelessWidget {
-  const _GameBody({required this.session, required this.controller});
+  const _GameBody({
+    required this.session,
+    required this.controller,
+    required this.onReturnHome,
+  });
 
   final GameSession session;
   final GameController controller;
+  final VoidCallback onReturnHome;
 
-  bool get _isGameOver => controller.movesLeft <= 0;
+  bool get _isGameOver => controller.isGameOver;
 
   @override
   Widget build(BuildContext context) {
@@ -199,6 +248,7 @@ class _GameBody extends StatelessWidget {
           _GameOverOverlay(
             score: controller.score,
             config: session.config,
+            onReturnHome: onReturnHome,
           ),
       ],
     );
@@ -485,10 +535,12 @@ class _GameOverOverlay extends StatefulWidget {
   const _GameOverOverlay({
     required this.score,
     required this.config,
+    required this.onReturnHome,
   });
 
   final int score;
   final GameConfig config;
+  final VoidCallback onReturnHome;
 
   @override
   State<_GameOverOverlay> createState() => _GameOverOverlayState();
@@ -664,9 +716,7 @@ class _GameOverOverlayState extends State<_GameOverOverlay>
                             SizedBox(
                               width: double.infinity,
                               child: FilledButton(
-                                onPressed: () =>
-                                    Navigator.of(context)
-                                        .pop(),
+                                onPressed: widget.onReturnHome,
                                 child: const Text(
                                   'Ana Menüye Dön',
                                 ),
