@@ -51,10 +51,7 @@ class _ScoreHistoryScreenPlaceholder extends StatelessWidget {
                 DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: <Color>[
-                        Color(0xFF4A3B6B),
-                        Color(0xFF7C5DA6),
-                      ],
+                      colors: <Color>[Color(0xFF4A3B6B), Color(0xFF7C5DA6)],
                     ),
                     borderRadius: BorderRadius.circular(24),
                   ),

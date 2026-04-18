@@ -67,9 +67,7 @@ void main() {
           letters: const <String>['B', 'A', 'L', 'X', 'Y', 'Z', 'W', 'Q', 'P'],
           movesLeft: 1,
           score: 0,
-          startedAt: fixedNow.subtract(
-            const Duration(minutes: 2, seconds: 15),
-          ),
+          startedAt: fixedNow.subtract(const Duration(minutes: 2, seconds: 15)),
         );
 
         final GameController controller = GameController.fromSession(
@@ -77,11 +75,7 @@ void main() {
           wordValidator: _buildValidator(const <String>{'bal'}),
           scoringEngine: ScoringEngine(
             scoringConfig: ScoringConfig(
-              letterScores: const <String, int>{
-                'B': 4,
-                'A': 1,
-                'L': 2,
-              },
+              letterScores: const <String, int>{'B': 4, 'A': 1, 'L': 2},
             ),
           ),
           gameHistoryRepository: gameHistoryRepository,
@@ -98,17 +92,14 @@ void main() {
 
         await controller.endSelection();
 
-        final List<GameResult> results =
-            await gameHistoryRepository.loadResultsNewestFirst();
+        final List<GameResult> results = await gameHistoryRepository
+            .loadResultsNewestFirst();
         expect(results, hasLength(2));
         expect(results.first.id, isNot('older-result'));
         expect(results.first.score, 7);
         expect(results.first.wordsFoundCount, 1);
         expect(results.first.longestWord, 'bal');
-        expect(
-          results.first.duration,
-          const Duration(minutes: 2, seconds: 15),
-        );
+        expect(results.first.duration, const Duration(minutes: 2, seconds: 15));
         expect(await checkpointRepository.load(), isNull);
 
         await controller.confirmExit();
@@ -120,75 +111,72 @@ void main() {
     );
   });
 
-  testWidgets(
-    'back exit shows confirmation and only saves on evet',
-    (WidgetTester tester) async {
-      final DateTime fixedNow = DateTime(2026, 4, 18, 17, 15, 0);
-      final MemoryGameHistoryRepository gameHistoryRepository =
-          MemoryGameHistoryRepository();
-      final MemorySessionCheckpointRepository checkpointRepository =
-          MemorySessionCheckpointRepository();
+  testWidgets('back exit shows confirmation and only saves on evet', (
+    WidgetTester tester,
+  ) async {
+    final DateTime fixedNow = DateTime(2026, 4, 18, 17, 15, 0);
+    final MemoryGameHistoryRepository gameHistoryRepository =
+        MemoryGameHistoryRepository();
+    final MemorySessionCheckpointRepository checkpointRepository =
+        MemorySessionCheckpointRepository();
 
-      final GameSession session = _buildSession(
-        letters: const <String>['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'],
-        movesLeft: 5,
-        score: 11,
-        startedAt: fixedNow.subtract(const Duration(seconds: 45)),
-      );
+    final GameSession session = _buildSession(
+      letters: const <String>['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'],
+      movesLeft: 5,
+      score: 11,
+      startedAt: fixedNow.subtract(const Duration(seconds: 45)),
+    );
 
-      final GameController controller = GameController.fromSession(
-        session,
-        gameHistoryRepository: gameHistoryRepository,
-        sessionCheckpointRepository: checkpointRepository,
-        clock: () => fixedNow,
-      );
+    final GameController controller = GameController.fromSession(
+      session,
+      gameHistoryRepository: gameHistoryRepository,
+      sessionCheckpointRepository: checkpointRepository,
+      clock: () => fixedNow,
+    );
 
-      await tester.pumpWidget(_buildTestApp(controller));
-      await tester.pump();
-      await tester.tap(find.text('Oyunu Aç'));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 500));
+    await tester.pumpWidget(_buildTestApp(controller));
+    await tester.pump();
+    await tester.tap(find.text('Oyunu Aç'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
 
-      expect(await checkpointRepository.load(), isNotNull);
+    expect(await checkpointRepository.load(), isNotNull);
 
-      await tester.pageBack();
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 300));
+    await tester.pageBack();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
 
-      expect(find.text('Oyundan çıkılsın mı?'), findsOneWidget);
+    expect(find.text('Oyundan çıkılsın mı?'), findsOneWidget);
 
-      await tester.tap(find.text('Hayır'));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 300));
+    await tester.tap(find.text('Hayır'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
 
-      expect(find.text('home screen'), findsNothing);
-      expect(await gameHistoryRepository.loadResultsNewestFirst(), isEmpty);
-      expect(await checkpointRepository.load(), isNotNull);
+    expect(find.text('home screen'), findsNothing);
+    expect(await gameHistoryRepository.loadResultsNewestFirst(), isEmpty);
+    expect(await checkpointRepository.load(), isNotNull);
 
-      await tester.pageBack();
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 300));
-      await tester.tap(find.text('Evet'));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 300));
+    await tester.pageBack();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.tap(find.text('Evet'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
 
-      final List<GameResult> results =
-          await gameHistoryRepository.loadResultsNewestFirst();
-      expect(results, hasLength(1));
-      expect(results.single.score, 11);
-      expect(results.single.wordsFoundCount, 0);
-      expect(results.single.longestWord, isEmpty);
-      expect(results.single.duration, const Duration(seconds: 45));
-      expect(await checkpointRepository.load(), isNull);
-      expect(find.text('home screen'), findsOneWidget);
-    },
-  );
+    final List<GameResult> results = await gameHistoryRepository
+        .loadResultsNewestFirst();
+    expect(results, hasLength(1));
+    expect(results.single.score, 11);
+    expect(results.single.wordsFoundCount, 0);
+    expect(results.single.longestWord, isEmpty);
+    expect(results.single.duration, const Duration(seconds: 45));
+    expect(await checkpointRepository.load(), isNull);
+    expect(find.text('home screen'), findsOneWidget);
+  });
 }
 
 Widget _buildTestApp(GameController controller) {
-  return MaterialApp(
-    home: _GameHost(controller: controller),
-  );
+  return MaterialApp(home: _GameHost(controller: controller));
 }
 
 class _GameHost extends StatelessWidget {
@@ -290,11 +278,8 @@ GameSession _buildSession({
     ),
     board: List<BoardCell>.generate(
       letters.length,
-      (int index) => BoardCell(
-        row: index ~/ 3,
-        column: index % 3,
-        letter: letters[index],
-      ),
+      (int index) =>
+          BoardCell(row: index ~/ 3, column: index % 3, letter: letters[index]),
       growable: false,
     ),
     movesLeft: movesLeft,

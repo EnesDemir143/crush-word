@@ -7,10 +7,7 @@ import 'package:crush_word/src/core/gameplay/services/board_generator.dart';
 /// Contains the new board state after cells have been cleared,
 /// columns collapsed downward and empty positions refilled.
 class BoardResolveResult {
-  const BoardResolveResult({
-    required this.board,
-    required this.removedCells,
-  });
+  const BoardResolveResult({required this.board, required this.removedCells});
 
   /// The board after clear → gravity → refill.
   final List<BoardCell> board;
@@ -30,7 +27,7 @@ class BoardResolveResult {
 /// The resolver never touches session state directly.
 class BoardResolver {
   const BoardResolver({required BoardGenerator boardGenerator})
-      : _boardGenerator = boardGenerator;
+    : _boardGenerator = boardGenerator;
 
   final BoardGenerator _boardGenerator;
 
@@ -49,23 +46,17 @@ class BoardResolver {
     final Set<String> removedIds = selectedCellIds.toSet();
 
     final List<BoardCell> removedCells = board
-        .where(
-          (BoardCell cell) => removedIds.contains(cell.id),
-        )
+        .where((BoardCell cell) => removedIds.contains(cell.id))
         .toList(growable: false);
 
     // ── 2. Gravity — per column, bottom-up ──────────────────
     // Build a column-major structure for easy manipulation.
     final List<List<BoardCell?>> columns = List<List<BoardCell?>>.generate(
       gridSize,
-      (int col) => List<BoardCell?>.generate(
-        gridSize,
-        (int row) {
-          final BoardCell cell = _cellAt(board, row, col);
-          return removedIds.contains(cell.id) ? null : cell;
-        },
-        growable: true,
-      ),
+      (int col) => List<BoardCell?>.generate(gridSize, (int row) {
+        final BoardCell cell = _cellAt(board, row, col);
+        return removedIds.contains(cell.id) ? null : cell;
+      }, growable: true),
       growable: false,
     );
 
@@ -106,15 +97,10 @@ class BoardResolver {
       }
     }
 
-    return BoardResolveResult(
-      board: newBoard,
-      removedCells: removedCells,
-    );
+    return BoardResolveResult(board: newBoard, removedCells: removedCells);
   }
 
   BoardCell _cellAt(List<BoardCell> board, int row, int col) {
-    return board.firstWhere(
-      (BoardCell c) => c.row == row && c.column == col,
-    );
+    return board.firstWhere((BoardCell c) => c.row == row && c.column == col);
   }
 }

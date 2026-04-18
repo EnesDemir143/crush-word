@@ -46,10 +46,7 @@ class GameHeader extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 14,
-          vertical: 10,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -77,9 +74,7 @@ class GameHeader extends StatelessWidget {
                       lastWordScore: lastWordScore,
                     ),
                     const SizedBox(width: 8),
-                    _AnimatedMovesPill(
-                      movesLeft: movesLeft,
-                    ),
+                    _AnimatedMovesPill(movesLeft: movesLeft),
                   ],
                 ),
               ],
@@ -101,17 +96,13 @@ class GameHeader extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────
 
 class _AnimatedScorePill extends StatefulWidget {
-  const _AnimatedScorePill({
-    required this.score,
-    required this.lastWordScore,
-  });
+  const _AnimatedScorePill({required this.score, required this.lastWordScore});
 
   final int score;
   final int lastWordScore;
 
   @override
-  State<_AnimatedScorePill> createState() =>
-      _AnimatedScorePillState();
+  State<_AnimatedScorePill> createState() => _AnimatedScorePillState();
 }
 
 class _AnimatedScorePillState extends State<_AnimatedScorePill>
@@ -134,37 +125,31 @@ class _AnimatedScorePillState extends State<_AnimatedScorePill>
       vsync: this,
       duration: const Duration(milliseconds: 800),
     );
-    _floatOffset = Tween<Offset>(
-      begin: Offset.zero,
-      end: const Offset(0, -1.8),
-    ).animate(CurvedAnimation(
-      parent: _floatController,
-      curve: Curves.easeOutCubic,
-    ));
+    _floatOffset = Tween<Offset>(begin: Offset.zero, end: const Offset(0, -1.8))
+        .animate(
+          CurvedAnimation(parent: _floatController, curve: Curves.easeOutCubic),
+        );
     _floatOpacity = Tween<double>(begin: 1, end: 0).animate(
-      CurvedAnimation(
-        parent: _floatController,
-        curve: const Interval(0.5, 1),
-      ),
+      CurvedAnimation(parent: _floatController, curve: const Interval(0.5, 1)),
     );
 
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 350),
     );
-    _pulseScale = TweenSequence<double>(<TweenSequenceItem<double>>[
-      TweenSequenceItem<double>(
-        tween: Tween<double>(begin: 1, end: 1.25),
-        weight: 40,
-      ),
-      TweenSequenceItem<double>(
-        tween: Tween<double>(begin: 1.25, end: 1),
-        weight: 60,
-      ),
-    ]).animate(CurvedAnimation(
-      parent: _pulseController,
-      curve: Curves.easeOutCubic,
-    ));
+    _pulseScale =
+        TweenSequence<double>(<TweenSequenceItem<double>>[
+          TweenSequenceItem<double>(
+            tween: Tween<double>(begin: 1, end: 1.25),
+            weight: 40,
+          ),
+          TweenSequenceItem<double>(
+            tween: Tween<double>(begin: 1.25, end: 1),
+            weight: 60,
+          ),
+        ]).animate(
+          CurvedAnimation(parent: _pulseController, curve: Curves.easeOutCubic),
+        );
   }
 
   @override
@@ -207,10 +192,7 @@ class _AnimatedScorePillState extends State<_AnimatedScorePill>
               builder: (BuildContext context, Widget? child) {
                 return Positioned(
                   top: -8 + (_floatOffset.value.dy * 20),
-                  child: Opacity(
-                    opacity: _floatOpacity.value,
-                    child: child,
-                  ),
+                  child: Opacity(opacity: _floatOpacity.value, child: child),
                 );
               },
               child: Text(
@@ -226,10 +208,7 @@ class _AnimatedScorePillState extends State<_AnimatedScorePill>
           AnimatedBuilder(
             animation: _pulseController,
             builder: (BuildContext context, Widget? child) {
-              return Transform.scale(
-                scale: _pulseScale.value,
-                child: child,
-              );
+              return Transform.scale(scale: _pulseScale.value, child: child);
             },
             child: _MetricPill(
               icon: Icons.star_rounded,
@@ -249,8 +228,7 @@ class _AnimatedMovesPill extends StatefulWidget {
   final int movesLeft;
 
   @override
-  State<_AnimatedMovesPill> createState() =>
-      _AnimatedMovesPillState();
+  State<_AnimatedMovesPill> createState() => _AnimatedMovesPillState();
 }
 
 class _AnimatedMovesPillState extends State<_AnimatedMovesPill>
@@ -265,21 +243,19 @@ class _AnimatedMovesPillState extends State<_AnimatedMovesPill>
       vsync: this,
       duration: const Duration(milliseconds: 350),
     );
-    _pulseScale = TweenSequence<double>(
-      <TweenSequenceItem<double>>[
-        TweenSequenceItem<double>(
-          tween: Tween<double>(begin: 1, end: 1.2),
-          weight: 40,
-        ),
-        TweenSequenceItem<double>(
-          tween: Tween<double>(begin: 1.2, end: 1),
-          weight: 60,
-        ),
-      ],
-    ).animate(CurvedAnimation(
-      parent: _pulseController,
-      curve: Curves.easeOutCubic,
-    ));
+    _pulseScale =
+        TweenSequence<double>(<TweenSequenceItem<double>>[
+          TweenSequenceItem<double>(
+            tween: Tween<double>(begin: 1, end: 1.2),
+            weight: 40,
+          ),
+          TweenSequenceItem<double>(
+            tween: Tween<double>(begin: 1.2, end: 1),
+            weight: 60,
+          ),
+        ]).animate(
+          CurvedAnimation(parent: _pulseController, curve: Curves.easeOutCubic),
+        );
   }
 
   @override
@@ -301,16 +277,14 @@ class _AnimatedMovesPillState extends State<_AnimatedMovesPill>
   @override
   Widget build(BuildContext context) {
     final bool isCritical = widget.movesLeft <= 3;
-    final Color color =
-        isCritical ? const Color(0xFFB91C1C) : const Color(0xFF2E8B7A);
+    final Color color = isCritical
+        ? const Color(0xFFB91C1C)
+        : const Color(0xFF2E8B7A);
 
     return AnimatedBuilder(
       animation: _pulseController,
       builder: (BuildContext context, Widget? child) {
-        return Transform.scale(
-          scale: _pulseScale.value,
-          child: child,
-        );
+        return Transform.scale(scale: _pulseScale.value, child: child);
       },
       child: _MetricPill(
         icon: Icons.swipe_rounded,
@@ -340,10 +314,7 @@ class _PillBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(999),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 10,
-          vertical: 5,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -383,10 +354,7 @@ class _MetricPill extends StatelessWidget {
         borderRadius: BorderRadius.circular(999),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 12,
-          vertical: 6,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
@@ -419,10 +387,7 @@ class _ActiveWordStrip extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: <Color>[
-            Color(0xFF2E8B7A),
-            Color(0xFF1A5D57),
-          ],
+          colors: <Color>[Color(0xFF2E8B7A), Color(0xFF1A5D57)],
         ),
         borderRadius: BorderRadius.circular(14),
         boxShadow: <BoxShadow>[
@@ -434,10 +399,7 @@ class _ActiveWordStrip extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 14,
-          vertical: 8,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         child: Row(
           children: <Widget>[
             Icon(

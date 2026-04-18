@@ -90,10 +90,7 @@ class _HomeScreenState extends State<HomeScreen>
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 24,
-              vertical: 16,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
             child: Column(
               children: <Widget>[
                 // ── Username button ──────────────────────
@@ -108,15 +105,15 @@ class _HomeScreenState extends State<HomeScreen>
                         borderRadius: BorderRadius.circular(999),
                         color: Colors.white.withValues(alpha: 0.7),
                         border: Border.all(
-                          color: theme.colorScheme.primary
-                              .withValues(alpha: 0.08),
+                          color: theme.colorScheme.primary.withValues(
+                            alpha: 0.08,
+                          ),
                         ),
                       ),
                       child: InkWell(
                         key: const Key('home-username-button'),
                         borderRadius: BorderRadius.circular(999),
-                        onTap:
-                            _isSavingUsername ? null : _editUsername,
+                        onTap: _isSavingUsername ? null : _editUsername,
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 14,
@@ -129,25 +126,22 @@ class _HomeScreenState extends State<HomeScreen>
                                 const SizedBox(
                                   width: 16,
                                   height: 16,
-                                  child:
-                                      CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      ),
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
                                 )
                               else
                                 Icon(
                                   Icons.person_rounded,
                                   size: 16,
-                                  color:
-                                      theme.colorScheme.primary,
+                                  color: theme.colorScheme.primary,
                                 ),
                               const SizedBox(width: 6),
                               Text(
                                 _user.username,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w700,
-                                  color:
-                                      theme.colorScheme.primary,
+                                  color: theme.colorScheme.primary,
                                   fontSize: 13,
                                 ),
                               ),
@@ -155,10 +149,9 @@ class _HomeScreenState extends State<HomeScreen>
                               Icon(
                                 Icons.edit_rounded,
                                 size: 12,
-                                color: theme
-                                    .colorScheme
-                                    .primary
-                                    .withValues(alpha: 0.5),
+                                color: theme.colorScheme.primary.withValues(
+                                  alpha: 0.5,
+                                ),
                               ),
                             ],
                           ),
@@ -210,12 +203,11 @@ class _HomeScreenState extends State<HomeScreen>
                             },
                             child: Text(
                               'Word Crush',
-                              style: theme.textTheme.displaySmall
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.w900,
-                                    color: Colors.white,
-                                    letterSpacing: -0.5,
-                                  ),
+                              style: theme.textTheme.displaySmall?.copyWith(
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white,
+                                letterSpacing: -0.5,
+                              ),
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -227,27 +219,27 @@ class _HomeScreenState extends State<HomeScreen>
                           intervalEnd: 0.6,
                           child: Text(
                             'Harfleri birleştir, kelimeleri keşfet!',
-                            style: theme.textTheme.bodyLarge
-                                ?.copyWith(
-                                  color: const Color(0xFF5A5245),
-                                  height: 1.4,
-                                ),
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              color: const Color(0xFF5A5245),
+                              height: 1.4,
+                            ),
                             textAlign: TextAlign.center,
                           ),
                         ),
                         const SizedBox(height: 32),
 
                         // ── Menu cards ──────────────────
-                        for (int i = 0;
-                            i < primaryDestinations.length;
-                            i++) ...<Widget>[
+                        for (
+                          int i = 0;
+                          i < primaryDestinations.length;
+                          i++
+                        ) ...<Widget>[
                           _FadeSlideIn(
                             animation: _staggerController,
                             intervalStart: 0.35 + (i * 0.12),
                             intervalEnd: 0.65 + (i * 0.12),
                             child: _MenuCard(
-                              destination:
-                                  primaryDestinations[i],
+                              destination: primaryDestinations[i],
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -278,8 +270,7 @@ class _MenuCard extends StatefulWidget {
 class _MenuCardState extends State<_MenuCard> {
   bool _pressed = false;
 
-  static const Map<String, List<Color>> _gradients =
-      <String, List<Color>>{
+  static const Map<String, List<Color>> _gradients = <String, List<Color>>{
     'newGame': <Color>[Color(0xFF1A5D57), Color(0xFF2E8B7A)],
     'scoreHistory': <Color>[Color(0xFF4A3B6B), Color(0xFF7C5DA6)],
     'market': <Color>[Color(0xFFB8860B), Color(0xFFD4A017)],
@@ -302,9 +293,7 @@ class _MenuCardState extends State<_MenuCard> {
       onTapDown: (_) => setState(() => _pressed = true),
       onTapUp: (_) {
         setState(() => _pressed = false);
-        Navigator.of(
-          context,
-        ).pushNamed(widget.destination.routeName);
+        Navigator.of(context).pushNamed(widget.destination.routeName);
       },
       onTapCancel: () => setState(() => _pressed = false),
       child: AnimatedScale(
@@ -328,10 +317,7 @@ class _MenuCardState extends State<_MenuCard> {
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 16,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             child: Row(
               children: <Widget>[
                 DecoratedBox(
@@ -351,8 +337,7 @@ class _MenuCardState extends State<_MenuCard> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
                         widget.destination.label,
@@ -366,8 +351,7 @@ class _MenuCardState extends State<_MenuCard> {
                       Text(
                         widget.destination.description,
                         style: TextStyle(
-                          color: Colors.white
-                              .withValues(alpha: 0.75),
+                          color: Colors.white.withValues(alpha: 0.75),
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                         ),

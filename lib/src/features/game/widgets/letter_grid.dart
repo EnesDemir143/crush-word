@@ -57,9 +57,7 @@ class _LetterGridState extends State<LetterGrid> {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final Map<String, int> selectionOrder = <String, int>{
-      for (int index = 0;
-          index < widget.selectedCellIds.length;
-          index += 1)
+      for (int index = 0; index < widget.selectedCellIds.length; index += 1)
         widget.selectedCellIds[index]: index,
     };
 
@@ -71,35 +69,24 @@ class _LetterGridState extends State<LetterGrid> {
       child: AspectRatio(
         aspectRatio: 1,
         child: LayoutBuilder(
-          builder: (
-            BuildContext context,
-            BoxConstraints constraints,
-          ) {
+          builder: (BuildContext context, BoxConstraints constraints) {
             final _GridLayout gridLayout = _GridLayout.fromSession(
               session: widget.session,
               size: constraints.biggest,
             );
 
             return ClipRRect(
-              borderRadius: BorderRadius.circular(
-                gridLayout.outerRadius,
-              ),
+              borderRadius: BorderRadius.circular(gridLayout.outerRadius),
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: <Color>[
-                      Color(0xFFF7F1E5),
-                      Color(0xFFE7D6BC),
-                    ],
+                    colors: <Color>[Color(0xFFF7F1E5), Color(0xFFE7D6BC)],
                   ),
-                  borderRadius: BorderRadius.circular(
-                    gridLayout.outerRadius,
-                  ),
+                  borderRadius: BorderRadius.circular(gridLayout.outerRadius),
                   border: Border.all(
-                    color: theme.colorScheme.primary
-                        .withValues(alpha: 0.10),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.10),
                   ),
                 ),
                 child: Padding(
@@ -108,16 +95,12 @@ class _LetterGridState extends State<LetterGrid> {
                     behavior: HitTestBehavior.opaque,
                     onPointerDown: (PointerDownEvent event) {
                       _handleSelectionStart(
-                        gridLayout.cellAtOffset(
-                          event.localPosition,
-                        ),
+                        gridLayout.cellAtOffset(event.localPosition),
                       );
                     },
                     onPointerMove: (PointerMoveEvent event) {
                       _handleSelectionUpdate(
-                        gridLayout.cellAtOffset(
-                          event.localPosition,
-                        ),
+                        gridLayout.cellAtOffset(event.localPosition),
                       );
                     },
                     onPointerUp: (_) => _finishSelection(),
@@ -135,41 +118,34 @@ class _LetterGridState extends State<LetterGrid> {
                         Positioned.fill(
                           child: CustomPaint(
                             painter: _SelectionPathPainter(
-                              selectedCells: widget.session.board
-                                  .where(
-                                    (BoardCell cell) =>
-                                        selectionOrder
-                                            .containsKey(cell.id),
-                                  )
-                                  .toList(growable: false)
-                                ..sort(
-                                  (BoardCell l, BoardCell r) =>
-                                      selectionOrder[l.id]!
-                                          .compareTo(
+                              selectedCells:
+                                  widget.session.board
+                                      .where(
+                                        (BoardCell cell) =>
+                                            selectionOrder.containsKey(cell.id),
+                                      )
+                                      .toList(growable: false)
+                                    ..sort(
+                                      (BoardCell l, BoardCell r) =>
+                                          selectionOrder[l.id]!.compareTo(
                                             selectionOrder[r.id]!,
                                           ),
-                                ),
+                                    ),
                               gridLayout: gridLayout,
                               color: theme.colorScheme.primary,
                             ),
                           ),
                         ),
-                        for (final BoardCell cell
-                            in widget.session.board)
+                        for (final BoardCell cell in widget.session.board)
                           Positioned.fromRect(
                             rect: gridLayout.rectFor(cell),
                             child: _AnimatedLetterCell(
-                              key: Key(
-                                'letter-cell-${cell.id}',
-                              ),
+                              key: Key('letter-cell-${cell.id}'),
                               cell: cell,
-                              selectionIndex:
-                                  selectionOrder[cell.id],
+                              selectionIndex: selectionOrder[cell.id],
                               cellExtent: gridLayout.cellExtent,
-                              showSelectionIndex:
-                                  gridLayout.showSelectionIndex,
-                              animate: _animatingCellIds
-                                  .contains(cell.id),
+                              showSelectionIndex: gridLayout.showSelectionIndex,
+                              animate: _animatingCellIds.contains(cell.id),
                               boardVersion: _boardVersion,
                             ),
                           ),
@@ -247,10 +223,7 @@ class _AnimatedLetterCell extends StatelessWidget {
       builder: (BuildContext context, double value, Widget? child) {
         return Opacity(
           opacity: value.clamp(0, 1),
-          child: Transform.scale(
-            scale: value.clamp(0, 1),
-            child: child,
-          ),
+          child: Transform.scale(scale: value.clamp(0, 1), child: child),
         );
       },
       child: _LetterCell(
@@ -298,89 +271,79 @@ class _LetterCell extends StatelessWidget {
           duration: const Duration(milliseconds: 140),
           curve: Curves.easeOutCubic,
           padding: EdgeInsets.all(contentPadding),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: isSelected
-                ? const <Color>[
-                    Color(0xFF1D6D67),
-                    Color(0xFF0F4E4A),
-                  ]
-                : const <Color>[
-                    Color(0xFFFFFCF7),
-                    Color(0xFFF2E6D5),
-                  ],
-          ),
-          borderRadius: BorderRadius.circular(borderRadius),
-          border: Border.all(
-            color: isSelected
-                ? const Color(0xFFFFE3A4)
-                : theme.colorScheme.primary
-                    .withValues(alpha: 0.08),
-            width: isSelected ? 2.2 : 1.1,
-          ),
-          boxShadow: <BoxShadow>[
-            BoxShadow(
-              color: const Color(0xFF0F172A).withValues(
-                alpha: isSelected ? 0.16 : 0.07,
-              ),
-              blurRadius: isSelected ? 14 : 8,
-              offset: const Offset(0, 5),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: isSelected
+                  ? const <Color>[Color(0xFF1D6D67), Color(0xFF0F4E4A)]
+                  : const <Color>[Color(0xFFFFFCF7), Color(0xFFF2E6D5)],
             ),
-          ],
-        ),
-        child: Stack(
-          children: <Widget>[
-            Center(
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text(
-                  cell.letter,
-                  maxLines: 1,
-                  style: TextStyle(
-                    color: isSelected
-                        ? Colors.white
-                        : const Color(0xFF2B2721),
-                    fontSize: fontSize,
-                    fontWeight: FontWeight.w900,
-                    height: 1,
+            borderRadius: BorderRadius.circular(borderRadius),
+            border: Border.all(
+              color: isSelected
+                  ? const Color(0xFFFFE3A4)
+                  : theme.colorScheme.primary.withValues(alpha: 0.08),
+              width: isSelected ? 2.2 : 1.1,
+            ),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: const Color(
+                  0xFF0F172A,
+                ).withValues(alpha: isSelected ? 0.16 : 0.07),
+                blurRadius: isSelected ? 14 : 8,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Stack(
+            children: <Widget>[
+              Center(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    cell.letter,
+                    maxLines: 1,
+                    style: TextStyle(
+                      color: isSelected
+                          ? Colors.white
+                          : const Color(0xFF2B2721),
+                      fontSize: fontSize,
+                      fontWeight: FontWeight.w900,
+                      height: 1,
+                    ),
                   ),
                 ),
               ),
-            ),
-            if (isSelected && showSelectionIndex)
-              Positioned(
-                right: math.max(4, cellExtent * 0.08),
-                top: math.max(4, cellExtent * 0.08),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.18),
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal:
-                          math.max(4, cellExtent * 0.08),
-                      vertical:
-                          math.max(2, cellExtent * 0.03),
+              if (isSelected && showSelectionIndex)
+                Positioned(
+                  right: math.max(4, cellExtent * 0.08),
+                  top: math.max(4, cellExtent * 0.08),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.18),
+                      borderRadius: BorderRadius.circular(999),
                     ),
-                    child: Text(
-                      '${selectionIndex! + 1}',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize:
-                            (cellExtent * 0.18).clamp(9, 13),
-                        fontWeight: FontWeight.w800,
-                        height: 1,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: math.max(4, cellExtent * 0.08),
+                        vertical: math.max(2, cellExtent * 0.03),
+                      ),
+                      child: Text(
+                        '${selectionIndex! + 1}',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: (cellExtent * 0.18).clamp(9, 13),
+                          fontWeight: FontWeight.w800,
+                          height: 1,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
-      ),
       ),
     );
   }
@@ -405,15 +368,13 @@ class _SelectionPathPainter extends CustomPainter {
 
     final Paint underlay = Paint()
       ..color = Colors.white.withValues(alpha: 0.75)
-      ..strokeWidth =
-          math.max(6, gridLayout.cellExtent * 0.20)
+      ..strokeWidth = math.max(6, gridLayout.cellExtent * 0.20)
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
 
     final Paint overlay = Paint()
       ..color = color.withValues(alpha: 0.42)
-      ..strokeWidth =
-          math.max(4, gridLayout.cellExtent * 0.12)
+      ..strokeWidth = math.max(4, gridLayout.cellExtent * 0.12)
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
 
@@ -433,9 +394,7 @@ class _SelectionPathPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(
-    covariant _SelectionPathPainter oldDelegate,
-  ) {
+  bool shouldRepaint(covariant _SelectionPathPainter oldDelegate) {
     return oldDelegate.selectedCells != selectedCells ||
         oldDelegate.gridLayout != gridLayout ||
         oldDelegate.color != color;
@@ -443,10 +402,7 @@ class _SelectionPathPainter extends CustomPainter {
 }
 
 class _BoardTexturePainter extends CustomPainter {
-  const _BoardTexturePainter({
-    required this.gridLayout,
-    required this.color,
-  });
+  const _BoardTexturePainter({required this.gridLayout, required this.color});
 
   final _GridLayout gridLayout;
   final Color color;
@@ -457,31 +413,18 @@ class _BoardTexturePainter extends CustomPainter {
       ..color = color.withValues(alpha: 0.05)
       ..strokeWidth = 1;
 
-    for (int index = 1;
-        index < gridLayout.session.gridSize;
-        index += 1) {
+    for (int index = 1; index < gridLayout.session.gridSize; index += 1) {
       final double offset =
           index * (gridLayout.cellExtent + gridLayout.gap) -
-              (gridLayout.gap / 2);
-      canvas.drawLine(
-        Offset(offset, 0),
-        Offset(offset, size.height),
-        paint,
-      );
-      canvas.drawLine(
-        Offset(0, offset),
-        Offset(size.width, offset),
-        paint,
-      );
+          (gridLayout.gap / 2);
+      canvas.drawLine(Offset(offset, 0), Offset(offset, size.height), paint);
+      canvas.drawLine(Offset(0, offset), Offset(size.width, offset), paint);
     }
   }
 
   @override
-  bool shouldRepaint(
-    covariant _BoardTexturePainter oldDelegate,
-  ) {
-    return oldDelegate.gridLayout != gridLayout ||
-        oldDelegate.color != color;
+  bool shouldRepaint(covariant _BoardTexturePainter oldDelegate) {
+    return oldDelegate.gridLayout != gridLayout || oldDelegate.color != color;
   }
 }
 
@@ -513,8 +456,7 @@ class _GridLayout {
       _ => 2.0,
     };
     final double usableSide = side - (outerPadding * 2);
-    final double cellExtent =
-        (usableSide - (gap * (gridSize - 1))) / gridSize;
+    final double cellExtent = (usableSide - (gap * (gridSize - 1))) / gridSize;
     final Map<String, Rect> rects = <String, Rect>{
       for (final BoardCell cell in session.board)
         cell.id: Rect.fromLTWH(

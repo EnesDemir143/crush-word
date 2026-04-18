@@ -98,8 +98,7 @@ class GameSession {
     final Object? boardJson = json['board'];
     final int? movesLeft = (json['movesLeft'] as num?)?.toInt();
     final int score = (json['score'] as num?)?.toInt() ?? 0;
-    final int wordsFoundCount =
-        (json['wordsFoundCount'] as num?)?.toInt() ?? 0;
+    final int wordsFoundCount = (json['wordsFoundCount'] as num?)?.toInt() ?? 0;
     final String longestWord = (json['longestWord'] as String?)?.trim() ?? '';
     final String? startedAtRaw = json['startedAt'] as String?;
     final Object? selectedCellIdsJson = json['selectedCellIds'];

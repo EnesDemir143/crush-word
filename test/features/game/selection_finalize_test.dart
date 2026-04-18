@@ -17,9 +17,7 @@ void main() {
       dictionaryRepository = DictionaryRepository(
         assetLoader: (_) async => 'bal\nkale\nsoru\nçay\ntest',
       );
-      wordValidator = WordValidator(
-        dictionaryRepository: dictionaryRepository,
-      );
+      wordValidator = WordValidator(dictionaryRepository: dictionaryRepository);
     });
 
     test('invalid attempt decrements remaining moves by 1', () async {
@@ -57,8 +55,7 @@ void main() {
         wordValidator: wordValidator,
       );
 
-      final List<BoardCell> originalBoard =
-          List<BoardCell>.from(session.board);
+      final List<BoardCell> originalBoard = List<BoardCell>.from(session.board);
 
       // Select 'XYZ' — not in dictionary.
       controller.startSelection(session.cellAt(row: 0, column: 0));
@@ -258,10 +255,7 @@ void main() {
   });
 }
 
-GameSession _buildSession({
-  required List<String> letters,
-  int movesLeft = 20,
-}) {
+GameSession _buildSession({required List<String> letters, int movesLeft = 20}) {
   // Always build a 3x3 grid — 9 cells required.
   assert(letters.length == 9);
 

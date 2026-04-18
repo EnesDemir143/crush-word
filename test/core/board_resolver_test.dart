@@ -53,9 +53,7 @@ List<BoardCell> _board3x3(List<List<String>> rows) {
 /// board list.
 String _letterAt(List<BoardCell> board, int row, int col) {
   return board
-      .firstWhere(
-        (BoardCell c) => c.row == row && c.column == col,
-      )
+      .firstWhere((BoardCell c) => c.row == row && c.column == col)
       .letter;
 }
 
@@ -77,9 +75,7 @@ void main() {
 
       // Remove center cell E (1:1).
       final BoardResolver resolver = BoardResolver(
-        boardGenerator: BoardGenerator(
-          randomSource: _FixedRandom(<int>[0]),
-        ),
+        boardGenerator: BoardGenerator(randomSource: _FixedRandom(<int>[0])),
       );
       final GameBoardGenerationRules rules = _singleLetterRules('X');
 
@@ -111,9 +107,7 @@ void main() {
       ]);
 
       final BoardResolver resolver = BoardResolver(
-        boardGenerator: BoardGenerator(
-          randomSource: _FixedRandom(<int>[0]),
-        ),
+        boardGenerator: BoardGenerator(randomSource: _FixedRandom(<int>[0])),
       );
       final GameBoardGenerationRules rules = _singleLetterRules('X');
 
@@ -152,9 +146,7 @@ void main() {
       ]);
 
       final BoardResolver resolver = BoardResolver(
-        boardGenerator: BoardGenerator(
-          randomSource: _FixedRandom(<int>[0]),
-        ),
+        boardGenerator: BoardGenerator(randomSource: _FixedRandom(<int>[0])),
       );
       final GameBoardGenerationRules rules = _singleLetterRules('Z');
 
@@ -184,9 +176,7 @@ void main() {
       ]);
 
       final BoardResolver resolver = BoardResolver(
-        boardGenerator: BoardGenerator(
-          randomSource: _FixedRandom(<int>[0]),
-        ),
+        boardGenerator: BoardGenerator(randomSource: _FixedRandom(<int>[0])),
       );
       final GameBoardGenerationRules rules = _singleLetterRules('N');
 
@@ -216,9 +206,7 @@ void main() {
       ]);
 
       final BoardResolver resolver = BoardResolver(
-        boardGenerator: BoardGenerator(
-          randomSource: _FixedRandom(<int>[0]),
-        ),
+        boardGenerator: BoardGenerator(randomSource: _FixedRandom(<int>[0])),
       );
       final GameBoardGenerationRules rules = _singleLetterRules('W');
 
@@ -259,9 +247,7 @@ void main() {
       ]);
 
       final BoardResolver resolver = BoardResolver(
-        boardGenerator: BoardGenerator(
-          randomSource: _FixedRandom(<int>[0]),
-        ),
+        boardGenerator: BoardGenerator(randomSource: _FixedRandom(<int>[0])),
       );
       final GameBoardGenerationRules rules = _singleLetterRules('Q');
 
@@ -285,9 +271,7 @@ void main() {
       ]);
 
       final BoardResolver resolver = BoardResolver(
-        boardGenerator: BoardGenerator(
-          randomSource: _FixedRandom(<int>[0]),
-        ),
+        boardGenerator: BoardGenerator(randomSource: _FixedRandom(<int>[0])),
       );
       final GameBoardGenerationRules rules = _singleLetterRules('X');
 
@@ -309,9 +293,7 @@ void main() {
       ]);
 
       final BoardResolver resolver = BoardResolver(
-        boardGenerator: BoardGenerator(
-          randomSource: _FixedRandom(<int>[0]),
-        ),
+        boardGenerator: BoardGenerator(randomSource: _FixedRandom(<int>[0])),
       );
       final GameBoardGenerationRules rules = _singleLetterRules('X');
 
@@ -329,8 +311,7 @@ void main() {
       }
 
       // Each (row, col) pair should appear exactly once.
-      final Set<String> ids =
-          result.board.map((BoardCell c) => c.id).toSet();
+      final Set<String> ids = result.board.map((BoardCell c) => c.id).toSet();
       expect(ids.length, 9);
     });
 
@@ -342,9 +323,7 @@ void main() {
       ]);
 
       final BoardResolver resolver = BoardResolver(
-        boardGenerator: BoardGenerator(
-          randomSource: _FixedRandom(<int>[0]),
-        ),
+        boardGenerator: BoardGenerator(randomSource: _FixedRandom(<int>[0])),
       );
       final GameBoardGenerationRules rules = _singleLetterRules('X');
 
@@ -356,8 +335,9 @@ void main() {
       );
 
       expect(result.removedCells.length, 2);
-      final Set<String> removedLetters =
-          result.removedCells.map((BoardCell c) => c.letter).toSet();
+      final Set<String> removedLetters = result.removedCells
+          .map((BoardCell c) => c.letter)
+          .toSet();
       expect(removedLetters, containsAll(<String>['A', 'I']));
     });
 
@@ -369,9 +349,7 @@ void main() {
       ]);
 
       final BoardResolver resolver = BoardResolver(
-        boardGenerator: BoardGenerator(
-          randomSource: _FixedRandom(<int>[0]),
-        ),
+        boardGenerator: BoardGenerator(randomSource: _FixedRandom(<int>[0])),
       );
       final GameBoardGenerationRules rules = _singleLetterRules('X');
 
@@ -386,10 +364,7 @@ void main() {
       expect(result.removedCells, isEmpty);
       for (int row = 0; row < 3; row++) {
         for (int col = 0; col < 3; col++) {
-          expect(
-            _letterAt(result.board, row, col),
-            _letterAt(board, row, col),
-          );
+          expect(_letterAt(result.board, row, col), _letterAt(board, row, col));
         }
       }
     });

@@ -39,9 +39,8 @@ const Map<String, int> _canonicalScores = <String, int>{
   'Z': 4,
 };
 
-ScoringEngine _engine() => ScoringEngine(
-      scoringConfig: ScoringConfig(letterScores: _canonicalScores),
-    );
+ScoringEngine _engine() =>
+    ScoringEngine(scoringConfig: ScoringConfig(letterScores: _canonicalScores));
 
 void main() {
   group('ScoringEngine', () {
@@ -153,14 +152,9 @@ void main() {
     });
 
     test('fromJson parses correctly', () {
-      final ScoringConfig config = ScoringConfig.fromJson(
-        <String, dynamic>{
-          'letterScores': <String, dynamic>{
-            'A': 1,
-            'B': 3,
-          },
-        },
-      );
+      final ScoringConfig config = ScoringConfig.fromJson(<String, dynamic>{
+        'letterScores': <String, dynamic>{'A': 1, 'B': 3},
+      });
       expect(config.scoreOf('A'), 1);
       expect(config.scoreOf('B'), 3);
     });

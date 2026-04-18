@@ -87,8 +87,7 @@ class _NewGameScreenState extends State<NewGameScreen> {
               ),
               leading: _controller.canStepBack
                   ? IconButton(
-                      onPressed:
-                          _controller.returnToDifficultySelection,
+                      onPressed: _controller.returnToDifficultySelection,
                       icon: const Icon(Icons.arrow_back_rounded),
                     )
                   : null,
@@ -185,8 +184,7 @@ class _DifficultyStep extends StatelessWidget {
   final List<GameSetupOption> options;
   final ValueChanged<GameSetupOption> onOptionSelected;
 
-  static const Map<String, List<Color>> _gradients =
-      <String, List<Color>>{
+  static const Map<String, List<Color>> _gradients = <String, List<Color>>{
     'easy': <Color>[Color(0xFF2E8B7A), Color(0xFF3FAF9A)],
     'medium': <Color>[Color(0xFFD4A017), Color(0xFFE6B533)],
     'hard': <Color>[Color(0xFFB03A3A), Color(0xFFD04545)],
@@ -215,16 +213,11 @@ class _DifficultyStep extends StatelessWidget {
         const SizedBox(height: 24),
         for (final GameSetupOption option in options) ...[
           _DifficultyCard(
-            key: Key(
-              'setup-difficulty-${option.difficulty.name}',
-            ),
+            key: Key('setup-difficulty-${option.difficulty.name}'),
             option: option,
             gradientColors:
                 _gradients[option.difficulty.name] ??
-                const <Color>[
-                  Color(0xFF2E8B7A),
-                  Color(0xFF3FAF9A),
-                ],
+                const <Color>[Color(0xFF2E8B7A), Color(0xFF3FAF9A)],
             onTap: () => onOptionSelected(option),
           ),
           const SizedBox(height: 14),
@@ -276,18 +269,14 @@ class _DifficultyCardState extends State<_DifficultyCard> {
             ),
             boxShadow: <BoxShadow>[
               BoxShadow(
-                color: widget.gradientColors.first
-                    .withValues(alpha: 0.25),
+                color: widget.gradientColors.first.withValues(alpha: 0.25),
                 blurRadius: 16,
                 offset: const Offset(0, 6),
               ),
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 18,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
             child: Row(
               children: <Widget>[
                 DecoratedBox(
@@ -307,8 +296,7 @@ class _DifficultyCardState extends State<_DifficultyCard> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
                         widget.option.gridLabel,
@@ -322,8 +310,7 @@ class _DifficultyCardState extends State<_DifficultyCard> {
                       Text(
                         widget.option.label,
                         style: TextStyle(
-                          color: Colors.white
-                              .withValues(alpha: 0.8),
+                          color: Colors.white.withValues(alpha: 0.8),
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                         ),
@@ -333,8 +320,7 @@ class _DifficultyCardState extends State<_DifficultyCard> {
                 ),
                 Icon(
                   Icons.chevron_right_rounded,
-                  color:
-                      Colors.white.withValues(alpha: 0.6),
+                  color: Colors.white.withValues(alpha: 0.6),
                 ),
               ],
             ),
@@ -380,10 +366,7 @@ class _MoveCountStep extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 14,
-              vertical: 10,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
@@ -406,12 +389,9 @@ class _MoveCountStep extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-        for (final GameMoveCountOption moveCountOption
-            in moveCountOptions) ...[
+        for (final GameMoveCountOption moveCountOption in moveCountOptions) ...[
           _MoveCountCard(
-            key: Key(
-              'setup-move-${moveCountOption.moveLimit}',
-            ),
+            key: Key('setup-move-${moveCountOption.moveLimit}'),
             moveCountOption: moveCountOption,
             onTap: () => onMoveSelected(moveCountOption),
           ),
@@ -457,32 +437,24 @@ class _MoveCountCardState extends State<_MoveCountCard> {
             borderRadius: BorderRadius.circular(18),
             color: Colors.white,
             border: Border.all(
-              color: const Color(0xFF1A5D57)
-                  .withValues(alpha: 0.12),
+              color: const Color(0xFF1A5D57).withValues(alpha: 0.12),
             ),
             boxShadow: <BoxShadow>[
               BoxShadow(
-                color: const Color(0xFF0F172A)
-                    .withValues(alpha: 0.06),
+                color: const Color(0xFF0F172A).withValues(alpha: 0.06),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
             ],
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 16,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             child: Row(
               children: <Widget>[
                 DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: <Color>[
-                        Color(0xFF1A5D57),
-                        Color(0xFF2E8B7A),
-                      ],
+                      colors: <Color>[Color(0xFF1A5D57), Color(0xFF2E8B7A)],
                     ),
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -498,8 +470,7 @@ class _MoveCountCardState extends State<_MoveCountCard> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
                         '${widget.moveCountOption.moveLimit} Hamle',
@@ -539,10 +510,7 @@ class _MoveCountCardState extends State<_MoveCountCard> {
 // ─────────────────────────────────────────────────────────────
 
 class GameSessionBootstrapScreen extends StatelessWidget {
-  const GameSessionBootstrapScreen({
-    super.key,
-    required this.config,
-  });
+  const GameSessionBootstrapScreen({super.key, required this.config});
 
   final GameConfig config;
 
@@ -576,9 +544,7 @@ class GameSessionBootstrapScreen extends StatelessWidget {
                 const SizedBox(height: 12),
                 Text(
                   'Board foundation bir sonraki planda burada yükselecek. Bu planda seçilen oturum ayarları güvenilir şekilde oyuna aktarıldı.',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    height: 1.5,
-                  ),
+                  style: theme.textTheme.bodyLarge?.copyWith(height: 1.5),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
@@ -587,10 +553,7 @@ class GameSessionBootstrapScreen extends StatelessWidget {
                   value: config.difficultyLabel,
                 ),
                 const SizedBox(height: 12),
-                _SessionSummaryRow(
-                  label: 'Grid',
-                  value: config.gridLabel,
-                ),
+                _SessionSummaryRow(label: 'Grid', value: config.gridLabel),
                 const SizedBox(height: 12),
                 _SessionSummaryRow(
                   label: 'Hamle',
@@ -606,10 +569,7 @@ class GameSessionBootstrapScreen extends StatelessWidget {
 }
 
 class _SessionSummaryRow extends StatelessWidget {
-  const _SessionSummaryRow({
-    required this.label,
-    required this.value,
-  });
+  const _SessionSummaryRow({required this.label, required this.value});
 
   final String label;
   final String value;
@@ -624,10 +584,7 @@ class _SessionSummaryRow extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
           children: [
             Expanded(

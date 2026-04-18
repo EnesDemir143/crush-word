@@ -14,10 +14,7 @@ enum WordValidationReason {
 
 /// Immutable result of a single word validation attempt.
 class WordValidationResult {
-  const WordValidationResult({
-    required this.reason,
-    required this.word,
-  });
+  const WordValidationResult({required this.reason, required this.word});
 
   final WordValidationReason reason;
 
@@ -36,7 +33,7 @@ class WordValidationResult {
 /// owns the side-effects.
 class WordValidator {
   const WordValidator({required DictionaryRepository dictionaryRepository})
-      : _dictionaryRepository = dictionaryRepository;
+    : _dictionaryRepository = dictionaryRepository;
 
   final DictionaryRepository _dictionaryRepository;
 

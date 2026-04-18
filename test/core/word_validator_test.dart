@@ -6,9 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 DictionaryRepository _createRepository(Set<String> words) {
   final String dictionaryContent = words.join('\n');
 
-  return DictionaryRepository(
-    assetLoader: (_) async => dictionaryContent,
-  );
+  return DictionaryRepository(assetLoader: (_) async => dictionaryContent);
 }
 
 void main() {
@@ -33,9 +31,10 @@ void main() {
     });
 
     test('rejects selections shorter than 3 letters', () async {
-      final WordValidationResult result = await validator.validate(
-        <String>['A', 'B'],
-      );
+      final WordValidationResult result = await validator.validate(<String>[
+        'A',
+        'B',
+      ]);
 
       expect(result.reason, WordValidationReason.tooShort);
       expect(result.isValid, isFalse);
@@ -43,36 +42,39 @@ void main() {
     });
 
     test('rejects single letter selection', () async {
-      final WordValidationResult result = await validator.validate(
-        <String>['X'],
-      );
+      final WordValidationResult result = await validator.validate(<String>[
+        'X',
+      ]);
 
       expect(result.reason, WordValidationReason.tooShort);
       expect(result.isValid, isFalse);
     });
 
     test('rejects empty selection', () async {
-      final WordValidationResult result = await validator.validate(
-        <String>[],
-      );
+      final WordValidationResult result = await validator.validate(<String>[]);
 
       expect(result.reason, WordValidationReason.tooShort);
       expect(result.isValid, isFalse);
     });
 
     test('returns notInDictionary for unknown 3+ letter word', () async {
-      final WordValidationResult result = await validator.validate(
-        <String>['X', 'Y', 'Z'],
-      );
+      final WordValidationResult result = await validator.validate(<String>[
+        'X',
+        'Y',
+        'Z',
+      ]);
 
       expect(result.reason, WordValidationReason.notInDictionary);
       expect(result.isValid, isFalse);
     });
 
     test('returns valid for a known dictionary word', () async {
-      final WordValidationResult result = await validator.validate(
-        <String>['S', 'O', 'R', 'U'],
-      );
+      final WordValidationResult result = await validator.validate(<String>[
+        'S',
+        'O',
+        'R',
+        'U',
+      ]);
 
       expect(result.reason, WordValidationReason.valid);
       expect(result.isValid, isTrue);
@@ -81,9 +83,12 @@ void main() {
 
     test('normalizes Turkish uppercase İ to lowercase i', () async {
       // 'ŞİİR' should normalize to 'şiir' which is in the dictionary.
-      final WordValidationResult result = await validator.validate(
-        <String>['Ş', 'İ', 'İ', 'R'],
-      );
+      final WordValidationResult result = await validator.validate(<String>[
+        'Ş',
+        'İ',
+        'İ',
+        'R',
+      ]);
 
       expect(result.reason, WordValidationReason.valid);
       expect(result.word, 'şiir');
@@ -91,45 +96,56 @@ void main() {
 
     test('normalizes Turkish I to ı correctly', () async {
       // 'ARI' with dotless I should normalize to 'arı'.
-      final WordValidationResult result = await validator.validate(
-        <String>['A', 'R', 'I'],
-      );
+      final WordValidationResult result = await validator.validate(<String>[
+        'A',
+        'R',
+        'I',
+      ]);
 
       expect(result.reason, WordValidationReason.valid);
       expect(result.word, 'arı');
     });
 
     test('handles Turkish Ü/Ö/Ç/Ğ correctly', () async {
-      final WordValidationResult result = await validator.validate(
-        <String>['Ü', 'Z', 'Ü', 'M'],
-      );
+      final WordValidationResult result = await validator.validate(<String>[
+        'Ü',
+        'Z',
+        'Ü',
+        'M',
+      ]);
 
       expect(result.reason, WordValidationReason.valid);
       expect(result.word, 'üzüm');
     });
 
     test('normalizes Ç in ÇAY', () async {
-      final WordValidationResult result = await validator.validate(
-        <String>['Ç', 'A', 'Y'],
-      );
+      final WordValidationResult result = await validator.validate(<String>[
+        'Ç',
+        'A',
+        'Y',
+      ]);
 
       expect(result.reason, WordValidationReason.valid);
       expect(result.word, 'çay');
     });
 
     test('normalizes Ö in GÖL', () async {
-      final WordValidationResult result = await validator.validate(
-        <String>['G', 'Ö', 'L'],
-      );
+      final WordValidationResult result = await validator.validate(<String>[
+        'G',
+        'Ö',
+        'L',
+      ]);
 
       expect(result.reason, WordValidationReason.valid);
       expect(result.word, 'göl');
     });
 
     test('word field is populated even for rejected results', () async {
-      final WordValidationResult result = await validator.validate(
-        <String>['Q', 'W', 'E'],
-      );
+      final WordValidationResult result = await validator.validate(<String>[
+        'Q',
+        'W',
+        'E',
+      ]);
 
       expect(result.word, 'qwe');
       expect(result.isRejected, isTrue);

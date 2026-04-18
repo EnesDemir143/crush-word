@@ -31,7 +31,7 @@ class ScoringResult {
 /// caller owns side-effects.
 class ScoringEngine {
   const ScoringEngine({required ScoringConfig scoringConfig})
-      : _config = scoringConfig;
+    : _config = scoringConfig;
 
   final ScoringConfig _config;
 
@@ -51,10 +51,7 @@ class ScoringEngine {
     return ScoringResult(
       word: upper,
       letterScores: perLetter,
-      totalScore: perLetter.fold<int>(
-        0,
-        (int sum, int v) => sum + v,
-      ),
+      totalScore: perLetter.fold<int>(0, (int sum, int v) => sum + v),
     );
   }
 }

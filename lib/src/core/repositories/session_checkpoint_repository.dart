@@ -21,37 +21,30 @@ class SessionCheckpointRepository {
   Future<void> save(GameSession session) async {
     final Database database = await _database.database;
     final DateTime now = _clock();
-    final int elapsedSeconds = _elapsedSecondsFor(
-      session: session,
-      now: now,
-    );
+    final int elapsedSeconds = _elapsedSecondsFor(session: session, now: now);
 
-    await database.insert(
-      'session_checkpoint',
-      <String, Object?>{
-        'checkpoint_id': activeCheckpointId,
-        'game_config_json': jsonEncode(session.config.toJson()),
-        'board_json': jsonEncode(
-          session.board
-              .map((BoardCell cell) => cell.toJson())
-              .toList(growable: false),
-        ),
-        'remaining_moves': session.movesLeft,
-        'elapsed_seconds': elapsedSeconds,
-        'current_score': session.score,
-        'words_found_count': session.wordsFoundCount,
-        'longest_word': session.longestWord,
-        'selected_path_json': jsonEncode(session.selectedCellIds),
-        'power_tiles_json': jsonEncode(
-          session.board
-              .where((BoardCell cell) => cell.power != null)
-              .map((BoardCell cell) => cell.toJson())
-              .toList(growable: false),
-        ),
-        'updated_at': now.toIso8601String(),
-      },
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    await database.insert('session_checkpoint', <String, Object?>{
+      'checkpoint_id': activeCheckpointId,
+      'game_config_json': jsonEncode(session.config.toJson()),
+      'board_json': jsonEncode(
+        session.board
+            .map((BoardCell cell) => cell.toJson())
+            .toList(growable: false),
+      ),
+      'remaining_moves': session.movesLeft,
+      'elapsed_seconds': elapsedSeconds,
+      'current_score': session.score,
+      'words_found_count': session.wordsFoundCount,
+      'longest_word': session.longestWord,
+      'selected_path_json': jsonEncode(session.selectedCellIds),
+      'power_tiles_json': jsonEncode(
+        session.board
+            .where((BoardCell cell) => cell.power != null)
+            .map((BoardCell cell) => cell.toJson())
+            .toList(growable: false),
+      ),
+      'updated_at': now.toIso8601String(),
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<GameSession?> load() async {
@@ -68,8 +61,7 @@ class SessionCheckpointRepository {
     }
 
     final Map<String, Object?> row = rows.single;
-    final int elapsedSeconds =
-        (row['elapsed_seconds'] as num?)?.toInt() ?? 0;
+    final int elapsedSeconds = (row['elapsed_seconds'] as num?)?.toInt() ?? 0;
 
     return GameSession(
       config: GameConfig.fromJson(

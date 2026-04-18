@@ -51,10 +51,7 @@ class _MarketScreenPlaceholder extends StatelessWidget {
                 DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: <Color>[
-                        Color(0xFFB8860B),
-                        Color(0xFFD4A017),
-                      ],
+                      colors: <Color>[Color(0xFFB8860B), Color(0xFFD4A017)],
                     ),
                     borderRadius: BorderRadius.circular(24),
                   ),

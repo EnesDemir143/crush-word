@@ -62,9 +62,7 @@ class GameHistoryRepository {
       score: (row['score'] as num).toInt(),
       wordsFoundCount: (row['words_found_count'] as num).toInt(),
       longestWord: (row['longest_word'] as String?)?.trim() ?? '',
-      duration: Duration(
-        seconds: (row['duration_seconds'] as num).toInt(),
-      ),
+      duration: Duration(seconds: (row['duration_seconds'] as num).toInt()),
       completedAt: DateTime.parse(row['completed_at'] as String),
     );
   }

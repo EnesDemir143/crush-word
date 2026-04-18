@@ -98,10 +98,9 @@ class GameController extends ChangeNotifier {
   /// Lazily initialised word validator — uses the injected instance or
   /// creates one from the dictionary repository.
   WordValidator? _wordValidator;
-  WordValidator get _validator =>
-      _wordValidator ??= WordValidator(
-        dictionaryRepository: _dictionaryRepository,
-      );
+  WordValidator get _validator => _wordValidator ??= WordValidator(
+    dictionaryRepository: _dictionaryRepository,
+  );
 
   /// Lazily initialised scoring engine — uses the injected instance
   /// or creates one from the loaded rules config.
@@ -110,9 +109,7 @@ class GameController extends ChangeNotifier {
   /// Lazily initialised board resolver.
   BoardResolver? _boardResolver;
   BoardResolver get _resolver =>
-      _boardResolver ??= BoardResolver(
-        boardGenerator: _boardGenerator,
-      );
+      _boardResolver ??= BoardResolver(boardGenerator: _boardGenerator);
 
   /// Cached rules config set during [load] — needed for board
   /// refill letter generation.
@@ -187,8 +184,7 @@ class GameController extends ChangeNotifier {
 
     try {
       final GameRulesConfig rules = await _rulesLoader.load();
-      final Set<String> dictionary =
-          await _dictionaryRepository.loadWords();
+      final Set<String> dictionary = await _dictionaryRepository.loadWords();
 
       // Cache rules for later use (scoring + board refill).
       _cachedRules = rules;
@@ -196,9 +192,7 @@ class GameController extends ChangeNotifier {
       // Initialise scoring engine from loaded config if not
       // injected via constructor.
       if (rules.scoring != null && _scoringEngine == null) {
-        _scoringEngine = ScoringEngine(
-          scoringConfig: rules.scoring!,
-        );
+        _scoringEngine = ScoringEngine(scoringConfig: rules.scoring!);
       }
 
       GameSession session = _boardGenerator.createSession(

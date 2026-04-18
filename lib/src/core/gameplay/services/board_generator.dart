@@ -57,8 +57,7 @@ class BoardGenerator {
       cursor += group.weight;
 
       if (threshold < cursor) {
-        final int letterIndex =
-            _randomSource.nextInt(group.letters.length);
+        final int letterIndex = _randomSource.nextInt(group.letters.length);
         return group.letters[letterIndex];
       }
     }

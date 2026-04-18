@@ -7,7 +7,7 @@ import 'package:crush_word/src/core/models/game_difficulty.dart';
 /// construction time so the table cannot drift at runtime.
 class ScoringConfig {
   ScoringConfig({required Map<String, int> letterScores})
-      : letterScores = Map<String, int>.unmodifiable(letterScores);
+    : letterScores = Map<String, int>.unmodifiable(letterScores);
 
   /// Uppercase letter → point value.
   final Map<String, int> letterScores;
@@ -16,8 +16,7 @@ class ScoringConfig {
   ///
   /// Falls back to 0 when the letter is not in the table
   /// (e.g. a wildcard tile in later phases).
-  int scoreOf(String letter) =>
-      letterScores[letter.toUpperCase()] ?? 0;
+  int scoreOf(String letter) => letterScores[letter.toUpperCase()] ?? 0;
 
   factory ScoringConfig.fromJson(Map<String, dynamic> json) {
     final Object? scoresJson = json['letterScores'];
@@ -76,9 +75,7 @@ class GameRulesConfig {
 
     return GameRulesConfig(
       setup: GameSetupRules.fromJson(setupJson),
-      boardGeneration: GameBoardGenerationRules.fromJson(
-        boardGenerationJson,
-      ),
+      boardGeneration: GameBoardGenerationRules.fromJson(boardGenerationJson),
       scoring: scoringJson is Map<String, dynamic>
           ? ScoringConfig.fromJson(scoringJson)
           : null,

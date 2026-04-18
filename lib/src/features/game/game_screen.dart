@@ -128,8 +128,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Future<void> _handleExitAttempt() async {
-    final bool shouldExit =
-        await showExitConfirmationDialog(context) ?? false;
+    final bool shouldExit = await showExitConfirmationDialog(context) ?? false;
 
     if (!shouldExit) {
       return;
@@ -233,10 +232,7 @@ class _GameBody extends StatelessWidget {
                 _AnimatedFeedback(feedback: feedback),
                 const SizedBox(height: 8),
                 Expanded(
-                  child: _BoardStage(
-                    session: session,
-                    controller: controller,
-                  ),
+                  child: _BoardStage(session: session, controller: controller),
                 ),
               ],
             );
@@ -318,10 +314,7 @@ class _BoardStageState extends State<_BoardStage>
           weight: 25,
         ),
       ],
-    ).animate(CurvedAnimation(
-      parent: _shakeController,
-      curve: Curves.easeOut,
-    ));
+    ).animate(CurvedAnimation(parent: _shakeController, curve: Curves.easeOut));
   }
 
   @override
@@ -347,8 +340,7 @@ class _BoardStageState extends State<_BoardStage>
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final double stagePadding =
-        widget.session.gridSize >= 10 ? 6 : 10;
+    final double stagePadding = widget.session.gridSize >= 10 ? 6 : 10;
 
     final Widget gridContent = RepaintBoundary(
       child: LetterGrid(
@@ -357,8 +349,7 @@ class _BoardStageState extends State<_BoardStage>
         selectedCellIds: widget.controller.selectedCellIds,
         onSelectionStart: widget.controller.startSelection,
         onSelectionExtend: widget.controller.extendSelection,
-        onSelectionEnd: () =>
-            unawaited(widget.controller.endSelection()),
+        onSelectionEnd: () => unawaited(widget.controller.endSelection()),
         lastRemovedCellIds: widget.controller.lastRemovedCellIds,
       ),
     );
@@ -391,15 +382,8 @@ class _BoardStageState extends State<_BoardStage>
               duration: const Duration(milliseconds: 420),
               curve: Curves.easeOutCubic,
               tween: Tween<double>(begin: 0.96, end: 1),
-              builder: (
-                BuildContext context,
-                double scale,
-                Widget? child,
-              ) {
-                return Transform.scale(
-                  scale: scale,
-                  child: child,
-                );
+              builder: (BuildContext context, double scale, Widget? child) {
+                return Transform.scale(scale: scale, child: child);
               },
               child: DecoratedBox(
                 decoration: BoxDecoration(
@@ -407,19 +391,14 @@ class _BoardStageState extends State<_BoardStage>
                   gradient: const LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: <Color>[
-                      Color(0xFFF8F4EC),
-                      Color(0xFFF0E6D6),
-                    ],
+                    colors: <Color>[Color(0xFFF8F4EC), Color(0xFFF0E6D6)],
                   ),
                   border: Border.all(
-                    color: theme.colorScheme.primary
-                        .withValues(alpha: 0.12),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.12),
                   ),
                   boxShadow: <BoxShadow>[
                     BoxShadow(
-                      color: const Color(0xFF0F172A)
-                          .withValues(alpha: 0.08),
+                      color: const Color(0xFF0F172A).withValues(alpha: 0.08),
                       blurRadius: 30,
                       offset: const Offset(0, 18),
                     ),
@@ -440,8 +419,6 @@ class _BoardStageState extends State<_BoardStage>
     );
   }
 }
-
-
 
 class _AnimatedFeedback extends StatelessWidget {
   const _AnimatedFeedback({required this.feedback});
@@ -482,8 +459,7 @@ class _InvalidFeedbackBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final String displayMessage = switch (feedback.reason) {
-      WordValidationReason.tooShort =>
-        'En az 3 harf gerekli',
+      WordValidationReason.tooShort => 'En az 3 harf gerekli',
       WordValidationReason.notInDictionary =>
         '"${feedback.word}" sözlükte bulunamadı',
       _ => 'Geçersiz kelime',
@@ -495,15 +471,10 @@ class _InvalidFeedbackBanner extends StatelessWidget {
         decoration: BoxDecoration(
           color: const Color(0xFFFDE8E8),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: const Color(0xFFF5C6C6),
-          ),
+          border: Border.all(color: const Color(0xFFF5C6C6)),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 14,
-            vertical: 8,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -571,27 +542,16 @@ class _GameOverOverlayState extends State<_GameOverOverlay>
     _cardScale = Tween<double>(begin: 0.8, end: 1).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(
-          0.15,
-          0.5,
-          curve: Curves.elasticOut,
-        ),
+        curve: const Interval(0.15, 0.5, curve: Curves.elasticOut),
       ),
     );
     _cardOpacity = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.15, 0.4),
-      ),
+      CurvedAnimation(parent: _controller, curve: const Interval(0.15, 0.4)),
     );
     _scoreProgress = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(
         parent: _controller,
-        curve: const Interval(
-          0.4,
-          0.9,
-          curve: Curves.easeOutCubic,
-        ),
+        curve: const Interval(0.4, 0.9, curve: Curves.easeOutCubic),
       ),
     );
 
@@ -611,36 +571,27 @@ class _GameOverOverlayState extends State<_GameOverOverlay>
       builder: (BuildContext context, _) {
         return Positioned.fill(
           child: ColoredBox(
-            color: Color.fromRGBO(
-              0,
-              0,
-              0,
-              0.45 * _backgroundOpacity.value,
-            ),
+            color: Color.fromRGBO(0, 0, 0, 0.45 * _backgroundOpacity.value),
             child: Center(
               child: Opacity(
                 opacity: _cardOpacity.value,
                 child: Transform.scale(
                   scale: _cardScale.value,
                   child: ConstrainedBox(
-                    constraints:
-                        const BoxConstraints(maxWidth: 320),
+                    constraints: const BoxConstraints(maxWidth: 320),
                     child: DecoratedBox(
                       decoration: BoxDecoration(
-                        borderRadius:
-                            BorderRadius.circular(28),
+                        borderRadius: BorderRadius.circular(28),
                         gradient: const LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: <Color>[
-                            Color(0xFFFFFCF7),
-                            Color(0xFFF6EFE2),
-                          ],
+                          colors: <Color>[Color(0xFFFFFCF7), Color(0xFFF6EFE2)],
                         ),
                         boxShadow: <BoxShadow>[
                           BoxShadow(
-                            color: const Color(0xFF0F172A)
-                                .withValues(alpha: 0.15),
+                            color: const Color(
+                              0xFF0F172A,
+                            ).withValues(alpha: 0.15),
                             blurRadius: 40,
                             offset: const Offset(0, 20),
                           ),
@@ -653,24 +604,18 @@ class _GameOverOverlayState extends State<_GameOverOverlay>
                           children: <Widget>[
                             DecoratedBox(
                               decoration: BoxDecoration(
-                                gradient:
-                                    const LinearGradient(
-                                      colors: <Color>[
-                                        Color(0xFFD4A017),
-                                        Color(0xFFE6B533),
-                                      ],
-                                    ),
-                                borderRadius:
-                                    BorderRadius.circular(
-                                      22,
-                                    ),
+                                gradient: const LinearGradient(
+                                  colors: <Color>[
+                                    Color(0xFFD4A017),
+                                    Color(0xFFE6B533),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(22),
                               ),
                               child: const Padding(
-                                padding:
-                                    EdgeInsets.all(16),
+                                padding: EdgeInsets.all(16),
                                 child: Icon(
-                                  Icons
-                                      .emoji_events_rounded,
+                                  Icons.emoji_events_rounded,
                                   size: 40,
                                   color: Colors.white,
                                 ),
@@ -717,9 +662,7 @@ class _GameOverOverlayState extends State<_GameOverOverlay>
                               width: double.infinity,
                               child: FilledButton(
                                 onPressed: widget.onReturnHome,
-                                child: const Text(
-                                  'Ana Menüye Dön',
-                                ),
+                                child: const Text('Ana Menüye Dön'),
                               ),
                             ),
                           ],
