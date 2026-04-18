@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-04-18)
 
 **Core value:** Oyuncuya her zaman oynanabilir kalan, kurallari acikca gorunen ve ders dokumanindaki tum zorunlu maddeleri eksiksiz yerine getiren bir mobil kelime oyunu sunmak.
-**Current focus:** Phase 02.1 - Initial Board Solvability Gate
+**Current focus:** Phase 3 - Core Gameplay and Session Results
 
 ## Current Position
 
-Phase: 02.1 of 8 (Initial Board Solvability Gate - inserted)
-Plan: 1 of 1 in current phase
-Status: Phase 2 fully completed (02-01, 02-02, 02-03 done); Phase 02.1 solvability gate is next before Phase 3
-Last activity: 2026-04-18 - Completed Phase 02-03 with board UI, drag selection, adjacency guard and responsive grid layout. Manual gate approved.
+Phase: 3 of 8 (Core Gameplay and Session Results)
+Plan: 0 of 3 in current phase
+Status: Phase 2 and Phase 02.1 fully completed; Phase 3 is next
+Last activity: 2026-04-18 - Completed Phase 02.1-01 with trie-backed board analyzer, dead-board recovery, controller solvability gate and 14 unit tests. Manual gate approved.
 
-Progress: [███████░░░] 75%
+Progress: [████████░░] 80%
 
 ## Performance Metrics
 
@@ -32,8 +32,8 @@ Progress: [███████░░░] 75%
 | 2. Game Setup and Board Foundation | 3 | execution tracked in summaries | n/a |
 
 **Recent Trend:**
-- Last 5 plans: 01.1-03, 02-01, 02-02, 02-03 (all completed)
-- Trend: Phase 2 tamamen kapandi; board render, weighted generation ve drag selection tamamlandi. Siradaki is initial solvability gate.
+- Last 5 plans: 02-01, 02-02, 02-03, 02.1-01 (all completed)
+- Trend: Phase 2 ve Phase 02.1 tamamen kapandi; board render, weighted generation, drag selection ve initial solvability gate tamamlandi. Siradaki is core gameplay (kelime dogrulama, puanlama, gravity/refill).
 
 ## Accumulated Context
 
@@ -54,7 +54,8 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - Phase 02-01 completed on 2026-04-18 after user-approved manual gate
 - Phase 02-02 completed on 2026-04-18 with weighted board generation, session models and deterministic coverage
 - Phase 02-03 completed on 2026-04-18 with board UI render, drag selection, adjacency guard and responsive width-first grid layout
-- Current next target is `02.1-01`; initial solvability gate runs before Phase 3
+- Phase 02.1 completed on 2026-04-18 with trie-backed board analyzer, dead-board recovery service, controller solvability gate and 14 unit tests
+- Current next target is Phase 3 `03-01`; core gameplay starts
 
 ### Pending Todos
 
@@ -68,6 +69,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-18 13:22
-Stopped at: Phase 2 fully completed; next work is Phase 02.1 initial board solvability gate (trie-backed analyzer + dead-board recovery before first render)
+Last session: 2026-04-18 13:53
+Stopped at: Phase 2 + Phase 02.1 fully completed; next work is Phase 3 core gameplay (word validation, scoring, gravity/refill, game end)
 Resume file: None

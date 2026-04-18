@@ -12,8 +12,8 @@ Bu roadmap, varsayilan Flutter starter uygulamasini ders dokumanindaki zorunlu k
 
 - [x] **Phase 1: Foundation and Shell** - Starter uygulamayi urun kabuguna, kalici kullanici akisina ve ortak temel modellere donustur.
 - [x] **Phase 01.1: Requirements, Architecture and Persistence Eval Gate** - Phase 2'ye gecmeden once kaynak dokuman, kurallar, SQLite/persistence mimarisi ve riskli oyun davranislarinin ownership/validation planini dondur.
-- [ ] **Phase 2: Game Setup and Board Foundation** - Yeni oyun ayarlari, agirlikli harf uretimi ve board UI temelini kur.
-- [ ] **Phase 02.1: Initial Board Solvability Gate** - Phase 2 tamamlanir tamamlanmaz ilk gosterilen board'un dead gelmesini engelle ve ilk render oncesi recovery kapisini kapat.
+- [x] **Phase 2: Game Setup and Board Foundation** - Yeni oyun ayarlari, agirlikli harf uretimi ve board UI temelini kur.
+- [x] **Phase 02.1: Initial Board Solvability Gate** - Phase 2 tamamlanir tamamlanmaz ilk gosterilen board'un dead gelmesini engelle ve ilk render oncesi recovery kapisini kapat.
 - [ ] **Phase 3: Core Gameplay and Session Results** - Kelime dogrulama, puanlama, refill ve oyun sonu kayit akislarini tamamla.
 - [ ] **Phase 4: Advanced Board Mechanics** - Her zaman oynanabilir board, combo ve ozel guc davranislarini ekle.
 - [ ] **Phase 5: Market and Score History** - Joker ekonomisi, market kullanimi ve skor tablosu ekranlarini tamamla.
@@ -91,7 +91,7 @@ Plans:
 Plans:
 - [x] 02-01: Build new game settings flow and session bootstrap
 - [x] 02-02: Implement weighted board generator and playable initial seed
-- [ ] 02-03: Render the board UI and drag-path capture behavior
+- [x] 02-03: Render the board UI and drag-path capture behavior
 
 ### Phase 02.1: Initial Board Solvability Gate (INSERTED)
 **Goal**: Phase 2 board'u gorunur olur olmaz, ilk oturumun dead board ile acilmasini engellemek ve kullaniciya ilk kez gosterilen gridde en az bir gecerli kelime oldugunu garanti etmek.
@@ -110,7 +110,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 02.1-01: Add initial-session playable-board analyzer and recovery gate
+- [x] 02.1-01: Add initial-session playable-board analyzer and recovery gate
 
 ### Phase 3: Core Gameplay and Session Results
 **Goal**: Kelime gecerliligi, hamle dusumu, puanlama, gravity/refill ve oyun sonucu kaydetme akislarini eksiksiz hale getirmek.
@@ -210,8 +210,8 @@ Phases execute in numeric order: 1 -> 1.1 -> 2 -> 2.1 -> 3 -> 4 -> 5 -> 6
 |-------|----------------|--------|-----------|
 | 1. Foundation and Shell | 3/3 | Completed | 2026-04-07 |
 | 01.1 Requirements, Architecture and Persistence Eval Gate | 3/3 | Completed | 2026-04-18 |
-| 2. Game Setup and Board Foundation | 2/3 | In progress | - |
-| 02.1 Initial Board Solvability Gate | 0/1 | Not started | - |
+| 2. Game Setup and Board Foundation | 3/3 | Completed | 2026-04-18 |
+| 02.1 Initial Board Solvability Gate | 1/1 | Completed | 2026-04-18 |
 | 3. Core Gameplay and Session Results | 0/3 | Not started | - |
 | 4. Advanced Board Mechanics | 0/3 | Not started | - |
 | 5. Market and Score History | 0/3 | Not started | - |
