@@ -131,7 +131,8 @@ Plans:
 
 Plans:
 - [x] 03-01: Implement word finalization and dictionary validation flow
-- [ ] 03-02: Add scoring table, move consumption, gravity and refill pipeline
+- [x] 03-02: Add scoring table, move consumption, gravity and refill pipeline
+- [x] 03-02.1: Implement UI polish, game animations, game-over screen and premium visuals
 - [ ] 03-03: Persist game results and exit/endgame flows
 
 ### Phase 4: Advanced Board Mechanics
@@ -212,7 +213,7 @@ Phases execute in numeric order: 1 -> 1.1 -> 2 -> 2.1 -> 3 -> 4 -> 5 -> 6
 | 01.1 Requirements, Architecture and Persistence Eval Gate | 3/3 | Completed | 2026-04-18 |
 | 2. Game Setup and Board Foundation | 3/3 | Completed | 2026-04-18 |
 | 02.1 Initial Board Solvability Gate | 1/1 | Completed | 2026-04-18 |
-| 3. Core Gameplay and Session Results | 1/3 | In progress | - |
+| 3. Core Gameplay and Session Results | 3/4 | In progress | - |
 | 4. Advanced Board Mechanics | 0/3 | Not started | - |
 | 5. Market and Score History | 0/3 | Not started | - |
 | 6. Mobile Polish and Delivery | 0/3 | Not started | - |
