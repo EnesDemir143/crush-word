@@ -106,6 +106,11 @@ class GameController extends ChangeNotifier {
   /// Cleared automatically on the next [startSelection] or [endSelection].
   InvalidAttemptFeedback? _lastInvalidFeedback;
 
+  /// Cell IDs removed on the last valid word — used by the UI to
+  /// trigger pop/gravity/refill animations.  Cleared on the next
+  /// [startSelection].
+  List<String> _lastRemovedCellIds = const <String>[];
+
   /// Whether a finalization is already running (prevents double-taps).
   bool _isFinalizing = false;
 
@@ -115,6 +120,7 @@ class GameController extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   InvalidAttemptFeedback? get lastInvalidFeedback => _lastInvalidFeedback;
+  List<String> get lastRemovedCellIds => _lastRemovedCellIds;
   bool get isFinalizing => _isFinalizing;
 
   int get score => _session?.score ?? 0;
@@ -197,8 +203,9 @@ class GameController extends ChangeNotifier {
       return;
     }
 
-    // Clear any previous invalid feedback when the user starts a new attempt.
+    // Clear transient state from previous attempt.
     _lastInvalidFeedback = null;
+    _lastRemovedCellIds = const <String>[];
 
     _session = activeSession.copyWith(selectedCellIds: <String>[cell.id]);
     notifyListeners();
@@ -299,6 +306,7 @@ class GameController extends ChangeNotifier {
             rules: rules.boardGeneration,
           );
           newBoard = resolved.board;
+          _lastRemovedCellIds = activeSession.selectedCellIds;
         }
 
         _session = activeSession.copyWith(
