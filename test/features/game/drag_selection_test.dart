@@ -8,12 +8,17 @@ import 'package:crush_word/src/core/models/game_difficulty.dart';
 import 'package:crush_word/src/features/game/game_controller.dart';
 import 'package:crush_word/src/features/game/game_screen.dart';
 
+import 'memory_session_checkpoint_repository.dart';
+
 void main() {
   testWidgets('game board renders the full square session grid', (
     WidgetTester tester,
   ) async {
     final GameSession session = _buildSession(gridSize: 3);
-    final GameController controller = GameController.fromSession(session);
+    final GameController controller = GameController.fromSession(
+      session,
+      sessionCheckpointRepository: MemorySessionCheckpointRepository(),
+    );
 
     await tester.pumpWidget(
       MaterialApp(
@@ -36,7 +41,10 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(390, 844));
 
     final GameSession session = _buildSession(gridSize: 10);
-    final GameController controller = GameController.fromSession(session);
+    final GameController controller = GameController.fromSession(
+      session,
+      sessionCheckpointRepository: MemorySessionCheckpointRepository(),
+    );
 
     await tester.pumpWidget(
       MaterialApp(
@@ -54,7 +62,10 @@ void main() {
     WidgetTester tester,
   ) async {
     final GameSession session = _buildSession(gridSize: 3);
-    final GameController controller = GameController.fromSession(session);
+    final GameController controller = GameController.fromSession(
+      session,
+      sessionCheckpointRepository: MemorySessionCheckpointRepository(),
+    );
 
     await tester.pumpWidget(
       MaterialApp(
@@ -90,7 +101,10 @@ void main() {
 
   test('an already selected cell cannot be re-added to the path', () {
     final GameSession session = _buildSession(gridSize: 3);
-    final GameController controller = GameController.fromSession(session);
+    final GameController controller = GameController.fromSession(
+      session,
+      sessionCheckpointRepository: MemorySessionCheckpointRepository(),
+    );
 
     controller.startSelection(session.cellAt(row: 0, column: 0));
     controller.extendSelection(session.cellAt(row: 0, column: 1));
