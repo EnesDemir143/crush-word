@@ -12,7 +12,7 @@ class AppDatabase {
        _databasePath = databasePath;
 
   static const String databaseName = 'word_crush.db';
-  static const int schemaVersion = 1;
+  static const int schemaVersion = 2;
 
   final DatabaseFactory _databaseFactory;
   final Future<String> Function() _databaseDirectoryProvider;
@@ -62,8 +62,24 @@ class AppDatabase {
           await db.execute('PRAGMA foreign_keys = ON');
         },
         onCreate: (Database db, int version) async {
-          await db.execute('''
-CREATE TABLE game_results (
+          await _createGameResultsTable(db);
+          await _createSessionCheckpointTable(db);
+          await _createWalletTable(db);
+          await _createJokerInventoryTable(db);
+        },
+        onUpgrade: (Database db, int oldVersion, int _) async {
+          if (oldVersion < 2) {
+            await _createWalletTable(db);
+            await _createJokerInventoryTable(db);
+          }
+        },
+      ),
+    );
+  }
+
+  Future<void> _createGameResultsTable(Database db) async {
+    await db.execute('''
+CREATE TABLE IF NOT EXISTS game_results (
   id TEXT PRIMARY KEY,
   completed_at TEXT NOT NULL,
   difficulty TEXT NOT NULL,
@@ -75,9 +91,11 @@ CREATE TABLE game_results (
   duration_seconds INTEGER NOT NULL
 )
 ''');
+  }
 
-          await db.execute('''
-CREATE TABLE session_checkpoint (
+  Future<void> _createSessionCheckpointTable(Database db) async {
+    await db.execute('''
+CREATE TABLE IF NOT EXISTS session_checkpoint (
   checkpoint_id TEXT PRIMARY KEY,
   game_config_json TEXT NOT NULL,
   board_json TEXT NOT NULL,
@@ -91,8 +109,23 @@ CREATE TABLE session_checkpoint (
   updated_at TEXT NOT NULL
 )
 ''');
-        },
-      ),
-    );
+  }
+
+  Future<void> _createWalletTable(Database db) async {
+    await db.execute('''
+CREATE TABLE IF NOT EXISTS wallet_balance (
+  wallet_id TEXT PRIMARY KEY,
+  gold_balance INTEGER NOT NULL
+)
+''');
+  }
+
+  Future<void> _createJokerInventoryTable(Database db) async {
+    await db.execute('''
+CREATE TABLE IF NOT EXISTS joker_inventory (
+  joker_id TEXT PRIMARY KEY,
+  quantity INTEGER NOT NULL
+)
+''');
   }
 }

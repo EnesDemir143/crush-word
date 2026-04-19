@@ -7,6 +7,8 @@ import 'package:crush_word/src/core/repositories/dictionary_repository.dart';
 import 'package:crush_word/src/features/game/game_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'memory_session_checkpoint_repository.dart';
+
 void main() {
   group('Selection finalization', () {
     late DictionaryRepository dictionaryRepository;
@@ -29,6 +31,7 @@ void main() {
       final GameController controller = GameController.fromSession(
         session,
         wordValidator: wordValidator,
+        sessionCheckpointRepository: MemorySessionCheckpointRepository(),
       );
 
       // Select 'XYZ' — not in dictionary.
@@ -53,6 +56,7 @@ void main() {
       final GameController controller = GameController.fromSession(
         session,
         wordValidator: wordValidator,
+        sessionCheckpointRepository: MemorySessionCheckpointRepository(),
       );
 
       final List<BoardCell> originalBoard = List<BoardCell>.from(session.board);
@@ -80,6 +84,7 @@ void main() {
       final GameController controller = GameController.fromSession(
         session,
         wordValidator: wordValidator,
+        sessionCheckpointRepository: MemorySessionCheckpointRepository(),
       );
 
       controller.startSelection(session.cellAt(row: 0, column: 0));
@@ -101,6 +106,7 @@ void main() {
       final GameController controller = GameController.fromSession(
         session,
         wordValidator: wordValidator,
+        sessionCheckpointRepository: MemorySessionCheckpointRepository(),
       );
 
       controller.startSelection(session.cellAt(row: 0, column: 0));
@@ -125,6 +131,7 @@ void main() {
       final GameController controller = GameController.fromSession(
         session,
         wordValidator: wordValidator,
+        sessionCheckpointRepository: MemorySessionCheckpointRepository(),
       );
 
       // Select only 2 cells.
@@ -152,6 +159,7 @@ void main() {
       final GameController controller = GameController.fromSession(
         session,
         wordValidator: wordValidator,
+        sessionCheckpointRepository: MemorySessionCheckpointRepository(),
       );
 
       controller.startSelection(session.cellAt(row: 0, column: 0));
@@ -172,6 +180,7 @@ void main() {
       final GameController controller = GameController.fromSession(
         session,
         wordValidator: wordValidator,
+        sessionCheckpointRepository: MemorySessionCheckpointRepository(),
       );
 
       controller.startSelection(session.cellAt(row: 0, column: 0));
@@ -193,6 +202,7 @@ void main() {
       final GameController controller = GameController.fromSession(
         session,
         wordValidator: wordValidator,
+        sessionCheckpointRepository: MemorySessionCheckpointRepository(),
       );
 
       // First: invalid attempt.
@@ -218,6 +228,7 @@ void main() {
       final GameController controller = GameController.fromSession(
         session,
         wordValidator: wordValidator,
+        sessionCheckpointRepository: MemorySessionCheckpointRepository(),
       );
 
       // No selection started; endSelection should be a no-op.
@@ -236,6 +247,7 @@ void main() {
       final GameController controller = GameController.fromSession(
         session,
         wordValidator: wordValidator,
+        sessionCheckpointRepository: MemorySessionCheckpointRepository(),
       );
 
       // First invalid attempt.
