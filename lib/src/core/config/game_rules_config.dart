@@ -113,15 +113,17 @@ class MarketRules {
 
     return MarketRules(
       initialGold: initialGold,
-      jokers: jokersJson.map((Object? jokerJson) {
-        if (jokerJson is! Map<String, dynamic>) {
-          throw const FormatException(
-            'Each joker definition must be a JSON object.',
-          );
-        }
+      jokers: jokersJson
+          .map((Object? jokerJson) {
+            if (jokerJson is! Map<String, dynamic>) {
+              throw const FormatException(
+                'Each joker definition must be a JSON object.',
+              );
+            }
 
-        return MarketJokerDefinition.fromJson(jokerJson);
-      }).toList(growable: false),
+            return MarketJokerDefinition.fromJson(jokerJson);
+          })
+          .toList(growable: false),
     );
   }
 }

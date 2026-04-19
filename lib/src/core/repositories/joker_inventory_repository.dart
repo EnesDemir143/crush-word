@@ -8,7 +8,9 @@ class JokerInventoryRepository {
 
   final AppDatabase _database;
 
-  Future<List<JokerInventory>> loadInventory({DatabaseExecutor? executor}) async {
+  Future<List<JokerInventory>> loadInventory({
+    DatabaseExecutor? executor,
+  }) async {
     final DatabaseExecutor resolvedExecutor = await _resolveExecutor(executor);
     final List<Map<String, Object?>> rows = await resolvedExecutor.query(
       'joker_inventory',
@@ -20,10 +22,7 @@ class JokerInventoryRepository {
         .toList(growable: false);
   }
 
-  Future<int> quantityFor(
-    String jokerId, {
-    DatabaseExecutor? executor,
-  }) async {
+  Future<int> quantityFor(String jokerId, {DatabaseExecutor? executor}) async {
     final DatabaseExecutor resolvedExecutor = await _resolveExecutor(executor);
     final List<Map<String, Object?>> rows = await resolvedExecutor.query(
       'joker_inventory',

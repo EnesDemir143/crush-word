@@ -63,16 +63,11 @@ class HistoryController extends ChangeNotifier {
 
   /// Loads results newest-first and computes aggregate metrics.
   Future<void> load() async {
-    final List<GameResult> results =
-        await _repository.loadResultsNewestFirst();
+    final List<GameResult> results = await _repository.loadResultsNewestFirst();
 
     final HistorySummary summary = _deriveSummary(results);
 
-    _state = HistoryState(
-      summary: summary,
-      results: results,
-      isLoading: false,
-    );
+    _state = HistoryState(summary: summary, results: results, isLoading: false);
     notifyListeners();
   }
 

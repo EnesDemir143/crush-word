@@ -183,11 +183,7 @@ class _SummarySection extends StatelessWidget {
           children: <Widget>[
             const Row(
               children: <Widget>[
-                Icon(
-                  Icons.emoji_events_rounded,
-                  color: Colors.white,
-                  size: 22,
-                ),
+                Icon(Icons.emoji_events_rounded, color: Colors.white, size: 22),
                 SizedBox(width: 8),
                 Text(
                   'Genel İstatistikler',
@@ -273,10 +269,7 @@ class _SummaryTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(14),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 12,
-            vertical: 10,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           child: Row(
             children: <Widget>[
               Icon(icon, color: Colors.white70, size: 18),
@@ -297,9 +290,7 @@ class _SummaryTile extends StatelessWidget {
                     Text(
                       label,
                       style: TextStyle(
-                        color: Colors.white.withValues(
-                          alpha: 0.65,
-                        ),
+                        color: Colors.white.withValues(alpha: 0.65),
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
                       ),
@@ -358,10 +349,7 @@ class _HistoryCard extends StatelessWidget {
                 DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: <Color>[
-                        Color(0xFF4A3B6B),
-                        Color(0xFF7C5DA6),
-                      ],
+                      colors: <Color>[Color(0xFF4A3B6B), Color(0xFF7C5DA6)],
                     ),
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -429,9 +417,7 @@ class _HistoryCard extends StatelessWidget {
                 _DetailChip(
                   key: const Key('history-card-longest'),
                   icon: Icons.text_fields_rounded,
-                  label: result.longestWord.isEmpty
-                      ? '-'
-                      : result.longestWord,
+                  label: result.longestWord.isEmpty ? '-' : result.longestWord,
                 ),
                 _DetailChip(
                   key: const Key('history-card-duration'),
@@ -448,11 +434,7 @@ class _HistoryCard extends StatelessWidget {
 }
 
 class _DetailChip extends StatelessWidget {
-  const _DetailChip({
-    super.key,
-    required this.icon,
-    required this.label,
-  });
+  const _DetailChip({super.key, required this.icon, required this.label});
 
   final IconData icon;
   final String label;
@@ -465,18 +447,11 @@ class _DetailChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 10,
-          vertical: 6,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Icon(
-              icon,
-              size: 14,
-              color: const Color(0xFF7A6F62),
-            ),
+            Icon(icon, size: 14, color: const Color(0xFF7A6F62)),
             const SizedBox(width: 4),
             Text(
               label,

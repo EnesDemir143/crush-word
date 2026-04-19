@@ -76,17 +76,15 @@ class MarketController extends ChangeNotifier {
       }
 
       final int goldBalance = await _walletRepository.loadGoldBalance();
-      final List<JokerInventory> inventory =
-          await _inventoryRepository.loadInventory();
+      final List<JokerInventory> inventory = await _inventoryRepository
+          .loadInventory();
 
       _rules = rules;
       _goldBalance = goldBalance;
-      _inventoryById = Map<String, int>.unmodifiable(
-        <String, int>{
-          for (final JokerInventory item in inventory)
-            item.jokerId: item.quantity,
-        },
-      );
+      _inventoryById = Map<String, int>.unmodifiable(<String, int>{
+        for (final JokerInventory item in inventory)
+          item.jokerId: item.quantity,
+      });
     } catch (error) {
       _error = error;
     } finally {

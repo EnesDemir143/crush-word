@@ -43,8 +43,7 @@ class _MarketScreenState extends State<MarketScreen> {
     }
 
     final String message = switch (status) {
-      MarketPurchaseStatus.success =>
-        '${joker.name} envantere eklendi.',
+      MarketPurchaseStatus.success => '${joker.name} envantere eklendi.',
       MarketPurchaseStatus.insufficientGold =>
         'Bu joker için yeterli altın yok.',
       MarketPurchaseStatus.busy => 'Satın alma işlemi zaten sürüyor.',
@@ -430,11 +429,7 @@ class _JokerArtwork extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.all(12),
-        child: Icon(
-          _iconFor(jokerId),
-          color: Colors.white,
-          size: 24,
-        ),
+        child: Icon(_iconFor(jokerId), color: Colors.white, size: 24),
       ),
     );
   }
@@ -486,11 +481,7 @@ IconData _iconFor(String jokerId) {
 }
 
 class _InfoChip extends StatelessWidget {
-  const _InfoChip({
-    super.key,
-    required this.icon,
-    required this.label,
-  });
+  const _InfoChip({super.key, required this.icon, required this.label});
 
   final IconData icon;
   final String label;

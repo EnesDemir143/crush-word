@@ -8,10 +8,10 @@ class ScoreHistoryRoutes {
   static Route<dynamic> build(RouteSettings settings) {
     return MaterialPageRoute<void>(
       builder: (_) {
-        final GameHistoryRepository repository =
-            GameHistoryRepository();
-        final HistoryController controller =
-            HistoryController(repository: repository);
+        final GameHistoryRepository repository = GameHistoryRepository();
+        final HistoryController controller = HistoryController(
+          repository: repository,
+        );
         return ScoreHistoryScreen(controller: controller);
       },
       settings: settings,

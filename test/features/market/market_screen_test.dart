@@ -285,16 +285,15 @@ class _FakeJokerInventoryRepository extends JokerInventoryRepository {
   Future<List<JokerInventory>> loadInventory({
     DatabaseExecutor? executor,
   }) async {
-    return _inventoryById.entries.map((MapEntry<String, int> entry) {
-      return JokerInventory(jokerId: entry.key, quantity: entry.value);
-    }).toList(growable: false);
+    return _inventoryById.entries
+        .map((MapEntry<String, int> entry) {
+          return JokerInventory(jokerId: entry.key, quantity: entry.value);
+        })
+        .toList(growable: false);
   }
 
   @override
-  Future<int> quantityFor(
-    String jokerId, {
-    DatabaseExecutor? executor,
-  }) async {
+  Future<int> quantityFor(String jokerId, {DatabaseExecutor? executor}) async {
     return _inventoryById[jokerId] ?? 0;
   }
 
