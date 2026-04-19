@@ -178,7 +178,7 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 05-01: Build market catalog, gold balance and purchase persistence
+- [x] 05-01: Build market catalog, gold balance and purchase persistence
 - [ ] 05-02: Execute joker actions from in-game inventory
 - [ ] 05-03: Implement score summary metrics and history list UI
 
@@ -215,5 +215,5 @@ Phases execute in numeric order: 1 -> 1.1 -> 2 -> 2.1 -> 3 -> 4 -> 5 -> 6
 | 02.1 Initial Board Solvability Gate | 1/1 | Completed | 2026-04-18 |
 | 3. Core Gameplay and Session Results | 4/4 | Completed | 2026-04-18 |
 | 4. Advanced Board Mechanics | 0/3 | Not started | - |
-| 5. Market and Score History | 0/3 | Not started | - |
+| 5. Market and Score History | 1/3 | In progress | - |
 | 6. Mobile Polish and Delivery | 0/3 | Not started | - |

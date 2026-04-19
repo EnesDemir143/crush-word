@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md (updated 2026-04-18)
 
 **Core value:** Oyuncuya her zaman oynanabilir kalan, kurallari acikca gorunen ve ders dokumanindaki tum zorunlu maddeleri eksiksiz yerine getiren bir mobil kelime oyunu sunmak.
-**Current focus:** Phase 4 - Advanced Board Mechanics (Plan 1 next)
+**Current focus:** Phase 4 - Advanced Board Mechanics (Plan 1 next); Phase 05-01 market foundation is already closed out of order
 
 ## Current Position
 
 Phase: 4 of 8 (Advanced Board Mechanics)
 Plan: 0 of 3 in current phase (not started)
-Status: Phase 3 completed with session result persistence, checkpoint baseline and confirmed exit flow. Next is 04-01 (post-move solvability continuity and visible count).
-Last activity: 2026-04-18 - Completed Phase 03-03 with sqflite-backed game history, session checkpoint baseline and Evet/Hayir exit confirmation.
+Status: Phase 05-01 completed out of order with canonical market catalog, wallet/inventory persistence and interactive market UI. Next required work remains 04-01 (post-move solvability continuity and visible count).
+Last activity: 2026-04-19 - Completed Phase 05-01 with market catalog, gold balance, purchase baseline and user-approved market dialog UI.
 
 Progress: [█████████░] 88%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 11
+- Total plans completed: 12
 - Average duration: planning + implementation karisik; direct compare edilmemeli
 - Total execution time: Tracking not normalized after inserted eval gate
 
@@ -32,10 +32,12 @@ Progress: [█████████░] 88%
 | 2. Game Setup and Board Foundation | 3 | execution tracked in summaries | n/a |
 | 02.1 Initial Board Solvability Gate | 1 | execution tracked in summary | n/a |
 | 3. Core Gameplay and Session Results | 4/4 | completed | n/a |
+| 4. Advanced Board Mechanics | 0/3 | not started | n/a |
+| 5. Market and Score History | 1/3 | in progress | n/a |
 
 **Recent Trend:**
-- Last 5 plans: 02.1-01, 03-01, 03-02, 03-02.1, 03-03 (all completed)
-- Trend: Phase 3 tam kapandi; gameplay artik skor kaydi ve confirmed exit ile uc uca tamamlandi. Siradaki is Phase 4 board continuity ve visible-word ownerligi.
+- Last 5 plans: 03-01, 03-02, 03-02.1, 03-03, 05-01
+- Trend: Market foundation'i erken kapandi; canonical joker katalogu ve ekonomi persistensi hazir. Buna ragmen execution sirasi acisindan sonraki kritik owner hala Phase 4 board continuity ve visible-word count.
 
 ## Accumulated Context
 
@@ -61,7 +63,8 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - Phase 03-02 completed on 2026-04-18 with ScoringEngine, BoardResolver (clear/gravity/refill), canonical letter-score table in game_rules.json, GameController wiring and 28 new tests
 - Phase 03-02.1 completed on 2026-04-18 with premium UI polish, animations (shake/bounce/pulse) and game over overlay
 - Phase 03-03 completed on 2026-04-18 with sqflite-backed game history, session checkpoint baseline, confirmed exit dialog and focused endgame tests
-- Current next target is Phase 4 `04-01`; post-move solvability continuity and visible count
+- Phase 05-01 completed on 2026-04-19 out of order with canonical joker catalog, wallet/inventory persistence and interactive market UI
+- Current next target is still Phase 4 `04-01`; post-move solvability continuity and visible count
 
 ### Pending Todos
 
@@ -70,11 +73,12 @@ None yet.
 ### Blockers/Concerns
 
 - Phase 2 ve sonrasi implementasyonlarda `01.1-EVAL-MATRIX.md` ve `01.1-MANUAL-CHECKLIST.md` zorunlu referans kabul edilmeli.
-- Harf puan tablosu, joker fiyatlari ve power threshold'lari canonical source yazildigi anda kullanicyla manuel teyit gerektiriyor.
+- Harf puan tablosu ve sonraki power threshold'lari canonical source yazildigi anda kullanicyla manuel teyit gerektiriyor.
+- Joker fiyat/katalog manual gate'i 2026-04-19 tarihinde onaylandi; gameplay effect ve newest-first history smoke-check'leri ileriki phase'lerde yine gerekecek.
 - Resume behavior, newest-first history ve kullaniciya gorunen aggregate/power/count alanlari icin feature-cikisinda kisa smoke-check gerekecek.
 
 ## Session Continuity
 
-Last session: 2026-04-18 18:05
-Stopped at: Phase 03-03 completed; persistence and exit flows verified with analyze + targeted tests. Next work is Phase 4 Plan 01.
+Last session: 2026-04-19 21:09
+Stopped at: Phase 05-01 completed out of order; market foundation verified and manually approved. Next required work is Phase 4 Plan 01 unless roadmap priority changes again.
 Resume file: None
