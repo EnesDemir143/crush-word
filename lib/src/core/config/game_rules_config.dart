@@ -47,6 +47,7 @@ class GameRulesConfig {
     required this.setup,
     required this.boardGeneration,
     this.scoring,
+    this.market,
   });
 
   final GameSetupRules setup;
@@ -55,11 +56,13 @@ class GameRulesConfig {
   /// Null when loaded from legacy JSON that predates the scoring
   /// section — callers must handle this gracefully.
   final ScoringConfig? scoring;
+  final MarketRules? market;
 
   factory GameRulesConfig.fromJson(Map<String, dynamic> json) {
     final Object? setupJson = json['setup'];
     final Object? boardGenerationJson = json['boardGeneration'];
     final Object? scoringJson = json['scoring'];
+    final Object? marketJson = json['market'];
 
     if (setupJson is! Map<String, dynamic>) {
       throw const FormatException(
@@ -79,6 +82,94 @@ class GameRulesConfig {
       scoring: scoringJson is Map<String, dynamic>
           ? ScoringConfig.fromJson(scoringJson)
           : null,
+      market: marketJson is Map<String, dynamic>
+          ? MarketRules.fromJson(marketJson)
+          : null,
+    );
+  }
+}
+
+class MarketRules {
+  const MarketRules({required this.initialGold, required this.jokers});
+
+  final int initialGold;
+  final List<MarketJokerDefinition> jokers;
+
+  factory MarketRules.fromJson(Map<String, dynamic> json) {
+    final int? initialGold = (json['initialGold'] as num?)?.toInt();
+    final Object? jokersJson = json['jokers'];
+
+    if (initialGold == null || initialGold < 0) {
+      throw const FormatException(
+        'Market rules require a non-negative initialGold value.',
+      );
+    }
+
+    if (jokersJson is! List<dynamic> || jokersJson.isEmpty) {
+      throw const FormatException(
+        'Market rules require at least one joker definition.',
+      );
+    }
+
+    return MarketRules(
+      initialGold: initialGold,
+      jokers: jokersJson.map((Object? jokerJson) {
+        if (jokerJson is! Map<String, dynamic>) {
+          throw const FormatException(
+            'Each joker definition must be a JSON object.',
+          );
+        }
+
+        return MarketJokerDefinition.fromJson(jokerJson);
+      }).toList(growable: false),
+    );
+  }
+}
+
+class MarketJokerDefinition {
+  const MarketJokerDefinition({
+    required this.id,
+    required this.name,
+    required this.cost,
+    required this.description,
+    required this.purpose,
+    required this.usage,
+  });
+
+  final String id;
+  final String name;
+  final int cost;
+  final String description;
+  final String purpose;
+  final String usage;
+
+  factory MarketJokerDefinition.fromJson(Map<String, dynamic> json) {
+    final String id = (json['id'] as String?)?.trim() ?? '';
+    final String name = (json['name'] as String?)?.trim() ?? '';
+    final int? cost = (json['cost'] as num?)?.toInt();
+    final String description = (json['description'] as String?)?.trim() ?? '';
+    final String purpose = (json['purpose'] as String?)?.trim() ?? '';
+    final String usage = (json['usage'] as String?)?.trim() ?? '';
+
+    if (id.isEmpty ||
+        name.isEmpty ||
+        cost == null ||
+        cost < 0 ||
+        description.isEmpty ||
+        purpose.isEmpty ||
+        usage.isEmpty) {
+      throw const FormatException(
+        'Each joker definition requires id, name, cost and display text.',
+      );
+    }
+
+    return MarketJokerDefinition(
+      id: id,
+      name: name,
+      cost: cost,
+      description: description,
+      purpose: purpose,
+      usage: usage,
     );
   }
 }
