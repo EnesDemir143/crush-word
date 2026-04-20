@@ -213,34 +213,23 @@ class GameController extends ChangeNotifier {
       selectedCells.map((BoardCell cell) => cell.letter).join();
 
   Future<void> load({bool force = false}) async {
-    if (_session != null && !force) {
-      await _persistCheckpointIfActive(_session!);
-      return;
-    }
-
     _isLoading = true;
     _errorMessage = null;
     _persistedResultId = null;
     notifyListeners();
 
     try {
-      final GameRulesConfig rules = await _rulesLoader.load();
-      final Set<String> dictionary = await _dictionaryRepository.loadWords();
+      await _ensureRuntimeCachesLoaded();
+      final GameRulesConfig rules = _cachedRules!;
+      final Set<String> dictionary = _cachedDictionary!;
 
-      // Cache rules and dictionary for later use (scoring,
-      // board refill, post-move recovery and word counting).
-      _cachedRules = rules;
-      _cachedDictionary = dictionary;
-
-      // Initialise scoring engine from loaded config if not
-      // injected via constructor.
-      if (rules.scoring != null && _scoringEngine == null) {
-        _scoringEngine = ScoringEngine(scoringConfig: rules.scoring!);
-      }
-
-      // Initialise power tile engine from loaded config.
-      if (rules.powerTiles != null && _powerTileEngine == null) {
-        _powerTileEngine = PowerTileEngine(config: rules.powerTiles!);
+      if (_session != null && !force) {
+        final GameSession hydratedSession = _ensurePostMovePlayability(
+          _session!,
+        );
+        _session = hydratedSession;
+        await _persistCheckpointIfActive(hydratedSession);
+        return;
       }
 
       GameSession session = _boardGenerator.createSession(
@@ -261,10 +250,7 @@ class GameController extends ChangeNotifier {
         rules: rules,
       );
 
-      // Compute the initial playable word count.
-      _session = session.copyWith(
-        playableWordCount: _computePlayableWordCount(session),
-      );
+      _session = _ensurePostMovePlayability(session);
 
       await _persistCheckpointIfActive(_session!);
     } catch (_) {
@@ -274,6 +260,21 @@ class GameController extends ChangeNotifier {
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  Future<void> _ensureRuntimeCachesLoaded() async {
+    _cachedRules ??= await _rulesLoader.load();
+    _cachedDictionary ??= await _dictionaryRepository.loadWords();
+
+    final GameRulesConfig rules = _cachedRules!;
+
+    if (rules.scoring != null && _scoringEngine == null) {
+      _scoringEngine = ScoringEngine(scoringConfig: rules.scoring!);
+    }
+
+    if (rules.powerTiles != null && _powerTileEngine == null) {
+      _powerTileEngine = PowerTileEngine(config: rules.powerTiles!);
     }
   }
 
