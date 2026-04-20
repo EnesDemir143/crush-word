@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-04-18)
 ## Current Position
 
 Phase: 4 of 8 (Advanced Board Mechanics)
-Plan: 1 of 3 in current phase (04-01 completed)
-Status: Phase 04-01 completed — playable word count (non-overlapping greedy), post-move dead-board auto-recovery, session state preservation. Next: 04-02 (combo scoring).
-Last activity: 2026-04-21 - Completed Phase 04-01 with extended board analyzer, post-move recovery, controller load pipeline refinement and 4 new tests.
+Plan: 2 of 3 in current phase (04-02 completed)
+Status: Phase 04-02 completed — combo detection engine and subword scoring implemented, extensively verified via automated tests and manual approval. Next: 04-03 (power tiles creation and triggers).
+Last activity: 2026-04-21 - Completed Phase 04-02 with combo engine restructuring, duplicate eliminations, standalone combo tests and scoring integration.
 
-Progress: [█████████░] 90%
+Progress: [█████████▓] 95%
 
 ## Performance Metrics
 
@@ -36,8 +36,8 @@ Progress: [█████████░] 90%
 | 5. Market and Score History | 2/3 | in progress | n/a |
 
 **Recent Trend:**
-- Last 5 plans: 03-02.1, 03-03, 05-01, 05-03, 04-01
-- Trend: Phase 4 board mechanics basladi; playable count ve post-move recovery kapandi. Siradaki 04-02 combo scoring.
+- Last 5 plans: 05-01, 05-03, 04-01, 04-02
+- Trend: Phase 4 board mechanics continues; playable count, post-move recovery, and combo scoring kapandi. Siradaki 04-03 power tiles mekanikleri.
 
 ## Accumulated Context
 
@@ -66,7 +66,8 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - Phase 05-01 completed on 2026-04-19 out of order with canonical joker catalog, wallet/inventory persistence and interactive market UI
 - Phase 05-03 completed on 2026-04-19 out of order with history controller, aggregate summary metrics, newest-first game cards and widget tests
 - Phase 04-01 completed on 2026-04-21 with non-overlapping playable word count, post-move dead-board recovery, session state preservation during regeneration, and 4 new tests
-- Current next target is Phase 4 `04-02`; combo scoring
+- Phase 04-02 completed on 2026-04-21 with Combo scoring detection, canonical integration, resolving solver exceptions, and fully validated subword rules.
+- Current next target is Phase 4 `04-03`; power tiles mechanics
 
 ### Pending Todos
 
@@ -81,6 +82,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-21 02:41
-Stopped at: Phase 04-01 completed with all verification gates passed. Next: Phase 04-02 combo scoring.
+Last session: 2026-04-21 02:58
+Stopped at: Phase 04-02 completed with mathematical proof testing and manual validations. Next: Phase 04-03 power tiles mechanics.
 Resume file: None
