@@ -1,4 +1,5 @@
 import 'package:crush_word/src/core/config/game_rules_config.dart';
+import 'package:crush_word/src/core/config/game_rules_loader.dart';
 import 'package:crush_word/src/core/gameplay/models/board_cell.dart';
 import 'package:crush_word/src/core/gameplay/models/game_session.dart';
 import 'package:crush_word/src/core/gameplay/services/scoring_engine.dart';
@@ -129,6 +130,10 @@ void main() {
 
     final GameController controller = GameController.fromSession(
       session,
+      rulesLoader: _FakeGameRulesLoader(),
+      dictionaryRepository: DictionaryRepository(
+        assetLoader: (_) async => 'abc\ndef\nghi',
+      ),
       gameHistoryRepository: gameHistoryRepository,
       sessionCheckpointRepository: checkpointRepository,
       clock: () => fixedNow,
@@ -261,6 +266,41 @@ WordValidator _buildValidator(Set<String> words) {
       assetLoader: (_) async => words.join('\n'),
     ),
   );
+}
+
+/// Fake rules loader returning a minimal valid config for tests.
+class _FakeGameRulesLoader extends GameRulesLoader {
+  @override
+  Future<GameRulesConfig> load() async {
+    return GameRulesConfig(
+      setup: GameSetupRules(
+        difficultyOptions: <GameSetupOption>[
+          const GameSetupOption(
+            difficulty: GameDifficulty.hard,
+            label: 'Zor',
+            gridLabel: '6x6',
+            gridSize: 6,
+          ),
+        ],
+        moveCountOptions: <GameMoveCountOption>[
+          const GameMoveCountOption(
+            difficulty: GameDifficulty.hard,
+            label: 'Zor',
+            moveLimit: 15,
+          ),
+        ],
+      ),
+      boardGeneration: GameBoardGenerationRules(
+        letterFrequencyGroups: <LetterFrequencyGroup>[
+          const LetterFrequencyGroup(
+            tier: LetterFrequencyTier.high,
+            weight: 1,
+            letters: <String>['A'],
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 GameSession _buildSession({

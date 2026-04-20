@@ -68,6 +68,14 @@ class BoardResolver {
     required GameBoardGenerationRules rules,
     int? wordLength,
   }) {
+    // Nothing to resolve — return the board as-is.
+    if (selectedCellIds.isEmpty) {
+      return BoardResolveResult(
+        board: board,
+        removedCells: const <BoardCell>[],
+      );
+    }
+
     // ── 0. Power activation ───────────────────────────────────
     PowerActivationResult? powerActivation;
     Set<String> allRemovedIds = selectedCellIds.toSet();
