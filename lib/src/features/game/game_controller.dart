@@ -8,7 +8,7 @@ import 'package:crush_word/src/core/gameplay/services/board_analyzer.dart';
 import 'package:crush_word/src/core/gameplay/services/board_generator.dart';
 import 'package:crush_word/src/core/gameplay/services/board_recovery.dart';
 import 'package:crush_word/src/core/gameplay/services/board_resolver.dart';
-import 'package:crush_word/src/core/gameplay/services/combo_detector.dart';
+import 'package:crush_word/src/core/gameplay/services/combo_engine.dart';
 import 'package:crush_word/src/core/gameplay/services/power_tile_engine.dart';
 import 'package:crush_word/src/core/gameplay/services/scoring_engine.dart';
 import 'package:crush_word/src/core/gameplay/services/word_validator.dart';
