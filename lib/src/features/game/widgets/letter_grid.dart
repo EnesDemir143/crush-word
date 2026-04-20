@@ -253,16 +253,21 @@ class _LetterCell extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final bool isSelected = selectionIndex != null;
+    final bool hasPower = cell.power != null;
     final double borderRadius = math.max(10, cellExtent * 0.24);
     final double fontSize = (cellExtent * 0.46).clamp(14, 32);
     final double contentPadding = math.max(3, cellExtent * 0.08);
+
+    // Power-specific styling.
+    final Color? powerColor = hasPower ? _powerColor(cell.power!) : null;
 
     return Semantics(
       button: true,
       label:
           'Satır ${cell.row + 1}, sütun ${cell.column + 1}, '
           '${cell.letter} harfi'
-          '${isSelected ? ', seçili ${selectionIndex! + 1}. sıra' : ''}',
+          '${isSelected ? ', seçili ${selectionIndex! + 1}. sıra' : ''}'
+          '${hasPower ? ', ${_powerLabel(cell.power!)} gücü var' : ''}',
       child: AnimatedScale(
         scale: isSelected ? 1.08 : 1.0,
         duration: const Duration(milliseconds: 160),
@@ -277,21 +282,45 @@ class _LetterCell extends StatelessWidget {
               end: Alignment.bottomRight,
               colors: isSelected
                   ? const <Color>[Color(0xFF1D6D67), Color(0xFF0F4E4A)]
-                  : const <Color>[Color(0xFFFFFCF7), Color(0xFFF2E6D5)],
+                  : hasPower
+                      ? <Color>[
+                          Color.lerp(
+                            const Color(0xFFFFFCF7),
+                            powerColor!,
+                            0.12,
+                          )!,
+                          Color.lerp(
+                            const Color(0xFFF2E6D5),
+                            powerColor,
+                            0.08,
+                          )!,
+                        ]
+                      : const <Color>[Color(0xFFFFFCF7), Color(0xFFF2E6D5)],
             ),
             borderRadius: BorderRadius.circular(borderRadius),
             border: Border.all(
               color: isSelected
                   ? const Color(0xFFFFE3A4)
-                  : theme.colorScheme.primary.withValues(alpha: 0.08),
-              width: isSelected ? 2.2 : 1.1,
+                  : hasPower
+                      ? powerColor!.withValues(alpha: 0.5)
+                      : theme.colorScheme.primary.withValues(alpha: 0.08),
+              width: isSelected
+                  ? 2.2
+                  : hasPower
+                      ? 2.0
+                      : 1.1,
             ),
             boxShadow: <BoxShadow>[
               BoxShadow(
-                color: const Color(
-                  0xFF0F172A,
-                ).withValues(alpha: isSelected ? 0.16 : 0.07),
-                blurRadius: isSelected ? 14 : 8,
+                color: (hasPower && !isSelected
+                        ? powerColor!
+                        : const Color(0xFF0F172A))
+                    .withValues(alpha: isSelected ? 0.16 : 0.07),
+                blurRadius: isSelected
+                    ? 14
+                    : hasPower
+                        ? 12
+                        : 8,
                 offset: const Offset(0, 5),
               ),
             ],
@@ -341,11 +370,67 @@ class _LetterCell extends StatelessWidget {
                     ),
                   ),
                 ),
+              // Power tile indicator badge
+              if (hasPower && !isSelected)
+                Positioned(
+                  left: math.max(2, cellExtent * 0.04),
+                  bottom: math.max(2, cellExtent * 0.04),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: powerColor!.withValues(alpha: 0.9),
+                      borderRadius: BorderRadius.circular(999),
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                          color: powerColor.withValues(alpha: 0.4),
+                          blurRadius: 4,
+                          offset: const Offset(0, 1),
+                        ),
+                      ],
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(
+                        math.max(2, cellExtent * 0.06),
+                      ),
+                      child: Icon(
+                        _powerIcon(cell.power!),
+                        size: (cellExtent * 0.22).clamp(8, 16),
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  static Color _powerColor(BoardCellPower power) {
+    return switch (power) {
+      BoardCellPower.rowClear => const Color(0xFFE67E22),
+      BoardCellPower.areaBlast => const Color(0xFFE74C3C),
+      BoardCellPower.columnClear => const Color(0xFF3498DB),
+      BoardCellPower.megaBlast => const Color(0xFF9B59B6),
+    };
+  }
+
+  static IconData _powerIcon(BoardCellPower power) {
+    return switch (power) {
+      BoardCellPower.rowClear => Icons.swap_horiz_rounded,
+      BoardCellPower.areaBlast => Icons.blur_on_rounded,
+      BoardCellPower.columnClear => Icons.swap_vert_rounded,
+      BoardCellPower.megaBlast => Icons.all_out_rounded,
+    };
+  }
+
+  static String _powerLabel(BoardCellPower power) {
+    return switch (power) {
+      BoardCellPower.rowClear => 'satır temizleme',
+      BoardCellPower.areaBlast => 'alan patlatma',
+      BoardCellPower.columnClear => 'sütun temizleme',
+      BoardCellPower.megaBlast => 'mega patlatma',
+    };
   }
 }
 

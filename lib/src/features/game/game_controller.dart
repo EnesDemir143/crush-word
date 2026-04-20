@@ -8,6 +8,8 @@ import 'package:crush_word/src/core/gameplay/services/board_analyzer.dart';
 import 'package:crush_word/src/core/gameplay/services/board_generator.dart';
 import 'package:crush_word/src/core/gameplay/services/board_recovery.dart';
 import 'package:crush_word/src/core/gameplay/services/board_resolver.dart';
+import 'package:crush_word/src/core/gameplay/services/combo_detector.dart';
+import 'package:crush_word/src/core/gameplay/services/power_tile_engine.dart';
 import 'package:crush_word/src/core/gameplay/services/scoring_engine.dart';
 import 'package:crush_word/src/core/gameplay/services/word_validator.dart';
 import 'package:crush_word/src/core/models/game_config.dart';
@@ -108,12 +110,42 @@ class GameController extends ChangeNotifier {
 
   /// Lazily initialised board resolver.
   BoardResolver? _boardResolver;
-  BoardResolver get _resolver =>
-      _boardResolver ??= BoardResolver(boardGenerator: _boardGenerator);
+
+  /// Lazily initialised power tile engine.
+  PowerTileEngine? _powerTileEngine;
+
+  /// Returns a [BoardResolver] configured with the current power
+  /// tile engine (if power config is available).
+  BoardResolver get _resolver {
+    // Rebuild if the power engine has been initialised since the
+    // last resolver was created.
+    if (_boardResolver == null ||
+        (_powerTileEngine != null &&
+            _boardResolver!.powerTileEngine == null)) {
+      _boardResolver = BoardResolver(
+        boardGenerator: _boardGenerator,
+        powerTileEngine: _powerTileEngine,
+      );
+    }
+    return _boardResolver!;
+  }
+
+  /// Lazily initialised combo detector.
+  ComboDetector? _comboDetector;
+  ComboDetector get _combo => _comboDetector ??= ComboDetector(
+    dictionaryRepository: _dictionaryRepository,
+  );
+
+  /// Lazily initialised combo scoring engine.
+  ComboScoringEngine? _comboScoringEngine;
 
   /// Cached rules config set during [load] — needed for board
   /// refill letter generation.
   GameRulesConfig? _cachedRules;
+
+  /// Cached dictionary set during [load] — needed for post-move
+  /// board analysis, recovery and playable word counting.
+  Set<String>? _cachedDictionary;
 
   GameSession? _session;
   bool _isLoading = false;
@@ -133,6 +165,12 @@ class GameController extends ChangeNotifier {
   /// [startSelection].
   int _lastWordScore = 0;
 
+  /// Number of combo hits on the last valid word (1 = main only).
+  int _lastComboCount = 0;
+
+  /// Total points earned from combo sub-words on the last valid word.
+  int _lastComboBonus = 0;
+
   /// Whether a finalization is already running (prevents double-taps).
   bool _isFinalizing = false;
 
@@ -147,11 +185,14 @@ class GameController extends ChangeNotifier {
   InvalidAttemptFeedback? get lastInvalidFeedback => _lastInvalidFeedback;
   List<String> get lastRemovedCellIds => _lastRemovedCellIds;
   int get lastWordScore => _lastWordScore;
+  int get lastComboCount => _lastComboCount;
+  int get lastComboBonus => _lastComboBonus;
   bool get isFinalizing => _isFinalizing;
   bool get isGameOver => movesLeft <= 0;
 
   int get score => _session?.score ?? 0;
   int get movesLeft => _session?.movesLeft ?? _config.moveLimit;
+  int get playableWordCount => _session?.playableWordCount ?? 0;
 
   List<String> get selectedCellIds =>
       _session?.selectedCellIds ?? const <String>[];
@@ -186,13 +227,20 @@ class GameController extends ChangeNotifier {
       final GameRulesConfig rules = await _rulesLoader.load();
       final Set<String> dictionary = await _dictionaryRepository.loadWords();
 
-      // Cache rules for later use (scoring + board refill).
+      // Cache rules and dictionary for later use (scoring,
+      // board refill, post-move recovery and word counting).
       _cachedRules = rules;
+      _cachedDictionary = dictionary;
 
       // Initialise scoring engine from loaded config if not
       // injected via constructor.
       if (rules.scoring != null && _scoringEngine == null) {
         _scoringEngine = ScoringEngine(scoringConfig: rules.scoring!);
+      }
+
+      // Initialise power tile engine from loaded config.
+      if (rules.powerTiles != null && _powerTileEngine == null) {
+        _powerTileEngine = PowerTileEngine(config: rules.powerTiles!);
       }
 
       GameSession session = _boardGenerator.createSession(
@@ -207,10 +255,15 @@ class GameController extends ChangeNotifier {
         boardGenerator: _boardGenerator,
       );
 
-      _session = recovery.ensurePlayable(
+      session = recovery.ensurePlayable(
         session: session,
         dictionary: dictionary,
         rules: rules,
+      );
+
+      // Compute the initial playable word count.
+      _session = session.copyWith(
+        playableWordCount: _computePlayableWordCount(session),
       );
 
       await _persistCheckpointIfActive(_session!);
@@ -235,6 +288,8 @@ class GameController extends ChangeNotifier {
     _lastInvalidFeedback = null;
     _lastRemovedCellIds = const <String>[];
     _lastWordScore = 0;
+    _lastComboCount = 0;
+    _lastComboBonus = 0;
 
     _session = activeSession.copyWith(selectedCellIds: <String>[cell.id]);
     notifyListeners();
@@ -317,9 +372,36 @@ class GameController extends ChangeNotifier {
 
         if (result.isValid) {
           int wordScore = 0;
+          int comboCount = 1;
+          int comboBonus = 0;
+
           if (_scoringEngine != null) {
             final ScoringResult scoring = _scoringEngine!.score(result.word);
             wordScore = scoring.totalScore;
+
+            // Combo detection and scoring.
+            final ComboResult comboResult = await _combo.detect(result.word);
+
+            if (comboResult.hasCombo) {
+              // Initialise combo scoring engine if needed.
+              if (_cachedRules?.scoring != null) {
+                _comboScoringEngine ??= ComboScoringEngine(
+                  scoringConfig: _cachedRules!.scoring!,
+                );
+              }
+
+              if (_comboScoringEngine != null) {
+                final ComboScoringResult comboScoring =
+                    _comboScoringEngine!.scoreWithCombo(
+                      mainWord: result.word,
+                      mainWordScore: wordScore,
+                      comboResult: comboResult,
+                    );
+                wordScore = comboScoring.totalScore;
+                comboCount = comboScoring.comboCount;
+                comboBonus = comboScoring.comboBonus;
+              }
+            }
           }
 
           List<BoardCell> newBoard = activeSession.board;
@@ -330,6 +412,7 @@ class GameController extends ChangeNotifier {
               selectedCellIds: activeSession.selectedCellIds,
               gridSize: activeSession.gridSize,
               rules: rules.boardGeneration,
+              wordLength: result.word.length,
             );
             newBoard = resolved.board;
             _lastRemovedCellIds = activeSession.selectedCellIds;
@@ -338,6 +421,8 @@ class GameController extends ChangeNotifier {
           }
 
           _lastWordScore = wordScore;
+          _lastComboCount = comboCount;
+          _lastComboBonus = comboBonus;
           updatedSession = activeSession.copyWith(
             board: newBoard,
             selectedCellIds: const <String>[],
@@ -349,14 +434,25 @@ class GameController extends ChangeNotifier {
               candidate: result.word,
             ),
           );
+
+          // Post-move recovery: ensure the new board has at
+          // least one playable word after refill. If not,
+          // trigger recovery and recompute the word count.
+          updatedSession = _ensurePostMovePlayability(updatedSession);
+
           _lastInvalidFeedback = null;
         } else {
+          // Invalid attempt — recompute word count on the
+          // unchanged board (it stays the same but we keep
+          // the count consistent since moves decreased).
           updatedSession = activeSession.copyWith(
             selectedCellIds: const <String>[],
             movesLeft: newMovesLeft,
           );
           _lastRemovedCellIds = const <String>[];
           _lastWordScore = 0;
+          _lastComboCount = 0;
+          _lastComboBonus = 0;
           _lastInvalidFeedback = InvalidAttemptFeedback(
             reason: result.reason,
             word: result.word,
@@ -372,6 +468,8 @@ class GameController extends ChangeNotifier {
         );
         _lastRemovedCellIds = const <String>[];
         _lastWordScore = 0;
+        _lastComboCount = 0;
+        _lastComboBonus = 0;
         _lastInvalidFeedback = InvalidAttemptFeedback(
           reason: WordValidationReason.notInDictionary,
           word: activeSession.selectedCellIds
@@ -480,5 +578,67 @@ class GameController extends ChangeNotifier {
     required String candidate,
   }) {
     return candidate.length > current.length ? candidate : current;
+  }
+
+  // ── Post-move board analysis ────────────────────────────────
+
+  /// Computes the non-overlapping playable word count for the
+  /// given [session] using the cached dictionary.
+  int _computePlayableWordCount(GameSession session) {
+    final Set<String>? dictionary = _cachedDictionary;
+    if (dictionary == null || dictionary.isEmpty) {
+      return 0;
+    }
+
+    return _boardAnalyzer.countNonOverlappingWords(
+      board: session.board,
+      gridSize: session.gridSize,
+      words: dictionary,
+    );
+  }
+
+  /// Ensures the board in [session] has at least one playable word.
+  ///
+  /// If the board is dead after refill, triggers
+  /// [BoardRecovery.ensurePlayable] and updates the playable word
+  /// count.  Returns the (potentially recovered) session.
+  GameSession _ensurePostMovePlayability(GameSession session) {
+    final Set<String>? dictionary = _cachedDictionary;
+    final GameRulesConfig? rules = _cachedRules;
+
+    if (dictionary == null || rules == null) {
+      // Without cached data we can't analyze — return as-is.
+      return session.copyWith(
+        playableWordCount: 0,
+      );
+    }
+
+    final bool isPlayable = _boardAnalyzer.hasPlayableWord(
+      board: session.board,
+      gridSize: session.gridSize,
+      words: dictionary,
+    );
+
+    if (!isPlayable) {
+      // Board is dead — trigger recovery.
+      final BoardRecovery recovery = BoardRecovery(
+        analyzer: _boardAnalyzer,
+        boardGenerator: _boardGenerator,
+      );
+
+      try {
+        session = recovery.ensurePlayable(
+          session: session,
+          dictionary: dictionary,
+          rules: rules,
+        );
+      } catch (error) {
+        debugPrint('post-move recovery failed: $error');
+      }
+    }
+
+    return session.copyWith(
+      playableWordCount: _computePlayableWordCount(session),
+    );
   }
 }

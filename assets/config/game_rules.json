@@ -142,5 +142,15 @@
         "letters": ["J", "Ğ", "F", "V"]
       }
     ]
+  },
+  "powerTiles": {
+    "thresholds": [
+      { "minLength": 4, "maxLength": 4, "power": "rowClear" },
+      { "minLength": 5, "maxLength": 5, "power": "areaBlast" },
+      { "minLength": 6, "maxLength": 6, "power": "columnClear" },
+      { "minLength": 7, "maxLength": 999, "power": "megaBlast" }
+    ],
+    "areaBlastRadius": 1,
+    "megaBlastRadius": 2
   }
 }

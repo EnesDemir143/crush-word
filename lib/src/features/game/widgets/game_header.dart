@@ -11,6 +11,7 @@ class GameHeader extends StatelessWidget {
     required this.activeWord,
     required this.compact,
     this.lastWordScore = 0,
+    this.playableWordCount = 0,
   });
 
   final GameConfig config;
@@ -21,6 +22,9 @@ class GameHeader extends StatelessWidget {
 
   /// Score earned on the last valid word — triggers "+X" animation.
   final int lastWordScore;
+
+  /// Number of non-overlapping playable words on the current board.
+  final int playableWordCount;
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +79,10 @@ class GameHeader extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     _AnimatedMovesPill(movesLeft: movesLeft),
+                    const SizedBox(width: 8),
+                    _PlayableWordCountPill(
+                      count: playableWordCount,
+                    ),
                   ],
                 ),
               ],
@@ -423,6 +431,75 @@ class _ActiveWordStrip extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _PlayableWordCountPill extends StatefulWidget {
+  const _PlayableWordCountPill({required this.count});
+
+  final int count;
+
+  @override
+  State<_PlayableWordCountPill> createState() =>
+      _PlayableWordCountPillState();
+}
+
+class _PlayableWordCountPillState extends State<_PlayableWordCountPill>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _pulseController;
+  late final Animation<double> _pulseScale;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 350),
+    );
+    _pulseScale =
+        TweenSequence<double>(<TweenSequenceItem<double>>[
+          TweenSequenceItem<double>(
+            tween: Tween<double>(begin: 1, end: 1.2),
+            weight: 40,
+          ),
+          TweenSequenceItem<double>(
+            tween: Tween<double>(begin: 1.2, end: 1),
+            weight: 60,
+          ),
+        ]).animate(
+          CurvedAnimation(parent: _pulseController, curve: Curves.easeOutCubic),
+        );
+  }
+
+  @override
+  void didUpdateWidget(covariant _PlayableWordCountPill oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.count != oldWidget.count) {
+      _pulseController
+        ..reset()
+        ..forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _pulseController,
+      builder: (BuildContext context, Widget? child) {
+        return Transform.scale(scale: _pulseScale.value, child: child);
+      },
+      child: _MetricPill(
+        icon: Icons.auto_stories_rounded,
+        value: '${widget.count}',
+        color: const Color(0xFF7C5CBF),
       ),
     );
   }

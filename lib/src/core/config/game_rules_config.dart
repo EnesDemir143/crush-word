@@ -1,3 +1,4 @@
+import 'package:crush_word/src/core/gameplay/models/board_cell.dart';
 import 'package:crush_word/src/core/models/game_config.dart';
 import 'package:crush_word/src/core/models/game_difficulty.dart';
 
@@ -48,6 +49,7 @@ class GameRulesConfig {
     required this.boardGeneration,
     this.scoring,
     this.market,
+    this.powerTiles,
   });
 
   final GameSetupRules setup;
@@ -58,11 +60,16 @@ class GameRulesConfig {
   final ScoringConfig? scoring;
   final MarketRules? market;
 
+  /// Null when loaded from legacy JSON that predates the power
+  /// tiles section — callers must handle this gracefully.
+  final PowerTileConfig? powerTiles;
+
   factory GameRulesConfig.fromJson(Map<String, dynamic> json) {
     final Object? setupJson = json['setup'];
     final Object? boardGenerationJson = json['boardGeneration'];
     final Object? scoringJson = json['scoring'];
     final Object? marketJson = json['market'];
+    final Object? powerTilesJson = json['powerTiles'];
 
     if (setupJson is! Map<String, dynamic>) {
       throw const FormatException(
@@ -84,6 +91,9 @@ class GameRulesConfig {
           : null,
       market: marketJson is Map<String, dynamic>
           ? MarketRules.fromJson(marketJson)
+          : null,
+      powerTiles: powerTilesJson is Map<String, dynamic>
+          ? PowerTileConfig.fromJson(powerTilesJson)
           : null,
     );
   }
@@ -418,3 +428,102 @@ class GameMoveCountOption {
     );
   }
 }
+
+// ── Power Tile Configuration ──────────────────────────────────
+
+/// A single threshold entry that maps a word-length range to a
+/// [BoardCellPower] type.
+class PowerTileThreshold {
+  const PowerTileThreshold({
+    required this.minLength,
+    required this.maxLength,
+    required this.power,
+  });
+
+  final int minLength;
+  final int maxLength;
+  final BoardCellPower power;
+
+  /// Returns `true` if a word of [wordLength] matches this threshold.
+  bool matches(int wordLength) =>
+      wordLength >= minLength && wordLength <= maxLength;
+
+  factory PowerTileThreshold.fromJson(Map<String, dynamic> json) {
+    final int? minLength = (json['minLength'] as num?)?.toInt();
+    final int? maxLength = (json['maxLength'] as num?)?.toInt();
+    final String powerName = (json['power'] as String?)?.trim() ?? '';
+
+    if (minLength == null || maxLength == null || powerName.isEmpty) {
+      throw const FormatException(
+        'PowerTileThreshold requires minLength, maxLength and power.',
+      );
+    }
+
+    return PowerTileThreshold(
+      minLength: minLength,
+      maxLength: maxLength,
+      power: BoardCellPower.fromName(powerName),
+    );
+  }
+}
+
+/// Configuration for power-tile creation and blast effects.
+///
+/// Loaded from the `powerTiles` section of `game_rules.json`.
+class PowerTileConfig {
+  const PowerTileConfig({
+    required this.thresholds,
+    this.areaBlastRadius = 1,
+    this.megaBlastRadius = 2,
+  });
+
+  /// Ordered list of word-length → power mappings.
+  final List<PowerTileThreshold> thresholds;
+
+  /// Radius (in cells) for [BoardCellPower.areaBlast] effects.
+  final int areaBlastRadius;
+
+  /// Radius (in cells) for [BoardCellPower.megaBlast] effects.
+  final int megaBlastRadius;
+
+  /// Returns the power type for a word of [wordLength], or `null`
+  /// if no threshold matches (word too short to earn a power).
+  BoardCellPower? powerForWordLength(int wordLength) {
+    for (final PowerTileThreshold threshold in thresholds) {
+      if (threshold.matches(wordLength)) {
+        return threshold.power;
+      }
+    }
+    return null;
+  }
+
+  factory PowerTileConfig.fromJson(Map<String, dynamic> json) {
+    final Object? thresholdsJson = json['thresholds'];
+    final int areaBlastRadius =
+        (json['areaBlastRadius'] as num?)?.toInt() ?? 1;
+    final int megaBlastRadius =
+        (json['megaBlastRadius'] as num?)?.toInt() ?? 2;
+
+    if (thresholdsJson is! List<dynamic> || thresholdsJson.isEmpty) {
+      throw const FormatException(
+        'PowerTileConfig requires at least one threshold.',
+      );
+    }
+
+    return PowerTileConfig(
+      thresholds: thresholdsJson
+          .map((Object? t) {
+            if (t is! Map<String, dynamic>) {
+              throw const FormatException(
+                'Each power tile threshold must be a JSON object.',
+              );
+            }
+            return PowerTileThreshold.fromJson(t);
+          })
+          .toList(growable: false),
+      areaBlastRadius: areaBlastRadius,
+      megaBlastRadius: megaBlastRadius,
+    );
+  }
+}
+
