@@ -11,6 +11,7 @@ class JokerBar extends StatelessWidget {
     required this.jokers,
     required this.inventoryById,
     required this.onJokerPressed,
+    this.onJokerBuyRequested,
     this.activeJokerId,
     this.helperText,
     this.enabled = true,
@@ -19,6 +20,7 @@ class JokerBar extends StatelessWidget {
   final List<MarketJokerDefinition> jokers;
   final Map<String, int> inventoryById;
   final ValueChanged<String> onJokerPressed;
+  final ValueChanged<String>? onJokerBuyRequested;
   final String? activeJokerId;
   final String? helperText;
   final bool enabled;
@@ -75,6 +77,9 @@ class JokerBar extends StatelessWidget {
                           isActive: activeJokerId == joker.id,
                           enabled: enabled,
                           onPressed: () => onJokerPressed(joker.id),
+                          onBuyRequested: onJokerBuyRequested != null
+                              ? () => onJokerBuyRequested!(joker.id)
+                              : null,
                         ),
                       ),
                     )
@@ -95,6 +100,7 @@ class _JokerOrb extends StatefulWidget {
     required this.isActive,
     required this.enabled,
     required this.onPressed,
+    this.onBuyRequested,
   });
 
   final MarketJokerDefinition joker;
@@ -102,13 +108,13 @@ class _JokerOrb extends StatefulWidget {
   final bool isActive;
   final bool enabled;
   final VoidCallback onPressed;
+  final VoidCallback? onBuyRequested;
 
   @override
   State<_JokerOrb> createState() => _JokerOrbState();
 }
 
-class _JokerOrbState extends State<_JokerOrb>
-    with SingleTickerProviderStateMixin {
+class _JokerOrbState extends State<_JokerOrb> with TickerProviderStateMixin {
   AnimationController? _partyController;
   Animation<double>? _partyPulse;
   Animation<double>? _partySpin;
@@ -155,9 +161,10 @@ class _JokerOrbState extends State<_JokerOrb>
     )..repeat();
 
     _partyController = controller;
-    _partyPulse = Tween<double>(begin: 0.92, end: 1.08).animate(
-      CurvedAnimation(parent: controller, curve: Curves.easeInOut),
-    );
+    _partyPulse = Tween<double>(
+      begin: 0.92,
+      end: 1.08,
+    ).animate(CurvedAnimation(parent: controller, curve: Curves.easeInOut));
     _partySpin = CurvedAnimation(parent: controller, curve: Curves.linear);
   }
 
@@ -170,7 +177,7 @@ class _JokerOrbState extends State<_JokerOrb>
 
   @override
   Widget build(BuildContext context) {
-    final bool isAvailable = widget.enabled && widget.quantity > 0;
+    final bool isInteractive = widget.enabled;
     final bool isPartyBooster = _isPartyBooster;
     final Color accentColor = widget.isActive
         ? const Color(0xFF0F615B)
@@ -179,13 +186,13 @@ class _JokerOrbState extends State<_JokerOrb>
         : widget.quantity > 0
         ? const Color(0xFF7A4E15)
         : const Color(0xFFB7AA96);
-    final bool showPressedState = isAvailable && _isPressed;
+    final bool showPressedState = isInteractive && _isPressed;
 
     return Material(
       color: Colors.transparent,
       child: Semantics(
         button: true,
-        enabled: isAvailable,
+        enabled: isInteractive,
         label: '${widget.joker.name}, x${widget.quantity}',
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -204,9 +211,17 @@ class _JokerOrbState extends State<_JokerOrb>
                 ),
                 child: InkWell(
                   key: Key('joker-bar-${widget.joker.id}'),
-                  onTap: isAvailable ? widget.onPressed : null,
+                  onTap: isInteractive
+                      ? () {
+                          if (widget.quantity > 0) {
+                            widget.onPressed();
+                          } else if (widget.onBuyRequested != null) {
+                            widget.onBuyRequested!();
+                          }
+                        }
+                      : null,
                   onHighlightChanged: (bool highlighted) {
-                    if (!isAvailable || _isPressed == highlighted) {
+                    if (!isInteractive || _isPressed == highlighted) {
                       return;
                     }
                     setState(() {
@@ -274,7 +289,9 @@ class _JokerOrbState extends State<_JokerOrb>
                       child: Stack(
                         fit: StackFit.expand,
                         children: <Widget>[
-                          if (isPartyBooster && widget.quantity > 0 && _partyController != null)
+                          if (isPartyBooster &&
+                              widget.quantity > 0 &&
+                              _partyController != null)
                             AnimatedBuilder(
                               animation: _partyController!,
                               builder: (BuildContext context, Widget? child) {
@@ -290,7 +307,13 @@ class _JokerOrbState extends State<_JokerOrb>
                                           shape: BoxShape.circle,
                                           gradient: RadialGradient(
                                             colors: <Color>[
-                                              const Color(0xFFFFE6F9).withValues(alpha: widget.isActive ? 0.32 : 0.44),
+                                              const Color(
+                                                0xFFFFE6F9,
+                                              ).withValues(
+                                                alpha: widget.isActive
+                                                    ? 0.32
+                                                    : 0.44,
+                                              ),
                                               Colors.transparent,
                                             ],
                                           ),
@@ -305,9 +328,13 @@ class _JokerOrbState extends State<_JokerOrb>
                                           gradient: SweepGradient(
                                             colors: <Color>[
                                               Colors.transparent,
-                                              const Color(0xFFFFD86E).withValues(alpha: 0.55),
+                                              const Color(
+                                                0xFFFFD86E,
+                                              ).withValues(alpha: 0.55),
                                               Colors.transparent,
-                                              const Color(0xFFFF8AD6).withValues(alpha: 0.45),
+                                              const Color(
+                                                0xFFFF8AD6,
+                                              ).withValues(alpha: 0.45),
                                               Colors.transparent,
                                             ],
                                           ),
@@ -338,6 +365,29 @@ class _JokerOrbState extends State<_JokerOrb>
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: Color(0x18000000),
+                              ),
+                            ),
+                          if (widget.quantity <= 0)
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFE8DCC8),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 1.5,
+                                  ),
+                                ),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(3),
+                                  child: Icon(
+                                    Icons.add_rounded,
+                                    size: 14,
+                                    color: Color(0xFF7A6F62),
+                                  ),
+                                ),
                               ),
                             ),
                         ],

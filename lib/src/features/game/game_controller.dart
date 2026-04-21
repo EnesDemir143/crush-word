@@ -361,6 +361,13 @@ class GameController extends ChangeNotifier {
     }
   }
 
+  Future<void> refreshInventory() async {
+    if (_session == null) return;
+    final Map<String, int> inventory = await _loadJokerInventorySafe();
+    _session = _session!.copyWith(jokerInventory: inventory);
+    notifyListeners();
+  }
+
   void startSelection(BoardCell cell) {
     final GameSession? activeSession = _session;
 

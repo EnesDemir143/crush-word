@@ -11,6 +11,8 @@ import 'package:crush_word/src/features/game/exit_confirmation_dialog.dart';
 import 'package:crush_word/src/features/game/widgets/game_header.dart';
 import 'package:crush_word/src/features/game/widgets/joker_bar.dart';
 import 'package:crush_word/src/features/game/widgets/letter_grid.dart';
+import 'package:crush_word/src/features/market/market_controller.dart';
+import 'package:crush_word/src/core/presentation/joker_art.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({super.key, required this.config, this.controller});
@@ -193,6 +195,9 @@ class _GameBody extends StatelessWidget {
       onJokerPressed: (String jokerId) {
         unawaited(controller.activateJoker(jokerId));
       },
+      onJokerBuyRequested: (String jokerId) {
+        unawaited(_buyJokerInGame(context, jokerId));
+      },
     );
 
     return Stack(
@@ -291,6 +296,235 @@ class _GameBody extends StatelessWidget {
         (constraints.maxWidth * 0.58) - boardChrome,
       ),
     );
+  }
+
+  Future<void> _buyJokerInGame(BuildContext context, String jokerId) async {
+    final joker = controller.availableJokers.firstWhere((j) => j.id == jokerId);
+
+    // Briefly show a loading indicator while we check gold balance
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext ctx) =>
+          const Center(child: CircularProgressIndicator()),
+    );
+
+    final MarketController market = MarketController();
+    await market.load();
+
+    if (!context.mounted) {
+      market.dispose();
+      return;
+    }
+
+    // Dismiss the loader
+    Navigator.of(context).pop();
+
+    final int currentGold = market.goldBalance;
+    final bool canAfford = currentGold >= joker.cost;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext ctx) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 340),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(28),
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: <Color>[Color(0xFFFFFCF7), Color(0xFFF6EFE2)],
+                ),
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                    color: const Color(0xFF0F172A).withValues(alpha: 0.15),
+                    blurRadius: 40,
+                    offset: const Offset(0, 20),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    DecoratedBox(
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          colors: <Color>[Color(0xFF1A5D57), Color(0xFF2E8B7A)],
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: JokerArtImage(
+                          jokerId: joker.id,
+                          size: 48,
+                          circular: true,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      '${joker.name} Satın Al',
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF3A3025),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Bu jokerden kalmadı. ${joker.cost} Altın karşılığında hemen satın alıp oynamaya devam edebilirsin.',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF7A6F62),
+                        height: 1.45,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFDF8F0),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: const Color(0xFFE5D4BA)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          const Text(
+                            'Bakiyen:',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF6E5432),
+                            ),
+                          ),
+                          Row(
+                            children: <Widget>[
+                              const Icon(
+                                Icons.monetization_on_rounded,
+                                color: Color(0xFF9A6B00),
+                                size: 18,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '$currentGold',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w900,
+                                  color: canAfford
+                                      ? const Color(0xFF6E5432)
+                                      : const Color(0xFFB91C1C),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 28),
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () => Navigator.of(ctx).pop(false),
+                            style: TextButton.styleFrom(
+                              foregroundColor: const Color(0xFF7A6F62),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                            ),
+                            child: const Text(
+                              'İptal',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: FilledButton.icon(
+                            onPressed: canAfford
+                                ? () => Navigator.of(ctx).pop(true)
+                                : null,
+                            icon: const Icon(
+                              Icons.shopping_cart_checkout_rounded,
+                              size: 18,
+                            ),
+                            label: const Text(
+                              'Satın Al',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            style: FilledButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    if (confirmed != true) {
+      market.dispose();
+      return;
+    }
+
+    if (!context.mounted) {
+      market.dispose();
+      return;
+    }
+
+    // Show loading overlay during purchase
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext ctx) =>
+          const Center(child: CircularProgressIndicator()),
+    );
+
+    final MarketPurchaseStatus status = await market.purchaseJoker(joker);
+    market.dispose();
+
+    if (!context.mounted) return;
+
+    // Close loading overlay
+    Navigator.of(context).pop();
+
+    if (status == MarketPurchaseStatus.success) {
+      await controller.refreshInventory();
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text('${joker.name} alındı! Kullanabilirsin.')),
+        );
+    } else if (status == MarketPurchaseStatus.insufficientGold) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(const SnackBar(content: Text('Yeterli altının yok.')));
+    } else {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(const SnackBar(content: Text('İşlem devam ediyor.')));
+    }
   }
 }
 
