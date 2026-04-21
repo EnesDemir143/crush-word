@@ -8,6 +8,7 @@ class GameHeader extends StatelessWidget {
     required this.activeWord,
     required this.compact,
     this.lastWordScore = 0,
+    this.comboCount = 1,
     this.playableWordCount = 0,
   });
 
@@ -18,6 +19,9 @@ class GameHeader extends StatelessWidget {
 
   /// Score earned on the last valid word — triggers "+X" animation.
   final int lastWordScore;
+
+  /// Combo count from the last valid word (x1 = no extra combo).
+  final int comboCount;
 
   /// Number of non-overlapping playable words on the current board.
   final int playableWordCount;
@@ -62,6 +66,7 @@ class GameHeader extends StatelessWidget {
                 final Widget scorePill = _AnimatedScorePill(
                   score: score,
                   lastWordScore: lastWordScore,
+                  comboCount: comboCount,
                 );
                 final Widget playablePill = _PlayableWordCountPill(
                   count: playableWordCount,
@@ -109,10 +114,15 @@ class GameHeader extends StatelessWidget {
 }
 
 class _AnimatedScorePill extends StatefulWidget {
-  const _AnimatedScorePill({required this.score, required this.lastWordScore});
+  const _AnimatedScorePill({
+    required this.score,
+    required this.lastWordScore,
+    required this.comboCount,
+  });
 
   final int score;
   final int lastWordScore;
+  final int comboCount;
 
   @override
   State<_AnimatedScorePill> createState() => _AnimatedScorePillState();
@@ -193,7 +203,7 @@ class _AnimatedScorePillState extends State<_AnimatedScorePill>
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 48,
+      height: 62,
       child: Stack(
         clipBehavior: Clip.none,
         alignment: Alignment.center,
@@ -223,7 +233,10 @@ class _AnimatedScorePillState extends State<_AnimatedScorePill>
             builder: (BuildContext context, Widget? child) {
               return Transform.scale(scale: _pulseScale.value, child: child);
             },
-            child: _DigitalScoreDisplay(value: _formatScore(_displayedScore)),
+            child: _DigitalScoreDisplay(
+              value: _formatScore(_displayedScore),
+              comboCount: widget.comboCount,
+            ),
           ),
         ],
       ),
@@ -277,38 +290,39 @@ String _formatScore(int score) {
 }
 
 class _DigitalScoreDisplay extends StatelessWidget {
-  const _DigitalScoreDisplay({required this.value});
+  const _DigitalScoreDisplay({required this.value, required this.comboCount});
 
   final String value;
+  final int comboCount;
 
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: <Color>[Color(0xFF25333A), Color(0xFF10191F)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: <Color>[Color(0xFFFFF7E6), Color(0xFFF3E4BE)],
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF405661), width: 1.2),
+        border: Border.all(color: const Color(0xFFE2C98C), width: 1.2),
         boxShadow: const <BoxShadow>[
           BoxShadow(
-            color: Color(0x30000000),
+            color: Color(0x1F8B6A12),
             blurRadius: 10,
             offset: Offset(0, 4),
           ),
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 5, 12, 7),
+        padding: const EdgeInsets.fromLTRB(12, 5, 12, 8),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             Text(
               'SKOR',
               style: TextStyle(
-                color: const Color(0xFF8FA6B1).withValues(alpha: 0.95),
+                color: const Color(0xFF8B6A12).withValues(alpha: 0.92),
                 fontSize: 9,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 1.6,
@@ -320,7 +334,7 @@ class _DigitalScoreDisplay extends StatelessWidget {
               value,
               key: const Key('game-score-display'),
               style: const TextStyle(
-                color: Color(0xFFFFD34D),
+                color: Color(0xFFD28C00),
                 fontSize: 22,
                 fontWeight: FontWeight.w900,
                 height: 1,
@@ -328,13 +342,27 @@ class _DigitalScoreDisplay extends StatelessWidget {
                 fontFamily: 'monospace',
                 fontFeatures: <FontFeature>[FontFeature.tabularFigures()],
                 shadows: <Shadow>[
-                  Shadow(color: Color(0xCCFFB300), blurRadius: 10),
+                  Shadow(color: Color(0x66FFD54F), blurRadius: 8),
                   Shadow(
-                    color: Color(0x661A1A1A),
+                    color: Color(0x33FFF8E1),
                     offset: Offset(0, 1),
                     blurRadius: 2,
                   ),
                 ],
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              'x${comboCount <= 0 ? 1 : comboCount}',
+              key: const Key('game-combo-display'),
+              style: TextStyle(
+                color: comboCount > 1
+                    ? const Color(0xFFB77A00)
+                    : const Color(0xFF8B6A12).withValues(alpha: 0.7),
+                fontSize: 10,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.8,
+                height: 1,
               ),
             ),
           ],

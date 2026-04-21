@@ -69,58 +69,67 @@ class _GameScreenState extends State<GameScreen> {
               elevation: 0,
             ),
             extendBodyBehindAppBar: true,
-            body: DecoratedBox(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: <Color>[
-                    Color(0xFFF6EFE3),
-                    Color(0xFFEDE6D8),
-                    Color(0xFFDCE8E0),
-                  ],
+            body: Stack(
+              children: <Widget>[
+                Positioned.fill(
+                  child: Image.asset(
+                    'assets/images/gameplay_background.png',
+                    fit: BoxFit.cover,
+                    filterQuality: FilterQuality.high,
+                  ),
                 ),
-              ),
-              child: Stack(
-                children: <Widget>[
-                  const _BackgroundGlow(
-                    alignment: Alignment.topLeft,
-                    color: Color(0x3395C9A3),
-                    diameter: 240,
-                  ),
-                  const _BackgroundGlow(
-                    alignment: Alignment.centerRight,
-                    color: Color(0x33D29A5A),
-                    diameter: 280,
-                  ),
-                  const _BackgroundGlow(
-                    alignment: Alignment.bottomLeft,
-                    color: Color(0x33538F87),
-                    diameter: 220,
-                  ),
-                  SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                      child: switch ((session, _controller.isLoading)) {
-                        (null, true) => const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                        (null, false) => _GameLoadError(
-                          message:
-                              _controller.errorMessage ??
-                              'Oyun tahtası yüklenemedi.',
-                          onRetry: () => _controller.load(force: true),
-                        ),
-                        _ => _GameBody(
-                          session: session!,
-                          controller: _controller,
-                          onReturnHome: _returnHome,
-                        ),
-                      },
+                Positioned.fill(
+                  child: DecoratedBox(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: <Color>[
+                          Color(0x66FFF8EE),
+                          Color(0x52FFF4E2),
+                          Color(0x5EE8F8FF),
+                        ],
+                      ),
                     ),
                   ),
-                ],
-              ),
+                ),
+                const _BackgroundGlow(
+                  alignment: Alignment.topLeft,
+                  color: Color(0x2695C9A3),
+                  diameter: 240,
+                ),
+                const _BackgroundGlow(
+                  alignment: Alignment.centerRight,
+                  color: Color(0x26D29A5A),
+                  diameter: 280,
+                ),
+                const _BackgroundGlow(
+                  alignment: Alignment.bottomLeft,
+                  color: Color(0x22538F87),
+                  diameter: 220,
+                ),
+                SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                    child: switch ((session, _controller.isLoading)) {
+                      (null, true) => const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                      (null, false) => _GameLoadError(
+                        message:
+                            _controller.errorMessage ??
+                            'Oyun tahtası yüklenemedi.',
+                        onRetry: () => _controller.load(force: true),
+                      ),
+                      _ => _GameBody(
+                        session: session!,
+                        controller: _controller,
+                        onReturnHome: _returnHome,
+                      ),
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
         );
@@ -221,6 +230,7 @@ class _GameBody extends StatelessWidget {
                                 activeWord: controller.selectedWord,
                                 compact: constraints.maxHeight < 760,
                                 lastWordScore: controller.lastWordScore,
+                                comboCount: controller.lastComboCount,
                                 playableWordCount: controller.playableWordCount,
                               ),
                               const SizedBox(height: 12),
@@ -246,6 +256,7 @@ class _GameBody extends StatelessWidget {
                   activeWord: controller.selectedWord,
                   compact: useCompactChrome,
                   lastWordScore: controller.lastWordScore,
+                  comboCount: controller.lastComboCount,
                   playableWordCount: controller.playableWordCount,
                 ),
                 _AnimatedFeedback(feedback: feedback),
@@ -429,6 +440,9 @@ class _BoardStageState extends State<_BoardStage>
         comboCount: widget.controller.lastComboCount,
         createdPower: widget.controller.lastCreatedPower,
         activatedPowers: widget.controller.lastActivatedPowers,
+        lastJokerEffectId: widget.controller.lastJokerEffectId,
+        partyCastToken: widget.controller.partyCastToken,
+        isPartyCasting: widget.controller.isPartyCasting,
       ),
     );
 

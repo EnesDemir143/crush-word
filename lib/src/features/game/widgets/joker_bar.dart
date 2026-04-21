@@ -1,7 +1,9 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import 'package:crush_word/src/core/config/game_rules_config.dart';
-import 'package:crush_word/src/core/gameplay/services/joker_engine.dart';
+import 'package:crush_word/src/core/presentation/joker_art.dart';
 
 class JokerBar extends StatelessWidget {
   const JokerBar({
@@ -45,38 +47,21 @@ class JokerBar extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Row(
-              children: <Widget>[
-                const Icon(
-                  Icons.auto_awesome_rounded,
-                  color: Color(0xFF7A4E15),
-                ),
-                const SizedBox(width: 8),
-                const Expanded(
-                  child: Text(
-                    'Jokerler',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w900,
-                      color: Color(0xFF3A3025),
-                    ),
+            if (helperText != null) ...<Widget>[
+              Align(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  helperText!,
+                  textAlign: TextAlign.right,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    height: 1.3,
+                    color: Color(0xFF6F6355),
                   ),
                 ),
-                if (helperText != null)
-                  Flexible(
-                    child: Text(
-                      helperText!,
-                      textAlign: TextAlign.right,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        height: 1.3,
-                        color: Color(0xFF6F6355),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 12),
+              ),
+              const SizedBox(height: 10),
+            ],
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -103,7 +88,7 @@ class JokerBar extends StatelessWidget {
   }
 }
 
-class _JokerOrb extends StatelessWidget {
+class _JokerOrb extends StatefulWidget {
   const _JokerOrb({
     required this.joker,
     required this.quantity,
@@ -119,97 +104,261 @@ class _JokerOrb extends StatelessWidget {
   final VoidCallback onPressed;
 
   @override
+  State<_JokerOrb> createState() => _JokerOrbState();
+}
+
+class _JokerOrbState extends State<_JokerOrb>
+    with SingleTickerProviderStateMixin {
+  AnimationController? _partyController;
+  Animation<double>? _partyPulse;
+  Animation<double>? _partySpin;
+  bool _isPressed = false;
+
+  bool get _isPartyBooster => widget.joker.id == 'party_booster';
+
+  @override
+  void initState() {
+    super.initState();
+    _updatePartyAnimation();
+  }
+
+  @override
+  void didUpdateWidget(covariant _JokerOrb oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.joker.id != widget.joker.id ||
+        oldWidget.quantity != widget.quantity) {
+      _updatePartyAnimation();
+    }
+  }
+
+  @override
+  void dispose() {
+    _disposePartyAnimation();
+    super.dispose();
+  }
+
+  void _updatePartyAnimation() {
+    final bool shouldAnimate = _isPartyBooster && widget.quantity > 0;
+
+    if (!shouldAnimate) {
+      _disposePartyAnimation();
+      return;
+    }
+
+    if (_partyController != null) {
+      return;
+    }
+
+    final AnimationController controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1800),
+    )..repeat();
+
+    _partyController = controller;
+    _partyPulse = Tween<double>(begin: 0.92, end: 1.08).animate(
+      CurvedAnimation(parent: controller, curve: Curves.easeInOut),
+    );
+    _partySpin = CurvedAnimation(parent: controller, curve: Curves.linear);
+  }
+
+  void _disposePartyAnimation() {
+    _partyController?.dispose();
+    _partyController = null;
+    _partyPulse = null;
+    _partySpin = null;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final bool isAvailable = enabled && quantity > 0;
-    final Color accentColor = isActive
+    final bool isAvailable = widget.enabled && widget.quantity > 0;
+    final bool isPartyBooster = _isPartyBooster;
+    final Color accentColor = widget.isActive
         ? const Color(0xFF0F615B)
-        : quantity > 0
+        : isPartyBooster && widget.quantity > 0
+        ? const Color(0xFFB83CB8)
+        : widget.quantity > 0
         ? const Color(0xFF7A4E15)
         : const Color(0xFFB7AA96);
+    final bool showPressedState = isAvailable && _isPressed;
 
     return Material(
       color: Colors.transparent,
       child: Semantics(
         button: true,
         enabled: isAvailable,
-        label: '${joker.name}, x$quantity',
+        label: '${widget.joker.name}, x${widget.quantity}',
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            InkWell(
-              key: Key('joker-bar-${joker.id}'),
-              onTap: isAvailable ? onPressed : null,
-              borderRadius: BorderRadius.circular(999),
+            AnimatedScale(
+              scale: showPressedState ? 0.92 : 1,
+              duration: const Duration(milliseconds: 110),
+              curve: Curves.easeOutCubic,
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
-                width: 72,
-                height: 72,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: isActive
-                        ? const <Color>[Color(0xFF1D6D67), Color(0xFF0F4E4A)]
-                        : quantity > 0
-                        ? const <Color>[Color(0xFFFFFCF6), Color(0xFFF4E8D5)]
-                        : const <Color>[Color(0xFFF2ECE2), Color(0xFFE3D9CB)],
-                  ),
-                  border: Border.all(
-                    color: isActive
-                        ? const Color(0xFFFFE7B0)
-                        : quantity > 0
-                        ? const Color(0xFFE5D4BA)
-                        : const Color(0xFFD5C8B7),
-                    width: isActive ? 2.6 : 1.4,
-                  ),
-                  boxShadow: <BoxShadow>[
-                    BoxShadow(
-                      color: accentColor.withValues(
-                        alpha: isActive ? 0.24 : 0.12,
-                      ),
-                      blurRadius: isActive ? 18 : 10,
-                      offset: const Offset(0, 6),
-                    ),
-                  ],
+                duration: const Duration(milliseconds: 110),
+                curve: Curves.easeOutCubic,
+                transform: Matrix4.translationValues(
+                  0,
+                  showPressedState ? 2 : 0,
+                  0,
                 ),
-                child: Center(
-                  child: Icon(
-                    _iconFor(joker.id),
-                    size: 30,
-                    color: isActive
-                        ? Colors.white
-                        : quantity > 0
-                        ? const Color(0xFF7A4E15)
-                        : const Color(0xFF9A8C7A),
+                child: InkWell(
+                  key: Key('joker-bar-${widget.joker.id}'),
+                  onTap: isAvailable ? widget.onPressed : null,
+                  onHighlightChanged: (bool highlighted) {
+                    if (!isAvailable || _isPressed == highlighted) {
+                      return;
+                    }
+                    setState(() {
+                      _isPressed = highlighted;
+                    });
+                  },
+                  borderRadius: BorderRadius.circular(999),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    width: 72,
+                    height: 72,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: isPartyBooster && widget.quantity > 0
+                            ? (widget.isActive
+                                  ? const <Color>[
+                                      Color(0xFF7B2CBF),
+                                      Color(0xFF5A189A),
+                                    ]
+                                  : const <Color>[
+                                      Color(0xFFFFF0FB),
+                                      Color(0xFFFFD9F1),
+                                    ])
+                            : widget.isActive
+                            ? const <Color>[
+                                Color(0xFF1D6D67),
+                                Color(0xFF0F4E4A),
+                              ]
+                            : widget.quantity > 0
+                            ? const <Color>[
+                                Color(0xFFFFFCF6),
+                                Color(0xFFF4E8D5),
+                              ]
+                            : const <Color>[
+                                Color(0xFFF2ECE2),
+                                Color(0xFFE3D9CB),
+                              ],
+                      ),
+                      border: Border.all(
+                        color: isPartyBooster && widget.quantity > 0
+                            ? const Color(0xFFFFD86E)
+                            : widget.isActive
+                            ? const Color(0xFFFFE7B0)
+                            : widget.quantity > 0
+                            ? const Color(0xFFE5D4BA)
+                            : const Color(0xFFD5C8B7),
+                        width: widget.isActive ? 2.6 : 1.4,
+                      ),
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                          color: accentColor.withValues(
+                            alpha: widget.isActive ? 0.24 : 0.12,
+                          ),
+                          blurRadius: showPressedState
+                              ? (widget.isActive ? 10 : 5)
+                              : (widget.isActive ? 18 : 10),
+                          offset: Offset(0, showPressedState ? 2 : 6),
+                        ),
+                      ],
+                    ),
+                    child: ClipOval(
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: <Widget>[
+                          if (isPartyBooster && widget.quantity > 0 && _partyController != null)
+                            AnimatedBuilder(
+                              animation: _partyController!,
+                              builder: (BuildContext context, Widget? child) {
+                                final double pulse = _partyPulse?.value ?? 1;
+                                final double spin = _partySpin?.value ?? 0;
+                                return Stack(
+                                  fit: StackFit.expand,
+                                  children: <Widget>[
+                                    Transform.scale(
+                                      scale: pulse,
+                                      child: DecoratedBox(
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          gradient: RadialGradient(
+                                            colors: <Color>[
+                                              const Color(0xFFFFE6F9).withValues(alpha: widget.isActive ? 0.32 : 0.44),
+                                              Colors.transparent,
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Transform.rotate(
+                                      angle: spin * math.pi * 2,
+                                      child: DecoratedBox(
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          gradient: SweepGradient(
+                                            colors: <Color>[
+                                              Colors.transparent,
+                                              const Color(0xFFFFD86E).withValues(alpha: 0.55),
+                                              Colors.transparent,
+                                              const Color(0xFFFF8AD6).withValues(alpha: 0.45),
+                                              Colors.transparent,
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
+                          JokerArtImage(
+                            jokerId: widget.joker.id,
+                            size: 72,
+                            opacity: widget.quantity > 0 ? 1 : 0.48,
+                            circular: true,
+                          ),
+                          if (widget.isActive || widget.quantity <= 0)
+                            DecoratedBox(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: widget.isActive
+                                    ? const Color(0x220F4E4A)
+                                    : const Color(0x55F2ECE2),
+                              ),
+                            ),
+                          if (showPressedState)
+                            const DecoratedBox(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Color(0x18000000),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'x$quantity',
+              'x${widget.quantity}',
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w900,
-                color: isActive ? const Color(0xFF0F615B) : accentColor,
+                color: widget.isActive ? const Color(0xFF0F615B) : accentColor,
               ),
             ),
           ],
         ),
       ),
     );
-  }
-
-  IconData _iconFor(String jokerId) {
-    return switch (jokerId) {
-      JokerIds.fish => Icons.set_meal_rounded,
-      JokerIds.wheel => Icons.radio_button_checked_rounded,
-      JokerIds.lollipopBreaker => Icons.close_rounded,
-      JokerIds.freeSwap => Icons.swap_horiz_rounded,
-      JokerIds.shuffleLetters => Icons.shuffle_rounded,
-      JokerIds.partyBooster => Icons.celebration_rounded,
-      _ => Icons.auto_awesome_rounded,
-    };
   }
 }

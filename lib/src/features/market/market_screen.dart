@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import 'package:crush_word/src/core/config/game_rules_config.dart';
+import 'package:crush_word/src/core/presentation/joker_art.dart';
 import 'package:crush_word/src/features/market/market_controller.dart';
 
 class MarketScreen extends StatefulWidget {
@@ -159,7 +160,32 @@ class _MarketScreenState extends State<MarketScreen> {
             actions: <Widget>[
               Padding(
                 padding: const EdgeInsets.only(right: 16),
-                child: _GoldHeaderChip(goldBalance: _controller.goldBalance),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    _GoldHeaderChip(goldBalance: _controller.goldBalance),
+                    const SizedBox(width: 8),
+                    FilledButton.tonalIcon(
+                      key: const Key('market-debug-add-gold'),
+                      onPressed: () async {
+                        final int nextBalance = _controller.goldBalance + 10000;
+                        await _controller.setGoldBalanceForDebug(nextBalance);
+                        if (!context.mounted) {
+                          return;
+                        }
+                        ScaffoldMessenger.of(context)
+                          ..hideCurrentSnackBar()
+                          ..showSnackBar(
+                            const SnackBar(
+                              content: Text('+10000 altın eklendi.'),
+                            ),
+                          );
+                      },
+                      icon: const Icon(Icons.add_circle_rounded, size: 18),
+                      label: const Text('+10K'),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -422,14 +448,14 @@ class _JokerArtwork extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
+        shape: BoxShape.circle,
         gradient: const LinearGradient(
           colors: <Color>[Color(0xFF1A5D57), Color(0xFF2E8B7A)],
         ),
       ),
       child: Padding(
         padding: const EdgeInsets.all(12),
-        child: Icon(_iconFor(jokerId), color: Colors.white, size: 24),
+        child: JokerArtImage(jokerId: jokerId, size: 48, circular: true),
       ),
     );
   }
@@ -466,18 +492,6 @@ class _DetailBlock extends StatelessWidget {
       ],
     );
   }
-}
-
-IconData _iconFor(String jokerId) {
-  return switch (jokerId) {
-    'fish' => Icons.set_meal_rounded,
-    'wheel' => Icons.trip_origin_rounded,
-    'lollipop_breaker' => Icons.close_rounded,
-    'free_swap' => Icons.swap_horiz_rounded,
-    'shuffle_letters' => Icons.shuffle_rounded,
-    'party_booster' => Icons.celebration_rounded,
-    _ => Icons.auto_awesome_rounded,
-  };
 }
 
 class _InfoChip extends StatelessWidget {

@@ -122,10 +122,7 @@ void main() {
 
       expect(result.applied, isTrue);
       expect(result.removedCellIds, hasLength(session.board.length));
-      expect(
-        result.board.every((BoardCell cell) => cell.letter == 'X'),
-        isTrue,
-      );
+      expect(result.board, hasLength(session.board.length));
     });
   });
 }

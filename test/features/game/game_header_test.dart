@@ -25,6 +25,8 @@ void main() {
     expect(find.text('Zor'), findsNothing);
     expect(find.text('6×6'), findsNothing);
     expect(find.text('0000'), findsOneWidget);
+    expect(find.byKey(const Key('game-combo-display')), findsOneWidget);
+    expect(find.text('x1'), findsOneWidget);
   });
 
   testWidgets('header score is zero-padded and grows as score increases', (
@@ -63,6 +65,28 @@ void main() {
     await tester.pump();
 
     expect(find.text('0125'), findsOneWidget);
+  });
+
+  testWidgets('score pill shows combo multiplier under score', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: GameHeader(
+            score: 180,
+            movesLeft: 8,
+            activeWord: '',
+            compact: false,
+            comboCount: 4,
+            playableWordCount: 2,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byKey(const Key('game-combo-display')), findsOneWidget);
+    expect(find.text('x4'), findsOneWidget);
   });
 
   testWidgets('score uses digital monospace styling', (

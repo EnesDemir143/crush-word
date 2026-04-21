@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'package:crush_word/src/core/gameplay/models/board_cell.dart';
 import 'package:crush_word/src/core/gameplay/models/game_session.dart';
+import 'package:crush_word/src/core/gameplay/services/joker_engine.dart';
 import 'package:crush_word/src/core/models/power_tile.dart';
 
 class LetterGrid extends StatefulWidget {
@@ -20,6 +21,9 @@ class LetterGrid extends StatefulWidget {
     this.comboCount = 0,
     this.createdPower,
     this.activatedPowers = const <PowerTileType>[],
+    this.lastJokerEffectId,
+    this.partyCastToken = 0,
+    this.isPartyCasting = false,
   });
 
   final GameSession session;
@@ -42,6 +46,15 @@ class LetterGrid extends StatefulWidget {
 
   /// Power effects activated by the last resolved word, if any.
   final List<PowerTileType> activatedPowers;
+
+  /// Joker id responsible for the latest resolved board effect, if any.
+  final String? lastJokerEffectId;
+
+  /// Monotonic token incremented whenever Party Booster cast starts.
+  final int partyCastToken;
+
+  /// Whether Party Booster pre-cast animation is active.
+  final bool isPartyCasting;
 
   @override
   State<LetterGrid> createState() => _LetterGridState();
@@ -195,6 +208,37 @@ class _LetterGridState extends State<LetterGrid> {
                                   spawnDepthByAnimationId[cell.animationId] ??
                                   0,
                               comboCount: widget.comboCount,
+                              fastSpawn:
+                                  widget.lastJokerEffectId ==
+                                  JokerIds.partyBooster,
+                            ),
+                          ),
+                        if (_effectOverlay != null &&
+                            _effectOverlay!.jokerId ==
+                                JokerIds.lollipopBreaker &&
+                            _effectOverlay!.removedCells.length == 1)
+                          Positioned.fill(
+                            child: IgnorePointer(
+                              child: _LollipopHammerOverlay(
+                                key: ValueKey<String>(
+                                  'lollipop-hammer-${_effectOverlay!.token}',
+                                ),
+                                gridLayout: gridLayout,
+                                target: _effectOverlay!.removedCells.single,
+                              ),
+                            ),
+                          ),
+                        if (widget.isPartyCasting)
+                          Positioned.fill(
+                            key: ValueKey<String>(
+                              'party-cast-${widget.partyCastToken}',
+                            ),
+                            child: IgnorePointer(
+                              child: _PartyCastOverlay(
+                                token: widget.partyCastToken,
+                                gridLayout: gridLayout,
+                                board: widget.session.board,
+                              ),
                             ),
                           ),
                         if (_effectOverlay != null)
@@ -280,6 +324,7 @@ class _LetterGridState extends State<LetterGrid> {
         createdPower: widget.createdPower,
         creationAnchor: creationAnchor,
         activatedPowers: activatedEffects,
+        jokerId: widget.lastJokerEffectId,
       );
     });
     _overlayResetTimer = Timer(const Duration(milliseconds: 1200), () {
@@ -333,6 +378,7 @@ class _AnimatedLetterCell extends StatelessWidget {
     required this.animateSpawn,
     required this.spawnDepth,
     required this.comboCount,
+    required this.fastSpawn,
   });
 
   final BoardCell cell;
@@ -343,6 +389,7 @@ class _AnimatedLetterCell extends StatelessWidget {
   final bool animateSpawn;
   final int spawnDepth;
   final int comboCount;
+  final bool fastSpawn;
 
   @override
   Widget build(BuildContext context) {
@@ -361,7 +408,11 @@ class _AnimatedLetterCell extends StatelessWidget {
 
     return TweenAnimationBuilder<double>(
       key: ValueKey<String>('spawn-${cell.animationId}'),
-      duration: Duration(milliseconds: 520 + (comboCount * 60)),
+      duration: Duration(
+        milliseconds: fastSpawn
+            ? 300 + (spawnDepth * 30)
+            : 520 + (comboCount * 60),
+      ),
       curve: Curves.easeOutCubic,
       tween: Tween<double>(begin: 0, end: 1),
       builder: (BuildContext context, double value, Widget? child) {
@@ -574,6 +625,7 @@ class _GridEffectOverlayData {
     required this.createdPower,
     required this.creationAnchor,
     required this.activatedPowers,
+    required this.jokerId,
   });
 
   final int token;
@@ -582,12 +634,132 @@ class _GridEffectOverlayData {
   final PowerTile? createdPower;
   final BoardCell? creationAnchor;
   final List<_ActivatedPowerOverlay> activatedPowers;
+  final String? jokerId;
 
   PowerTileType? get primaryPowerType {
     if (activatedPowers.isNotEmpty) {
       return activatedPowers.last.powerType;
     }
     return createdPower?.type;
+  }
+}
+
+class _LollipopHammerOverlay extends StatelessWidget {
+  const _LollipopHammerOverlay({
+    super.key,
+    required this.gridLayout,
+    required this.target,
+  });
+
+  final _GridLayout gridLayout;
+  final BoardCell target;
+
+  @override
+  Widget build(BuildContext context) {
+    final Rect targetRect = gridLayout.rectFor(target);
+    final Offset targetCenter = targetRect.center;
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0, end: 1),
+      duration: const Duration(milliseconds: 460),
+      curve: Curves.easeOutCubic,
+      builder: (BuildContext context, double value, Widget? child) {
+        final double impactPhase = value < 0.58 ? (value / 0.58) : 1;
+        final double recoilPhase = value < 0.58 ? 0 : ((value - 0.58) / 0.42);
+
+        final double approachDx = (1 - impactPhase) * 52;
+        final double approachDy = (1 - impactPhase) * -70;
+        final double recoilDy = recoilPhase * -18;
+        final double angle = (0.68 * (1 - impactPhase)) - (0.18 * recoilPhase);
+
+        final double flash = (1 - (value - 0.58).clamp(0, 0.42) / 0.42)
+            .clamp(0, 1)
+            .toDouble();
+
+        return Stack(
+          children: <Widget>[
+            if (value >= 0.52)
+              Positioned(
+                left: targetCenter.dx - (targetRect.width * 0.75),
+                top: targetCenter.dy - (targetRect.height * 0.75),
+                width: targetRect.width * 1.5,
+                height: targetRect.height * 1.5,
+                child: Opacity(
+                  opacity: flash * 0.9,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: <Color>[
+                          const Color(0xFFFFE6A8).withValues(alpha: 0.9),
+                          const Color(0xFFFF8A65).withValues(alpha: 0.45),
+                          Colors.transparent,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            Positioned(
+              left: targetCenter.dx + approachDx - 14,
+              top: targetCenter.dy + approachDy + recoilDy - 58,
+              child: Transform.rotate(
+                angle: angle,
+                child: SizedBox(
+                  width: 36,
+                  height: 96,
+                  child: Stack(
+                    alignment: Alignment.topCenter,
+                    children: <Widget>[
+                      Positioned(
+                        top: 26,
+                        child: Container(
+                          width: 9,
+                          height: 64,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(999),
+                            gradient: const LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: <Color>[
+                                Color(0xFFB88A54),
+                                Color(0xFF8C5E2F),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: 32,
+                        height: 28,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          gradient: const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: <Color>[
+                              Color(0xFFF4F4F4),
+                              Color(0xFFC5C5C5),
+                            ],
+                          ),
+                          boxShadow: const <BoxShadow>[
+                            BoxShadow(
+                              color: Color(0x44000000),
+                              blurRadius: 8,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
 
@@ -610,10 +782,22 @@ class _GridEffectOverlay extends StatelessWidget {
       data.primaryPowerType,
       comboCount: data.comboCount,
     );
+    final _ComboPresentation comboPresentation = _comboPresentationFor(
+      data.comboCount,
+      accent: accent,
+    );
 
     return Stack(
       clipBehavior: Clip.none,
       children: <Widget>[
+        if (data.comboCount > 1)
+          Positioned.fill(
+            child: _ComboCelebrationOverlay(
+              key: ValueKey<String>('combo-celebration-${data.token}'),
+              gridLayout: gridLayout,
+              presentation: comboPresentation,
+            ),
+          ),
         for (final _ActivatedPowerOverlay effect in data.activatedPowers)
           _PowerSweepOverlay(
             key: ValueKey<String>(
@@ -624,15 +808,28 @@ class _GridEffectOverlay extends StatelessWidget {
             comboCount: data.comboCount,
           ),
         for (final BoardCell cell in data.removedCells)
-          Positioned.fromRect(
-            rect: gridLayout.rectFor(cell),
-            child: _CellBurstOverlay(
-              key: ValueKey<String>('cell-burst-${data.token}-${cell.id}'),
-              cellExtent: gridLayout.cellExtent,
-              color: accent,
-              comboCount: data.comboCount,
-            ),
-          ),
+          () {
+            final double boardSize = _boardExtent(gridLayout);
+            final Offset boardCenter = Offset(boardSize / 2, boardSize / 2);
+            final Offset cellCenter = gridLayout.rectFor(cell).center;
+            final double maxDistance = boardCenter.distance;
+            final double distanceRatio = maxDistance == 0
+                ? 0
+                : ((cellCenter - boardCenter).distance / maxDistance);
+            final bool isParty = data.jokerId == JokerIds.partyBooster;
+
+            return Positioned.fromRect(
+              rect: gridLayout.rectFor(cell),
+              child: _CellBurstOverlay(
+                key: ValueKey<String>('cell-burst-${data.token}-${cell.id}'),
+                cellExtent: gridLayout.cellExtent,
+                color: accent,
+                comboCount: data.comboCount,
+                startDelayMs: isParty ? (distanceRatio * 220).round() : 0,
+                burstDurationMs: isParty ? 240 : null,
+              ),
+            );
+          }(),
         if (data.creationAnchor != null && data.createdPower != null)
           Positioned.fromRect(
             rect: gridLayout.rectFor(data.creationAnchor!),
@@ -651,12 +848,28 @@ class _GridEffectOverlay extends StatelessWidget {
             child: _ComboBanner(
               key: ValueKey<String>('combo-banner-${data.token}'),
               comboCount: data.comboCount,
-              accent: accent,
+              presentation: comboPresentation,
             ),
           ),
       ],
     );
   }
+}
+
+enum _ComboFlavor { sweetPop, tastyBlast, sugarRush }
+
+class _ComboPresentation {
+  const _ComboPresentation({
+    required this.flavor,
+    required this.title,
+    required this.accent,
+    required this.secondary,
+  });
+
+  final _ComboFlavor flavor;
+  final String title;
+  final Color accent;
+  final Color secondary;
 }
 
 class _CellBurstOverlay extends StatelessWidget {
@@ -665,24 +878,38 @@ class _CellBurstOverlay extends StatelessWidget {
     required this.cellExtent,
     required this.color,
     required this.comboCount,
+    this.startDelayMs = 0,
+    this.burstDurationMs,
   });
 
   final double cellExtent;
   final Color color;
   final int comboCount;
+  final int startDelayMs;
+  final int? burstDurationMs;
 
   @override
   Widget build(BuildContext context) {
     final int streakCount = 6 + comboCount.clamp(0, 5);
     final double maxScale = 1.15 + (comboCount * 0.08);
+    final int effectDurationMs = burstDurationMs ?? (440 + (comboCount * 70));
+    final int totalDurationMs = effectDurationMs + startDelayMs;
 
     return TweenAnimationBuilder<double>(
       tween: Tween<double>(begin: 0, end: 1),
-      duration: Duration(milliseconds: 440 + (comboCount * 70)),
+      duration: Duration(milliseconds: totalDurationMs),
       curve: Curves.easeOutCubic,
       builder: (BuildContext context, double value, Widget? child) {
-        final double fadeOut = (1 - value).clamp(0, 1);
-        final double ringScale = 0.25 + (value * maxScale);
+        final double local =
+            ((value * totalDurationMs - startDelayMs) / effectDurationMs)
+                .clamp(0, 1)
+                .toDouble();
+        if (local <= 0) {
+          return const SizedBox.shrink();
+        }
+
+        final double fadeOut = (1 - local).clamp(0, 1);
+        final double ringScale = 0.25 + (local * maxScale);
 
         return Stack(
           alignment: Alignment.center,
@@ -710,7 +937,7 @@ class _CellBurstOverlay extends StatelessWidget {
               Transform.rotate(
                 angle: (math.pi * 2 / streakCount) * index,
                 child: Transform.translate(
-                  offset: Offset(0, -cellExtent * 0.18 * value),
+                  offset: Offset(0, -cellExtent * 0.18 * local),
                   child: Opacity(
                     opacity: fadeOut,
                     child: Align(
@@ -738,6 +965,370 @@ class _CellBurstOverlay extends StatelessWidget {
         );
       },
     );
+  }
+}
+
+class _ComboCelebrationOverlay extends StatelessWidget {
+  const _ComboCelebrationOverlay({
+    super.key,
+    required this.gridLayout,
+    required this.presentation,
+  });
+
+  final _GridLayout gridLayout;
+  final _ComboPresentation presentation;
+
+  @override
+  Widget build(BuildContext context) {
+    final double boardExtent = _boardExtent(gridLayout);
+    final Offset center = Offset(boardExtent / 2, boardExtent * 0.44);
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0, end: 1),
+      duration: Duration(
+        milliseconds: switch (presentation.flavor) {
+          _ComboFlavor.sweetPop => 620,
+          _ComboFlavor.tastyBlast => 760,
+          _ComboFlavor.sugarRush => 960,
+        },
+      ),
+      curve: Curves.easeOutCubic,
+      builder: (BuildContext context, double value, Widget? child) {
+        final double fadeOut = (1 - value).clamp(0, 1);
+        final double flashOpacity = switch (presentation.flavor) {
+          _ComboFlavor.sweetPop => 0.08,
+          _ComboFlavor.tastyBlast => 0.12,
+          _ComboFlavor.sugarRush => 0.16,
+        };
+        final int shardCount = switch (presentation.flavor) {
+          _ComboFlavor.sweetPop => 8,
+          _ComboFlavor.tastyBlast => 12,
+          _ComboFlavor.sugarRush => 18,
+        };
+
+        return Stack(
+          clipBehavior: Clip.none,
+          children: <Widget>[
+            Positioned.fill(
+              child: Opacity(
+                opacity: fadeOut * flashOpacity,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: RadialGradient(
+                      center: Alignment(
+                        ((center.dx / boardExtent) * 2) - 1,
+                        ((center.dy / boardExtent) * 2) - 1,
+                      ),
+                      radius: 1.05,
+                      colors: <Color>[
+                        presentation.secondary.withValues(alpha: 0.95),
+                        presentation.accent.withValues(alpha: 0.35),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            if (presentation.flavor != _ComboFlavor.sweetPop)
+              ...List<Widget>.generate(2, (int index) {
+                final bool horizontal = index == 0;
+                return Positioned.fill(
+                  child: Transform.rotate(
+                    angle: horizontal ? 0 : math.pi / 2.8,
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Opacity(
+                        opacity: fadeOut * 0.55,
+                        child: Container(
+                          width: horizontal ? boardExtent * 0.72 : 20,
+                          height: horizontal ? 20 : boardExtent * 0.72,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(999),
+                            gradient: LinearGradient(
+                              colors: <Color>[
+                                Colors.transparent,
+                                presentation.secondary.withValues(alpha: 0.7),
+                                presentation.accent.withValues(alpha: 0.9),
+                                Colors.transparent,
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            Positioned(
+              left: center.dx - (boardExtent * 0.22),
+              top: center.dy - (boardExtent * 0.22),
+              width: boardExtent * 0.44,
+              height: boardExtent * 0.44,
+              child: Transform.scale(
+                scale: 0.35 + (value * 1.2),
+                child: Opacity(
+                  opacity: fadeOut * 0.7,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: <Color>[
+                          presentation.secondary.withValues(alpha: 0.95),
+                          presentation.accent.withValues(alpha: 0.18),
+                          Colors.transparent,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            ...List<Widget>.generate(shardCount, (int index) {
+              final double angle = (math.pi * 2 / shardCount) * index;
+              final double distance =
+                  (boardExtent * 0.1) + (value * boardExtent * 0.18);
+              final Offset shardCenter = Offset(
+                center.dx + (math.cos(angle) * distance),
+                center.dy + (math.sin(angle) * distance),
+              );
+              final double width = switch (presentation.flavor) {
+                _ComboFlavor.sweetPop => gridLayout.cellExtent * 0.16,
+                _ComboFlavor.tastyBlast => gridLayout.cellExtent * 0.19,
+                _ComboFlavor.sugarRush => gridLayout.cellExtent * 0.21,
+              };
+              final double height = switch (presentation.flavor) {
+                _ComboFlavor.sweetPop => gridLayout.cellExtent * 0.36,
+                _ComboFlavor.tastyBlast => gridLayout.cellExtent * 0.44,
+                _ComboFlavor.sugarRush => gridLayout.cellExtent * 0.52,
+              };
+              final Color shardColor = index.isEven
+                  ? presentation.accent
+                  : presentation.secondary;
+
+              return Positioned(
+                left: shardCenter.dx - width / 2,
+                top: shardCenter.dy - height / 2,
+                child: Transform.rotate(
+                  angle: angle + (math.pi / 4),
+                  child: Opacity(
+                    opacity: fadeOut * 0.95,
+                    child: Container(
+                      width: width,
+                      height: height,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(999),
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: <Color>[
+                            Colors.white,
+                            shardColor,
+                            shardColor.withValues(alpha: 0.28),
+                          ],
+                        ),
+                        boxShadow: <BoxShadow>[
+                          BoxShadow(
+                            color: shardColor.withValues(alpha: 0.4),
+                            blurRadius: 8,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }),
+            if (presentation.flavor == _ComboFlavor.sugarRush)
+              ...List<Widget>.generate(10, (int index) {
+                final double lane = index / 9;
+                final double x = boardExtent * (0.06 + (lane * 0.88));
+                final double y =
+                    (boardExtent * 0.08) + (value * boardExtent * 0.82);
+                return Positioned(
+                  left: x,
+                  top: y - (index.isEven ? 30 : 0),
+                  child: Opacity(
+                    opacity: fadeOut * 0.85,
+                    child: Transform.rotate(
+                      angle: (index.isEven ? -1 : 1) * 0.48,
+                      child: Container(
+                        width: 10,
+                        height: gridLayout.cellExtent * 0.34,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(999),
+                          color: index.isEven
+                              ? presentation.secondary
+                              : presentation.accent,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _PartyCastOverlay extends StatelessWidget {
+  const _PartyCastOverlay({
+    required this.token,
+    required this.gridLayout,
+    required this.board,
+  });
+
+  final int token;
+  final _GridLayout gridLayout;
+  final List<BoardCell> board;
+
+  @override
+  Widget build(BuildContext context) {
+    final double extent = _boardExtent(gridLayout);
+    final Offset center = Offset(extent / 2, extent / 2);
+    final List<Offset> targets = board
+        .map((BoardCell cell) => gridLayout.rectFor(cell).center)
+        .toList(growable: false);
+
+    return TweenAnimationBuilder<double>(
+      key: ValueKey<int>(token),
+      tween: Tween<double>(begin: 0, end: 1),
+      duration: const Duration(milliseconds: 420),
+      curve: Curves.easeOutCubic,
+      builder: (BuildContext context, double value, Widget? child) {
+        final double fade = (1 - value).clamp(0, 1);
+
+        return Stack(
+          children: <Widget>[
+            Positioned.fill(
+              child: Opacity(
+                opacity: 0.34 * fade,
+                child: DecoratedBox(
+                  decoration: const BoxDecoration(
+                    gradient: RadialGradient(
+                      center: Alignment.center,
+                      radius: 0.9,
+                      colors: <Color>[
+                        Color(0xFFB43DBB),
+                        Color(0x884A148C),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              left: center.dx - (extent * 0.18),
+              top: center.dy - (extent * 0.18),
+              width: extent * 0.36,
+              height: extent * 0.36,
+              child: Transform.scale(
+                scale: 0.4 + (value * 1.4),
+                child: Opacity(
+                  opacity: fade * 0.85,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: <Color>[
+                          Colors.white.withValues(alpha: 0.95),
+                          const Color(0xFFFFD86E),
+                          const Color(0x00FFD86E),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned.fill(
+              child: CustomPaint(
+                painter: _PartyRayPainter(
+                  center: center,
+                  targets: targets,
+                  progress: value,
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Opacity(
+                  opacity: fade,
+                  child: Transform.translate(
+                    offset: Offset(0, -6 + (value * 6)),
+                    child: const Text(
+                      'PARTY BOOSTER!',
+                      style: TextStyle(
+                        color: Color(0xFFFFF5D6),
+                        fontSize: 15,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.1,
+                        shadows: <Shadow>[
+                          Shadow(color: Color(0xAA7B2CBF), blurRadius: 8),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _PartyRayPainter extends CustomPainter {
+  const _PartyRayPainter({
+    required this.center,
+    required this.targets,
+    required this.progress,
+  });
+
+  final Offset center;
+  final List<Offset> targets;
+  final double progress;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final double alpha = (1 - progress).clamp(0, 1);
+    final Paint rayPaint = Paint()
+      ..shader = const LinearGradient(
+        colors: <Color>[
+          Color(0xFFFFD86E),
+          Color(0xFFFF8AD6),
+          Colors.transparent,
+        ],
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
+      ..strokeWidth = 2
+      ..strokeCap = StrokeCap.round;
+
+    for (final Offset target in targets) {
+      final Offset current = Offset.lerp(center, target, progress)!;
+      canvas.drawLine(
+        center,
+        current,
+        rayPaint..color = Colors.white.withValues(alpha: 0.82 * alpha),
+      );
+
+      final Paint pulsePaint = Paint()
+        ..color = const Color(0xFFFFD86E).withValues(alpha: 0.24 * alpha)
+        ..style = PaintingStyle.fill;
+      canvas.drawCircle(current, 5 + (progress * 8), pulsePaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _PartyRayPainter oldDelegate) {
+    return oldDelegate.center != center ||
+        oldDelegate.targets != targets ||
+        oldDelegate.progress != progress;
   }
 }
 
@@ -1009,11 +1600,11 @@ class _ComboBanner extends StatelessWidget {
   const _ComboBanner({
     super.key,
     required this.comboCount,
-    required this.accent,
+    required this.presentation,
   });
 
   final int comboCount;
-  final Color accent;
+  final _ComboPresentation presentation;
 
   @override
   Widget build(BuildContext context) {
@@ -1036,12 +1627,18 @@ class _ComboBanner extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(999),
             gradient: LinearGradient(
-              colors: <Color>[Colors.white, accent.withValues(alpha: 0.18)],
+              colors: <Color>[
+                Colors.white,
+                presentation.secondary.withValues(alpha: 0.45),
+                presentation.accent.withValues(alpha: 0.14),
+              ],
             ),
-            border: Border.all(color: accent.withValues(alpha: 0.35)),
+            border: Border.all(
+              color: presentation.accent.withValues(alpha: 0.35),
+            ),
             boxShadow: <BoxShadow>[
               BoxShadow(
-                color: accent.withValues(alpha: 0.22),
+                color: presentation.accent.withValues(alpha: 0.22),
                 blurRadius: 18,
                 spreadRadius: 2,
               ),
@@ -1050,9 +1647,9 @@ class _ComboBanner extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             child: Text(
-              'COMBO x$comboCount',
+              '${presentation.title} • COMBO x$comboCount',
               style: TextStyle(
-                color: accent,
+                color: presentation.accent,
                 fontSize: 14,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 0.9,
@@ -1063,6 +1660,36 @@ class _ComboBanner extends StatelessWidget {
       ),
     );
   }
+}
+
+_ComboPresentation _comboPresentationFor(
+  int comboCount, {
+  required Color accent,
+}) {
+  if (comboCount >= 4) {
+    return _ComboPresentation(
+      flavor: _ComboFlavor.sugarRush,
+      title: 'DELICIOUS!',
+      accent: accent,
+      secondary: const Color(0xFFFFD86E),
+    );
+  }
+
+  if (comboCount == 3) {
+    return _ComboPresentation(
+      flavor: _ComboFlavor.tastyBlast,
+      title: 'TASTY!',
+      accent: accent,
+      secondary: const Color(0xFFFFA7D8),
+    );
+  }
+
+  return _ComboPresentation(
+    flavor: _ComboFlavor.sweetPop,
+    title: 'SWEET!',
+    accent: accent,
+    secondary: const Color(0xFFFFF3A8),
+  );
 }
 
 Color _powerColorFor(PowerTile power) {
