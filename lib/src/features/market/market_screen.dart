@@ -140,78 +140,70 @@ class _MarketScreenState extends State<MarketScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (BuildContext context, _) {
-        return Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            surfaceTintColor: Colors.transparent,
-            foregroundColor: const Color(0xFF3A3025),
-            elevation: 0,
-            title: const Text(
-              'Market',
-              style: TextStyle(
-                fontWeight: FontWeight.w800,
-                color: Color(0xFF3A3025),
-              ),
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        foregroundColor: const Color(0xFF3A3025),
+        elevation: 0,
+        title: const Text(
+          'Market',
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            color: Color(0xFF3A3025),
+          ),
+        ),
+        actions: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: AnimatedBuilder(
+              animation: _controller,
+              builder: (BuildContext context, _) {
+                return _GoldHeaderChip(
+                  goldBalance: _controller.goldBalance,
+                  onDebugAddGold: () async {
+                    final int nextBalance = _controller.goldBalance + 10000;
+                    await _controller.setGoldBalanceForDebug(nextBalance);
+                    if (!context.mounted) {
+                      return;
+                    }
+                    ScaffoldMessenger.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(
+                        const SnackBar(content: Text('+10000 altın eklendi.')),
+                      );
+                  },
+                );
+              },
             ),
-            actions: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(right: 16),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    _GoldHeaderChip(goldBalance: _controller.goldBalance),
-                    const SizedBox(width: 8),
-                    FilledButton.tonalIcon(
-                      key: const Key('market-debug-add-gold'),
-                      onPressed: () async {
-                        final int nextBalance = _controller.goldBalance + 10000;
-                        await _controller.setGoldBalanceForDebug(nextBalance);
-                        if (!context.mounted) {
-                          return;
-                        }
-                        ScaffoldMessenger.of(context)
-                          ..hideCurrentSnackBar()
-                          ..showSnackBar(
-                            const SnackBar(
-                              content: Text('+10000 altın eklendi.'),
-                            ),
-                          );
-                      },
-                      icon: const Icon(Icons.add_circle_rounded, size: 18),
-                      label: const Text('+10K'),
-                    ),
-                  ],
-                ),
-              ),
+          ),
+        ],
+      ),
+      extendBodyBehindAppBar: false,
+      body: DecoratedBox(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: <Color>[
+              Color(0xFFFDF8F0),
+              Color(0xFFF5EBDA),
+              Color(0xFFEDE0CB),
             ],
           ),
-          extendBodyBehindAppBar: false,
-          body: DecoratedBox(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: <Color>[
-                  Color(0xFFFDF8F0),
-                  Color(0xFFF5EBDA),
-                  Color(0xFFEDE0CB),
-                ],
-              ),
-            ),
-            child: SafeArea(
-              top: false,
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: _buildBody(context),
-              ),
+        ),
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: AnimatedBuilder(
+              animation: _controller,
+              builder: (BuildContext context, _) => _buildBody(context),
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -267,46 +259,63 @@ class _MarketScreenState extends State<MarketScreen> {
 }
 
 class _GoldHeaderChip extends StatelessWidget {
-  const _GoldHeaderChip({required this.goldBalance});
+  const _GoldHeaderChip({
+    required this.goldBalance,
+    required this.onDebugAddGold,
+  });
 
   final int goldBalance;
+  final Future<void> Function() onDebugAddGold;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFFF4E4C8),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: const Color(0xFFE1C89C)),
-        boxShadow: const <BoxShadow>[
-          BoxShadow(
-            color: Color(0x14000000),
-            blurRadius: 10,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            const Icon(
-              Icons.monetization_on_rounded,
-              color: Color(0xFF9A6B00),
-              size: 18,
+    return Semantics(
+      label: 'Altın bakiyesi: $goldBalance. Uzun basinca +10K eklenir.',
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          key: const Key('market-debug-add-gold'),
+          borderRadius: BorderRadius.circular(999),
+          onLongPress: () {
+            unawaited(onDebugAddGold());
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFFF4E4C8),
+              borderRadius: BorderRadius.circular(999),
+              border: Border.all(color: const Color(0xFFE1C89C)),
+              boxShadow: const <BoxShadow>[
+                BoxShadow(
+                  color: Color(0x14000000),
+                  blurRadius: 10,
+                  offset: Offset(0, 4),
+                ),
+              ],
             ),
-            const SizedBox(width: 6),
-            Text(
-              '$goldBalance',
-              key: const Key('market-gold-balance'),
-              style: const TextStyle(
-                color: Color(0xFF6E5432),
-                fontSize: 14,
-                fontWeight: FontWeight.w800,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  const Icon(
+                    Icons.monetization_on_rounded,
+                    color: Color(0xFF9A6B00),
+                    size: 18,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    '$goldBalance',
+                    key: const Key('market-gold-balance'),
+                    style: const TextStyle(
+                      color: Color(0xFF6E5432),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
