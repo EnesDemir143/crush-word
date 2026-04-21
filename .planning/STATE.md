@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-04-18)
 
 **Core value:** Oyuncuya her zaman oynanabilir kalan, kurallari acikca gorunen ve ders dokumanindaki tum zorunlu maddeleri eksiksiz yerine getiren bir mobil kelime oyunu sunmak.
-**Current focus:** Phase 5 - Market and Score History (Plan 05-02 next); Phase 4 fully completed, Phase 05-01 and 05-03 already completed out of order
+**Current focus:** Phase 6 - Mobile Polish and Delivery (Plan 06-01 next); Phase 5 is now fully completed
 
 ## Current Position
 
-Phase: 5 of 8 (Market and Score History)
-Plan: 2 of 3 in current phase (05-02 next)
-Status: Phase 04 completed — post-move continuity, combo scoring and power-tile mechanics are implemented and verified. Next: 05-02 (in-game joker actions).
-Last activity: 2026-04-21 - Completed Phase 04-03 with power-tile creation, surviving-last-letter behavior, power activation effects and focused automated/manual verification.
+Phase: 6 of 8 (Mobile Polish and Delivery)
+Plan: 1 of 3 in current phase (06-01 next)
+Status: Phase 05 completed — market economy, in-game joker actions and score history are implemented and verified. Next: 06-01 (mobile polish and device-facing UX hardening).
+Last activity: 2026-04-21 - Completed Phase 05-02 with transactional joker purchasing, in-game joker bar, six live joker effects and manual gate approval.
 
-Progress: [██████████] 100% of Phase 4, overall project focus moved to Phase 5
+Progress: [██████████] 100% of Phase 5, overall project focus moved to Phase 6
 
 ## Performance Metrics
 
@@ -33,11 +33,12 @@ Progress: [██████████] 100% of Phase 4, overall project focu
 | 02.1 Initial Board Solvability Gate | 1 | execution tracked in summary | n/a |
 | 3. Core Gameplay and Session Results | 4/4 | completed | n/a |
 | 4. Advanced Board Mechanics | 3/3 | completed | execution tracked in summaries |
-| 5. Market and Score History | 2/3 | in progress | n/a |
+| 5. Market and Score History | 3/3 | completed | execution tracked in summaries |
+| 6. Mobile Polish and Delivery | 0/3 | next | n/a |
 
 **Recent Trend:**
-- Last 5 plans: 05-01, 05-03, 04-01, 04-02, 04-03
-- Trend: Phase 4 board mechanics kapandi. Siradaki odak, marketten satin alinan jokerlerin oyun ici etkilerini calistiran 05-02.
+- Last 5 plans: 05-02, 05-01, 05-03, 04-01, 04-02
+- Trend: Phase 5 tamamen kapandi. Siradaki odak, mobil polish, cihaz uzeri smoke-check ve teslim sertlestirmesi icin Phase 6.
 
 ## Accumulated Context
 
@@ -68,7 +69,8 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - Phase 04-01 completed on 2026-04-21 with non-overlapping playable word count, post-move dead-board recovery, session state preservation during regeneration, and 4 new tests
 - Phase 04-02 completed on 2026-04-21 with Combo scoring detection, canonical integration, resolving solver exceptions, and fully validated subword rules.
 - Phase 04-03 completed on 2026-04-21 with dedicated power-tile modeling, surviving-last-letter placement, resolver-integrated activation effects, focused power tests and manual gate approval.
-- Current next target is Phase 5 `05-02`; execute joker actions from in-game inventory
+- Phase 05-02 completed on 2026-04-21 with transactional joker purchasing, owned-joker bar, six documented joker effects, automated coverage and manual gate approval.
+- Current next target is Phase 6 `06-01`; polish mobile UX and verify required flows on device/emulator
 
 ### Pending Todos
 
@@ -78,11 +80,11 @@ None yet.
 
 - Phase 2 ve sonrasi implementasyonlarda `01.1-EVAL-MATRIX.md` ve `01.1-MANUAL-CHECKLIST.md` zorunlu referans kabul edilmeli.
 - Harf puan tablosu ve power threshold'lari canonical source ile manuel teyit edildi; joker effect alanlari icin sonraki phase sonunda yine smoke-check gerekecek.
-- Joker fiyat/katalog manual gate'i 2026-04-19 tarihinde onaylandi; gameplay effect ve newest-first history smoke-check'leri ileriki phase'lerde yine gerekecek.
-- Resume behavior, newest-first history ve kullaniciya gorunen aggregate/power/count alanlari icin feature-cikisinda kisa smoke-check gerekecek.
+- Joker fiyat/katalog manual gate'i 2026-04-19 tarihinde onaylandi; gameplay joker effect smoke-check'i de 2026-04-21 tarihinde tamamlandi.
+- Resume behavior, newest-first history ve kullaniciya gorunen aggregate/power/count alanlari icin Phase 6 device smoke-check'inde son kez toplu dogrulama iyi olur.
 
 ## Session Continuity
 
-Last session: 2026-04-21 03:35
-Stopped at: Phase 04-03 completed with automated verification and manual gate approval. Next: Phase 05-02 joker action mechanics.
+Last session: 2026-04-21 04:25
+Stopped at: Phase 05-02 completed with automated verification and manual gate approval. Next: Phase 06-01 mobile polish and device-facing validation.
 Resume file: None

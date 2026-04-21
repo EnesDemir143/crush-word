@@ -16,7 +16,7 @@ Bu roadmap, varsayilan Flutter starter uygulamasini ders dokumanindaki zorunlu k
 - [x] **Phase 02.1: Initial Board Solvability Gate** - Phase 2 tamamlanir tamamlanmaz ilk gosterilen board'un dead gelmesini engelle ve ilk render oncesi recovery kapisini kapat.
 - [x] **Phase 3: Core Gameplay and Session Results** - Kelime dogrulama, puanlama, refill ve oyun sonu kayit akislarini tamamla.
 - [x] **Phase 4: Advanced Board Mechanics** - Her zaman oynanabilir board, combo ve ozel guc davranislarini ekle.
-- [ ] **Phase 5: Market and Score History** - Joker ekonomisi, market kullanimi ve skor tablosu ekranlarini tamamla.
+- [x] **Phase 5: Market and Score History** - Joker ekonomisi, market kullanimi ve skor tablosu ekranlarini tamamla.
 - [ ] **Phase 6: Mobile Polish and Delivery** - Mobil sunum sertlestirmesi, testler ve LaTeX/teslim varliklarini kapat.
 
 ## Phase Details
@@ -179,7 +179,7 @@ Plans:
 
 Plans:
 - [x] 05-01: Build market catalog, gold balance and purchase persistence
-- [ ] 05-02: Execute joker actions from in-game inventory
+- [x] 05-02: Execute joker actions from in-game inventory
 - [x] 05-03: Implement score summary metrics and history list UI
 
 ### Phase 6: Mobile Polish and Delivery
@@ -215,5 +215,5 @@ Phases execute in numeric order: 1 -> 1.1 -> 2 -> 2.1 -> 3 -> 4 -> 5 -> 6
 | 02.1 Initial Board Solvability Gate | 1/1 | Completed | 2026-04-18 |
 | 3. Core Gameplay and Session Results | 4/4 | Completed | 2026-04-18 |
 | 4. Advanced Board Mechanics | 3/3 | Completed | 2026-04-21 |
-| 5. Market and Score History | 2/3 | In progress | - |
+| 5. Market and Score History | 3/3 | Completed | 2026-04-21 |
 | 6. Mobile Polish and Delivery | 0/3 | Not started | - |
