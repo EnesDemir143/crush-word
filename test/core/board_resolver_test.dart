@@ -52,9 +52,11 @@ List<BoardCell> _board3x3(List<List<String>> rows) {
 /// Convenience to pick a cell's letter by row/col from a flat
 /// board list.
 String _letterAt(List<BoardCell> board, int row, int col) {
-  return board
-      .firstWhere((BoardCell c) => c.row == row && c.column == col)
-      .letter;
+  return _cellAt(board, row, col).letter;
+}
+
+BoardCell _cellAt(List<BoardCell> board, int row, int col) {
+  return board.firstWhere((BoardCell c) => c.row == row && c.column == col);
 }
 
 // ──────────────────────────────────────────────────────────
@@ -125,6 +127,15 @@ void main() {
       expect(_letterAt(result.board, 0, 0), 'X');
       expect(_letterAt(result.board, 1, 0), 'A');
       expect(_letterAt(result.board, 2, 0), 'G');
+
+      final BoardCell refillCell = _cellAt(result.board, 0, 0);
+      final BoardCell movedCell = _cellAt(result.board, 1, 0);
+      final BoardCell anchoredCell = _cellAt(result.board, 2, 0);
+
+      expect(movedCell.animationId, '0:0');
+      expect(anchoredCell.animationId, '2:0');
+      expect(refillCell.animationId, isNot(anyOf('0:0', '1:0', '2:0')));
+      expect(refillCell.tileId, isNotNull);
 
       // Other columns unchanged.
       expect(_letterAt(result.board, 0, 1), 'B');

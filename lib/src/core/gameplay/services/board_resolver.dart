@@ -187,7 +187,7 @@ class BoardResolver {
         } else {
           // Empty slot — generate a new letter.
           newBoard.add(
-            BoardCell(
+            _boardGenerator.createCell(
               row: row,
               column: col,
               letter: _boardGenerator.pickWeightedLetter(rules),

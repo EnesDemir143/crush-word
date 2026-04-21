@@ -50,11 +50,8 @@ class LetterGrid extends StatefulWidget {
 class _LetterGridState extends State<LetterGrid> {
   String? _lastDraggedCellId;
 
-  /// Tracks which cell IDs are "new" for entrance animation.
-  Set<String> _animatingCellIds = <String>{};
-
-  /// Incremented to give each board update a unique animation key.
-  int _boardVersion = 0;
+  /// Tracks freshly spawned refill tiles so they can drop in from above.
+  Set<String> _spawningCellAnimationIds = <String>{};
 
   Timer? _overlayResetTimer;
   _GridEffectOverlayData? _effectOverlay;
@@ -63,11 +60,13 @@ class _LetterGridState extends State<LetterGrid> {
   void didUpdateWidget(covariant LetterGrid oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (widget.lastRemovedCellIds.isNotEmpty &&
-        oldWidget.lastRemovedCellIds != widget.lastRemovedCellIds) {
-      _boardVersion += 1;
-      _animatingCellIds = widget.session.board
-          .map((BoardCell cell) => cell.id)
+    if (widget.effectToken != oldWidget.effectToken) {
+      final Set<String> previousAnimationIds = oldWidget.session.board
+          .map((BoardCell cell) => cell.animationId)
+          .toSet();
+      _spawningCellAnimationIds = widget.session.board
+          .map((BoardCell cell) => cell.animationId)
+          .where((String id) => !previousAnimationIds.contains(id))
           .toSet();
     }
 
@@ -104,6 +103,8 @@ class _LetterGridState extends State<LetterGrid> {
               session: widget.session,
               size: constraints.biggest,
             );
+            final Map<String, int> spawnDepthByAnimationId =
+                _buildSpawnDepthByAnimationId();
 
             return ClipRRect(
               borderRadius: BorderRadius.circular(gridLayout.outerRadius),
@@ -168,16 +169,31 @@ class _LetterGridState extends State<LetterGrid> {
                           ),
                         ),
                         for (final BoardCell cell in widget.session.board)
-                          Positioned.fromRect(
-                            rect: gridLayout.rectFor(cell),
+                          AnimatedPositioned(
+                            key: ValueKey<String>(
+                              'board-item-${cell.animationId}',
+                            ),
+                            duration: Duration(
+                              milliseconds: 420 + (widget.comboCount * 40),
+                            ),
+                            curve: Curves.easeInOutCubic,
+                            left: gridLayout.rectFor(cell).left,
+                            top: gridLayout.rectFor(cell).top,
+                            width: gridLayout.rectFor(cell).width,
+                            height: gridLayout.rectFor(cell).height,
                             child: _AnimatedLetterCell(
                               key: Key('letter-cell-${cell.id}'),
                               cell: cell,
                               selectionIndex: selectionOrder[cell.id],
                               cellExtent: gridLayout.cellExtent,
+                              cellGap: gridLayout.gap,
                               showSelectionIndex: gridLayout.showSelectionIndex,
-                              animate: _animatingCellIds.contains(cell.id),
-                              boardVersion: _boardVersion,
+                              animateSpawn: _spawningCellAnimationIds.contains(
+                                cell.animationId,
+                              ),
+                              spawnDepth:
+                                  spawnDepthByAnimationId[cell.animationId] ??
+                                  0,
                               comboCount: widget.comboCount,
                             ),
                           ),
@@ -275,6 +291,34 @@ class _LetterGridState extends State<LetterGrid> {
       });
     });
   }
+
+  Map<String, int> _buildSpawnDepthByAnimationId() {
+    final List<BoardCell> newCells =
+        widget.session.board
+            .where(
+              (BoardCell cell) =>
+                  _spawningCellAnimationIds.contains(cell.animationId),
+            )
+            .toList(growable: false)
+          ..sort((BoardCell left, BoardCell right) {
+            final int columnCompare = left.column.compareTo(right.column);
+            if (columnCompare != 0) {
+              return columnCompare;
+            }
+            return left.row.compareTo(right.row);
+          });
+
+    final Map<int, int> seenByColumn = <int, int>{};
+    final Map<String, int> spawnDepthByAnimationId = <String, int>{};
+
+    for (final BoardCell cell in newCells) {
+      final int nextDepth = (seenByColumn[cell.column] ?? 0) + 1;
+      seenByColumn[cell.column] = nextDepth;
+      spawnDepthByAnimationId[cell.animationId] = nextDepth;
+    }
+
+    return spawnDepthByAnimationId;
+  }
 }
 
 /// Wraps [_LetterCell] with a more tactile spawn animation.
@@ -284,18 +328,20 @@ class _AnimatedLetterCell extends StatelessWidget {
     required this.cell,
     required this.selectionIndex,
     required this.cellExtent,
+    required this.cellGap,
     required this.showSelectionIndex,
-    required this.animate,
-    required this.boardVersion,
+    required this.animateSpawn,
+    required this.spawnDepth,
     required this.comboCount,
   });
 
   final BoardCell cell;
   final int? selectionIndex;
   final double cellExtent;
+  final double cellGap;
   final bool showSelectionIndex;
-  final bool animate;
-  final int boardVersion;
+  final bool animateSpawn;
+  final int spawnDepth;
   final int comboCount;
 
   @override
@@ -307,19 +353,25 @@ class _AnimatedLetterCell extends StatelessWidget {
       showSelectionIndex: showSelectionIndex,
     );
 
-    if (!animate) {
+    if (!animateSpawn || spawnDepth <= 0) {
       return child;
     }
 
+    final double dropDistance = (cellExtent + cellGap) * (spawnDepth + 0.4);
+
     return TweenAnimationBuilder<double>(
-      key: ValueKey<String>('anim-${cell.id}-v$boardVersion'),
-      duration: Duration(milliseconds: 460 + (comboCount * 60)),
-      curve: Curves.easeOutBack,
+      key: ValueKey<String>('spawn-${cell.animationId}'),
+      duration: Duration(milliseconds: 520 + (comboCount * 60)),
+      curve: Curves.easeOutCubic,
       tween: Tween<double>(begin: 0, end: 1),
       builder: (BuildContext context, double value, Widget? child) {
-        final double opacity = value.clamp(0, 1);
-        final double scale = 0.6 + (value * 0.4);
-        final double glowOpacity = (1 - value).clamp(0, 1) * 0.28;
+        final double delayedProgress = Curves.easeOutCubic.transform(
+          Interval(0.12, 1).transform(value.clamp(0, 1)),
+        );
+        final double opacity = (0.55 + (delayedProgress * 0.45)).clamp(0, 1);
+        final double translateY = (1 - delayedProgress) * -dropDistance;
+        final double scale = 0.92 + (delayedProgress * 0.08);
+        final double glowOpacity = (1 - delayedProgress).clamp(0, 1) * 0.20;
         return Stack(
           fit: StackFit.expand,
           children: <Widget>[
@@ -342,7 +394,10 @@ class _AnimatedLetterCell extends StatelessWidget {
             ),
             Opacity(
               opacity: opacity,
-              child: Transform.scale(scale: scale, child: child),
+              child: Transform.translate(
+                offset: Offset(0, translateY),
+                child: Transform.scale(scale: scale, child: child),
+              ),
             ),
           ],
         );
