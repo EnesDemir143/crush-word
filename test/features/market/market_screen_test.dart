@@ -276,6 +276,13 @@ class _FakeWalletRepository extends WalletRepository {
   }) async {
     _goldBalance = goldBalance;
   }
+
+  @override
+  Future<T> runInTransaction<T>(
+    Future<T> Function(DatabaseExecutor executor) action,
+  ) {
+    return action(_FakeDatabaseExecutor());
+  }
 }
 
 class _FakeJokerInventoryRepository extends JokerInventoryRepository {
@@ -305,6 +312,11 @@ class _FakeJokerInventoryRepository extends JokerInventoryRepository {
   }) async {
     _inventoryById[jokerId] = quantity;
   }
+}
+
+class _FakeDatabaseExecutor implements DatabaseExecutor {
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 const String _gameRulesJson = '''

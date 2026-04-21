@@ -40,6 +40,15 @@ class WalletRepository {
     );
   }
 
+  Future<T> runInTransaction<T>(
+    Future<T> Function(DatabaseExecutor executor) action,
+  ) async {
+    final Database database = await _database.database;
+    return database.transaction<T>((Transaction transaction) {
+      return action(transaction);
+    });
+  }
+
   Future<DatabaseExecutor> _resolveExecutor(DatabaseExecutor? executor) async {
     return executor ?? await _database.database;
   }
