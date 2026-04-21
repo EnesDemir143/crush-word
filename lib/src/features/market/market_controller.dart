@@ -109,25 +109,47 @@ class MarketController extends ChangeNotifier {
 
     int nextGoldBalance = _goldBalance;
     int nextQuantity = quantityFor(joker.id);
+    MarketPurchaseStatus status = MarketPurchaseStatus.success;
 
     try {
-      final int currentGold = await _walletRepository.loadGoldBalance();
+      status = await _walletRepository.runInTransaction<MarketPurchaseStatus>((
+        executor,
+      ) async {
+        final int currentGold = await _walletRepository.loadGoldBalance(
+          executor: executor,
+        );
 
-      if (currentGold < joker.cost) {
-        return MarketPurchaseStatus.insufficientGold;
-      }
+        if (currentGold < joker.cost) {
+          return MarketPurchaseStatus.insufficientGold;
+        }
 
-      final int currentQuantity = await _inventoryRepository.quantityFor(
-        joker.id,
-      );
+        final int currentQuantity = await _inventoryRepository.quantityFor(
+          joker.id,
+          executor: executor,
+        );
 
-      nextGoldBalance = currentGold - joker.cost;
-      nextQuantity = currentQuantity + 1;
+        nextGoldBalance = currentGold - joker.cost;
+        nextQuantity = currentQuantity + 1;
 
-      await _walletRepository.setGoldBalance(nextGoldBalance);
-      await _inventoryRepository.setQuantity(joker.id, nextQuantity);
+        await _walletRepository.setGoldBalance(
+          nextGoldBalance,
+          executor: executor,
+        );
+        await _inventoryRepository.setQuantity(
+          joker.id,
+          nextQuantity,
+          executor: executor,
+        );
+
+        return MarketPurchaseStatus.success;
+      });
     } finally {
       _purchasingJokerIds.remove(joker.id);
+    }
+
+    if (status != MarketPurchaseStatus.success) {
+      notifyListeners();
+      return status;
     }
 
     _goldBalance = nextGoldBalance;
@@ -136,6 +158,6 @@ class MarketController extends ChangeNotifier {
       joker.id: nextQuantity,
     });
     notifyListeners();
-    return MarketPurchaseStatus.success;
+    return status;
   }
 }

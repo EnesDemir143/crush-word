@@ -9,14 +9,17 @@ import 'package:crush_word/src/core/gameplay/services/board_generator.dart';
 import 'package:crush_word/src/core/gameplay/services/board_recovery.dart';
 import 'package:crush_word/src/core/gameplay/services/board_resolver.dart';
 import 'package:crush_word/src/core/gameplay/services/combo_engine.dart';
+import 'package:crush_word/src/core/gameplay/services/joker_engine.dart';
 import 'package:crush_word/src/core/gameplay/services/power_engine.dart';
 import 'package:crush_word/src/core/gameplay/services/scoring_engine.dart';
 import 'package:crush_word/src/core/gameplay/services/word_validator.dart';
 import 'package:crush_word/src/core/models/game_config.dart';
 import 'package:crush_word/src/core/models/game_result.dart';
+import 'package:crush_word/src/core/models/joker_inventory.dart';
 import 'package:crush_word/src/core/models/power_tile.dart';
 import 'package:crush_word/src/core/repositories/dictionary_repository.dart';
 import 'package:crush_word/src/core/repositories/game_history_repository.dart';
+import 'package:crush_word/src/core/repositories/joker_inventory_repository.dart';
 import 'package:crush_word/src/core/repositories/session_checkpoint_repository.dart';
 
 /// Lightweight feedback state shown after an invalid attempt.
@@ -41,7 +44,9 @@ class GameController extends ChangeNotifier {
     WordValidator? wordValidator,
     ScoringEngine? scoringEngine,
     BoardResolver? boardResolver,
+    JokerEngine? jokerEngine,
     GameHistoryRepository? gameHistoryRepository,
+    JokerInventoryRepository? jokerInventoryRepository,
     SessionCheckpointRepository? sessionCheckpointRepository,
     DateTime Function()? clock,
     GameSession? initialSession,
@@ -53,8 +58,11 @@ class GameController extends ChangeNotifier {
        _wordValidator = wordValidator,
        _scoringEngine = scoringEngine,
        _boardResolver = boardResolver,
+       _jokerEngine = jokerEngine ?? JokerEngine(),
        _gameHistoryRepository =
            gameHistoryRepository ?? GameHistoryRepository(),
+       _jokerInventoryRepository =
+           jokerInventoryRepository ?? JokerInventoryRepository(),
        _sessionCheckpointRepository =
            sessionCheckpointRepository ?? SessionCheckpointRepository(),
        _clock = clock ?? DateTime.now,
@@ -69,7 +77,9 @@ class GameController extends ChangeNotifier {
     WordValidator? wordValidator,
     ScoringEngine? scoringEngine,
     BoardResolver? boardResolver,
+    JokerEngine? jokerEngine,
     GameHistoryRepository? gameHistoryRepository,
+    JokerInventoryRepository? jokerInventoryRepository,
     SessionCheckpointRepository? sessionCheckpointRepository,
     DateTime Function()? clock,
   }) {
@@ -82,7 +92,9 @@ class GameController extends ChangeNotifier {
       wordValidator: wordValidator,
       scoringEngine: scoringEngine,
       boardResolver: boardResolver,
+      jokerEngine: jokerEngine,
       gameHistoryRepository: gameHistoryRepository,
+      jokerInventoryRepository: jokerInventoryRepository,
       sessionCheckpointRepository: sessionCheckpointRepository,
       clock: clock,
       initialSession: session,
@@ -94,7 +106,9 @@ class GameController extends ChangeNotifier {
   final BoardGenerator _boardGenerator;
   final DictionaryRepository _dictionaryRepository;
   final BoardAnalyzer _boardAnalyzer;
+  final JokerEngine _jokerEngine;
   final GameHistoryRepository _gameHistoryRepository;
+  final JokerInventoryRepository _jokerInventoryRepository;
   final SessionCheckpointRepository _sessionCheckpointRepository;
   final DateTime Function() _clock;
 
@@ -186,6 +200,8 @@ class GameController extends ChangeNotifier {
   /// Guards terminal result persistence against duplicate writes.
   String? _persistedResultId;
 
+  String? _activeJokerId;
+
   GameConfig get config => _config;
   GameSession? get session => _session;
   bool get hasSession => _session != null;
@@ -201,10 +217,37 @@ class GameController extends ChangeNotifier {
   int get lastBoardEffectToken => _lastBoardEffectToken;
   bool get isFinalizing => _isFinalizing;
   bool get isGameOver => movesLeft <= 0;
+  String? get activeJokerId => _activeJokerId;
 
   int get score => _session?.score ?? 0;
   int get movesLeft => _session?.movesLeft ?? _config.moveLimit;
   int get playableWordCount => _session?.playableWordCount ?? 0;
+  Map<String, int> get jokerInventory =>
+      _session?.jokerInventory ?? const <String, int>{};
+
+  List<MarketJokerDefinition> get ownedJokers {
+    final MarketRules? market = _cachedRules?.market;
+    if (market == null) {
+      return const <MarketJokerDefinition>[];
+    }
+
+    return market.jokers
+        .where((MarketJokerDefinition joker) => quantityForJoker(joker.id) > 0)
+        .toList(growable: false);
+  }
+
+  int quantityForJoker(String jokerId) => jokerInventory[jokerId] ?? 0;
+
+  String? get jokerHintText {
+    return switch (_activeJokerId) {
+      JokerIds.wheel => 'Tekerlek hazır: tahtadan bir harf seç.',
+      JokerIds.lollipopBreaker =>
+        'Lolipop Kırıcı hazır: kaldırmak istediğin harfe dokun.',
+      JokerIds.freeSwap =>
+        'Serbest Değiştirme hazır: komşu iki harfi sürükleyerek seç.',
+      _ => null,
+    };
+  }
 
   List<String> get selectedCellIds =>
       _session?.selectedCellIds ?? const <String>[];
@@ -228,16 +271,18 @@ class GameController extends ChangeNotifier {
     _isLoading = true;
     _errorMessage = null;
     _persistedResultId = null;
+    _activeJokerId = null;
     notifyListeners();
 
     try {
       await _ensureRuntimeCachesLoaded();
       final GameRulesConfig rules = _cachedRules!;
       final Set<String> dictionary = _cachedDictionary!;
+      final Map<String, int> inventory = await _loadJokerInventorySafe();
 
       if (_session != null && !force) {
         final GameSession hydratedSession = _ensurePostMovePlayability(
-          _session!,
+          _session!.copyWith(jokerInventory: inventory),
         );
         _session = hydratedSession;
         await _persistCheckpointIfActive(hydratedSession);
@@ -262,7 +307,9 @@ class GameController extends ChangeNotifier {
         rules: rules,
       );
 
-      _session = _ensurePostMovePlayability(session);
+      _session = _ensurePostMovePlayability(
+        session.copyWith(jokerInventory: inventory),
+      );
 
       await _persistCheckpointIfActive(_session!);
     } catch (_) {
@@ -290,6 +337,20 @@ class GameController extends ChangeNotifier {
     }
   }
 
+  Future<Map<String, int>> _loadJokerInventorySafe() async {
+    try {
+      final List<JokerInventory> inventoryItems =
+          await _jokerInventoryRepository.loadInventory();
+
+      return Map<String, int>.unmodifiable(<String, int>{
+        for (final JokerInventory item in inventoryItems)
+          item.jokerId: item.quantity,
+      });
+    } catch (_) {
+      return const <String, int>{};
+    }
+  }
+
   void startSelection(BoardCell cell) {
     final GameSession? activeSession = _session;
 
@@ -307,6 +368,32 @@ class GameController extends ChangeNotifier {
     _lastActivatedPowers = const <PowerTileType>[];
 
     _session = activeSession.copyWith(selectedCellIds: <String>[cell.id]);
+    notifyListeners();
+  }
+
+  Future<void> activateJoker(String jokerId) async {
+    final GameSession? activeSession = _session;
+    if (activeSession == null ||
+        _isLoading ||
+        _isFinalizing ||
+        quantityForJoker(jokerId) <= 0) {
+      return;
+    }
+
+    _clearTransientFeedback();
+    clearSelection();
+
+    if (!_jokerEngine.requiresTarget(jokerId)) {
+      _isFinalizing = true;
+      try {
+        await _applyJoker(jokerId: jokerId, selectedCellIds: const <String>[]);
+      } finally {
+        _isFinalizing = false;
+      }
+      return;
+    }
+
+    _activeJokerId = _activeJokerId == jokerId ? null : jokerId;
     notifyListeners();
   }
 
@@ -331,6 +418,17 @@ class GameController extends ChangeNotifier {
     final BoardCell lastCell = _cellById(activeSession, activePath.last);
 
     if (!_isAdjacent(lastCell, cell)) {
+      return;
+    }
+
+    if (_activeJokerId != null &&
+        _jokerEngine.allowsSingleTarget(_activeJokerId!)) {
+      return;
+    }
+
+    if (_activeJokerId != null &&
+        _jokerEngine.allowsDoubleTarget(_activeJokerId!) &&
+        activePath.length >= 2) {
       return;
     }
 
@@ -375,6 +473,14 @@ class GameController extends ChangeNotifier {
     _isFinalizing = true;
 
     try {
+      if (_activeJokerId != null) {
+        await _applyJoker(
+          jokerId: _activeJokerId!,
+          selectedCellIds: activeSession.selectedCellIds,
+        );
+        return;
+      }
+
       // Build the word from the selected letters.
       final List<String> letters = activeSession.selectedCellIds
           .map((String cellId) => _cellById(activeSession, cellId).letter)
@@ -538,6 +644,63 @@ class GameController extends ChangeNotifier {
     return rowDelta <= 1 &&
         columnDelta <= 1 &&
         (rowDelta != 0 || columnDelta != 0);
+  }
+
+  void _clearTransientFeedback() {
+    _lastInvalidFeedback = null;
+    _lastRemovedCellIds = const <String>[];
+    _lastWordScore = 0;
+    _lastComboCount = 0;
+    _lastComboBonus = 0;
+    _lastCreatedPower = null;
+    _lastActivatedPowers = const <PowerTileType>[];
+  }
+
+  Future<void> _applyJoker({
+    required String jokerId,
+    required List<String> selectedCellIds,
+  }) async {
+    final GameSession? activeSession = _session;
+    final GameRulesConfig? rules = _cachedRules;
+    if (activeSession == null || rules == null) {
+      return;
+    }
+
+    final JokerEffectResult result = _jokerEngine.apply(
+      jokerId: jokerId,
+      session: activeSession,
+      rules: rules,
+      boardResolver: _resolver,
+      selectedCellIds: selectedCellIds,
+    );
+
+    if (!result.applied) {
+      _session = activeSession.copyWith(selectedCellIds: const <String>[]);
+      notifyListeners();
+      return;
+    }
+
+    final int remainingQuantity = (quantityForJoker(jokerId) - 1).clamp(0, 999);
+    final Map<String, int> nextInventory = Map<String, int>.from(
+      activeSession.jokerInventory,
+    )..[jokerId] = remainingQuantity;
+
+    _clearTransientFeedback();
+    _lastRemovedCellIds = result.removedCellIds;
+    _lastBoardEffectToken += 1;
+    _activeJokerId = null;
+
+    GameSession updatedSession = activeSession.copyWith(
+      board: result.board,
+      selectedCellIds: const <String>[],
+      jokerInventory: nextInventory,
+    );
+    updatedSession = _ensurePostMovePlayability(updatedSession);
+
+    await _jokerInventoryRepository.setQuantity(jokerId, remainingQuantity);
+    _session = updatedSession;
+    await _syncPersistenceAfterMutation(updatedSession);
+    notifyListeners();
   }
 
   Future<void> _syncPersistenceAfterMutation(GameSession session) async {

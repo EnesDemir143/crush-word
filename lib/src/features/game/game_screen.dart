@@ -9,6 +9,7 @@ import 'package:crush_word/src/core/models/game_config.dart';
 import 'package:crush_word/src/features/game/game_controller.dart';
 import 'package:crush_word/src/features/game/exit_confirmation_dialog.dart';
 import 'package:crush_word/src/features/game/widgets/game_header.dart';
+import 'package:crush_word/src/features/game/widgets/joker_bar.dart';
 import 'package:crush_word/src/features/game/widgets/letter_grid.dart';
 
 class GameScreen extends StatefulWidget {
@@ -174,6 +175,16 @@ class _GameBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final InvalidAttemptFeedback? feedback = controller.lastInvalidFeedback;
+    final Widget jokerBar = JokerBar(
+      jokers: controller.ownedJokers,
+      inventoryById: controller.jokerInventory,
+      activeJokerId: controller.activeJokerId,
+      helperText: controller.jokerHintText,
+      enabled: !controller.isLoading && !controller.isGameOver,
+      onJokerPressed: (String jokerId) {
+        unawaited(controller.activateJoker(jokerId));
+      },
+    );
 
     return Stack(
       children: <Widget>[
@@ -186,35 +197,43 @@ class _GameBody extends StatelessWidget {
                 !isMedium || constraints.maxHeight < 620;
 
             if (isWide) {
-              return Row(
+              return Column(
                 children: <Widget>[
                   Expanded(
-                    flex: 7,
-                    child: _BoardStage(
-                      session: session,
-                      controller: controller,
-                      boardSide: _resolveWideBoardSide(constraints),
-                    ),
-                  ),
-                  const SizedBox(width: 24),
-                  Expanded(
-                    flex: 5,
-                    child: Column(
+                    child: Row(
                       children: <Widget>[
-                        GameHeader(
-                          config: session.config,
-                          score: controller.score,
-                          movesLeft: controller.movesLeft,
-                          activeWord: controller.selectedWord,
-                          compact: constraints.maxHeight < 760,
-                          lastWordScore: controller.lastWordScore,
-                          playableWordCount: controller.playableWordCount,
+                        Expanded(
+                          flex: 7,
+                          child: _BoardStage(
+                            session: session,
+                            controller: controller,
+                            boardSide: _resolveWideBoardSide(constraints),
+                          ),
                         ),
-                        const SizedBox(height: 12),
-                        _AnimatedFeedback(feedback: feedback),
+                        const SizedBox(width: 24),
+                        Expanded(
+                          flex: 5,
+                          child: Column(
+                            children: <Widget>[
+                              GameHeader(
+                                config: session.config,
+                                score: controller.score,
+                                movesLeft: controller.movesLeft,
+                                activeWord: controller.selectedWord,
+                                compact: constraints.maxHeight < 760,
+                                lastWordScore: controller.lastWordScore,
+                                playableWordCount: controller.playableWordCount,
+                              ),
+                              const SizedBox(height: 12),
+                              _AnimatedFeedback(feedback: feedback),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
+                  const SizedBox(height: 12),
+                  jokerBar,
                 ],
               );
             }
@@ -236,6 +255,8 @@ class _GameBody extends StatelessWidget {
                 Expanded(
                   child: _BoardStage(session: session, controller: controller),
                 ),
+                const SizedBox(height: 12),
+                jokerBar,
               ],
             );
           },
