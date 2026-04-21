@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-04-18)
 
 **Core value:** Oyuncuya her zaman oynanabilir kalan, kurallari acikca gorunen ve ders dokumanindaki tum zorunlu maddeleri eksiksiz yerine getiren bir mobil kelime oyunu sunmak.
-**Current focus:** Phase 4 - Advanced Board Mechanics (Plan 2 next); Phase 04-01 completed, Phase 05-01 and 05-03 completed out of order
+**Current focus:** Phase 5 - Market and Score History (Plan 05-02 next); Phase 4 fully completed, Phase 05-01 and 05-03 already completed out of order
 
 ## Current Position
 
-Phase: 4 of 8 (Advanced Board Mechanics)
-Plan: 2 of 3 in current phase (04-02 completed)
-Status: Phase 04-02 completed — combo detection engine and subword scoring implemented, extensively verified via automated tests and manual approval. Next: 04-03 (power tiles creation and triggers).
-Last activity: 2026-04-21 - Completed Phase 04-02 with combo engine restructuring, duplicate eliminations, standalone combo tests and scoring integration.
+Phase: 5 of 8 (Market and Score History)
+Plan: 2 of 3 in current phase (05-02 next)
+Status: Phase 04 completed — post-move continuity, combo scoring and power-tile mechanics are implemented and verified. Next: 05-02 (in-game joker actions).
+Last activity: 2026-04-21 - Completed Phase 04-03 with power-tile creation, surviving-last-letter behavior, power activation effects and focused automated/manual verification.
 
-Progress: [█████████▓] 95%
+Progress: [██████████] 100% of Phase 4, overall project focus moved to Phase 5
 
 ## Performance Metrics
 
@@ -32,12 +32,12 @@ Progress: [█████████▓] 95%
 | 2. Game Setup and Board Foundation | 3 | execution tracked in summaries | n/a |
 | 02.1 Initial Board Solvability Gate | 1 | execution tracked in summary | n/a |
 | 3. Core Gameplay and Session Results | 4/4 | completed | n/a |
-| 4. Advanced Board Mechanics | 1/3 | in progress | n/a |
+| 4. Advanced Board Mechanics | 3/3 | completed | execution tracked in summaries |
 | 5. Market and Score History | 2/3 | in progress | n/a |
 
 **Recent Trend:**
-- Last 5 plans: 05-01, 05-03, 04-01, 04-02
-- Trend: Phase 4 board mechanics continues; playable count, post-move recovery, and combo scoring kapandi. Siradaki 04-03 power tiles mekanikleri.
+- Last 5 plans: 05-01, 05-03, 04-01, 04-02, 04-03
+- Trend: Phase 4 board mechanics kapandi. Siradaki odak, marketten satin alinan jokerlerin oyun ici etkilerini calistiran 05-02.
 
 ## Accumulated Context
 
@@ -67,7 +67,8 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - Phase 05-03 completed on 2026-04-19 out of order with history controller, aggregate summary metrics, newest-first game cards and widget tests
 - Phase 04-01 completed on 2026-04-21 with non-overlapping playable word count, post-move dead-board recovery, session state preservation during regeneration, and 4 new tests
 - Phase 04-02 completed on 2026-04-21 with Combo scoring detection, canonical integration, resolving solver exceptions, and fully validated subword rules.
-- Current next target is Phase 4 `04-03`; power tiles mechanics
+- Phase 04-03 completed on 2026-04-21 with dedicated power-tile modeling, surviving-last-letter placement, resolver-integrated activation effects, focused power tests and manual gate approval.
+- Current next target is Phase 5 `05-02`; execute joker actions from in-game inventory
 
 ### Pending Todos
 
@@ -76,12 +77,12 @@ None yet.
 ### Blockers/Concerns
 
 - Phase 2 ve sonrasi implementasyonlarda `01.1-EVAL-MATRIX.md` ve `01.1-MANUAL-CHECKLIST.md` zorunlu referans kabul edilmeli.
-- Harf puan tablosu ve sonraki power threshold'lari canonical source yazildigi anda kullanicyla manuel teyit gerektiriyor.
+- Harf puan tablosu ve power threshold'lari canonical source ile manuel teyit edildi; joker effect alanlari icin sonraki phase sonunda yine smoke-check gerekecek.
 - Joker fiyat/katalog manual gate'i 2026-04-19 tarihinde onaylandi; gameplay effect ve newest-first history smoke-check'leri ileriki phase'lerde yine gerekecek.
 - Resume behavior, newest-first history ve kullaniciya gorunen aggregate/power/count alanlari icin feature-cikisinda kisa smoke-check gerekecek.
 
 ## Session Continuity
 
-Last session: 2026-04-21 02:58
-Stopped at: Phase 04-02 completed with mathematical proof testing and manual validations. Next: Phase 04-03 power tiles mechanics.
+Last session: 2026-04-21 03:35
+Stopped at: Phase 04-03 completed with automated verification and manual gate approval. Next: Phase 05-02 joker action mechanics.
 Resume file: None
