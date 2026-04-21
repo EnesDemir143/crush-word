@@ -6,10 +6,7 @@ import 'package:crush_word/src/core/repositories/dictionary_repository.dart';
 /// Contains the main word plus all unique, order-preserving
 /// sub-words (subsequences) found within it.
 class ComboResult {
-  const ComboResult({
-    required this.mainWord,
-    required this.subWords,
-  });
+  const ComboResult({required this.mainWord, required this.subWords});
 
   /// The original normalised word that was played.
   final String mainWord;
@@ -69,9 +66,11 @@ class ComboDetector {
     final Set<String> candidates = <String>{};
 
     for (int start = 0; start < normalised.length; start++) {
-      for (int end = start + minSubWordLength;
-          end <= normalised.length;
-          end++) {
+      for (
+        int end = start + minSubWordLength;
+        end <= normalised.length;
+        end++
+      ) {
         final String sub = normalised.substring(start, end);
 
         // Skip the main word itself.
@@ -88,8 +87,9 @@ class ComboDetector {
     }
 
     // Batch-check all candidates against the dictionary.
-    final Set<String> validSubWords =
-        await _dictionaryRepository.lookupWords(candidates);
+    final Set<String> validSubWords = await _dictionaryRepository.lookupWords(
+      candidates,
+    );
 
     return ComboResult(
       mainWord: normalised,

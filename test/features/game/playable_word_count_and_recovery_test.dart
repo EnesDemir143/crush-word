@@ -17,17 +17,7 @@ void main() {
   group('Playable count and post-move continuity', () {
     test('load computes non-overlapping playable word count', () async {
       final GameSession session = _buildSession(
-        letters: const <String>[
-          'k',
-          'a',
-          'l',
-          'e',
-          'x',
-          'x',
-          'x',
-          'x',
-          'x',
-        ],
+        letters: const <String>['k', 'a', 'l', 'e', 'x', 'x', 'x', 'x', 'x'],
       );
 
       final GameController controller = GameController.fromSession(
@@ -36,9 +26,7 @@ void main() {
         dictionaryRepository: DictionaryRepository(
           assetLoader: (_) async => 'kal\nkale\n',
         ),
-        boardGenerator: BoardGenerator(
-          randomSource: _FixedRandomSource(0),
-        ),
+        boardGenerator: BoardGenerator(randomSource: _FixedRandomSource(0)),
         sessionCheckpointRepository: MemorySessionCheckpointRepository(),
       );
 
@@ -52,17 +40,7 @@ void main() {
 
     test('post-move dead board is recovered and count refreshed', () async {
       final GameSession session = _buildSession(
-        letters: const <String>[
-          'k',
-          'a',
-          'l',
-          'x',
-          'x',
-          'x',
-          'x',
-          'x',
-          'x',
-        ],
+        letters: const <String>['k', 'a', 'l', 'x', 'x', 'x', 'x', 'x', 'x'],
         movesLeft: 5,
       );
 
@@ -116,10 +94,7 @@ void main() {
   });
 }
 
-GameSession _buildSession({
-  required List<String> letters,
-  int movesLeft = 10,
-}) {
+GameSession _buildSession({required List<String> letters, int movesLeft = 10}) {
   const int gridSize = 3;
   return GameSession(
     config: const GameConfig(
@@ -252,5 +227,7 @@ final GameRulesConfig _rules = GameRulesConfig(
       ),
     ],
   ),
-  scoring: ScoringConfig(letterScores: const <String, int>{'K': 1, 'A': 1, 'L': 1}),
+  scoring: ScoringConfig(
+    letterScores: const <String, int>{'K': 1, 'A': 1, 'L': 1},
+  ),
 );

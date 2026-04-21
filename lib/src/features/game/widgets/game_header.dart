@@ -80,9 +80,7 @@ class GameHeader extends StatelessWidget {
                     const SizedBox(width: 8),
                     _AnimatedMovesPill(movesLeft: movesLeft),
                     const SizedBox(width: 8),
-                    _PlayableWordCountPill(
-                      count: playableWordCount,
-                    ),
+                    _PlayableWordCountPill(count: playableWordCount),
                   ],
                 ),
               ],
@@ -442,8 +440,7 @@ class _PlayableWordCountPill extends StatefulWidget {
   final int count;
 
   @override
-  State<_PlayableWordCountPill> createState() =>
-      _PlayableWordCountPillState();
+  State<_PlayableWordCountPill> createState() => _PlayableWordCountPillState();
 }
 
 class _PlayableWordCountPillState extends State<_PlayableWordCountPill>

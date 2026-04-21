@@ -299,8 +299,7 @@ class BoardAnalyzer {
           .join();
 
       final PlayableWord? existing = found[word];
-      if (existing == null ||
-          currentPath.length < existing.cellIds.length) {
+      if (existing == null || currentPath.length < existing.cellIds.length) {
         found[word] = PlayableWord(
           word: word,
           cellIds: List<String>.of(currentPath),

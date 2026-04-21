@@ -9,10 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 /// without touching the real asset bundle.
 class _FakeDictionaryRepository extends DictionaryRepository {
   _FakeDictionaryRepository(this._words)
-    : super(
-        assetLoader: (_) async => '',
-        assetPath: 'fake',
-      );
+    : super(assetLoader: (_) async => '', assetPath: 'fake');
 
   final Set<String> _words;
 
@@ -21,8 +18,7 @@ class _FakeDictionaryRepository extends DictionaryRepository {
 
   @override
   Future<bool> contains(String word) async {
-    final String normalised =
-        DictionaryRepository.normalizeWord(word);
+    final String normalised = DictionaryRepository.normalizeWord(word);
     return normalised.length >= 3 && _words.contains(normalised);
   }
 
@@ -30,8 +26,7 @@ class _FakeDictionaryRepository extends DictionaryRepository {
   Future<Set<String>> lookupWords(Iterable<String> words) async {
     final Set<String> matches = <String>{};
     for (final String word in words) {
-      final String normalised =
-          DictionaryRepository.normalizeWord(word);
+      final String normalised = DictionaryRepository.normalizeWord(word);
       if (normalised.length >= 3 && _words.contains(normalised)) {
         matches.add(normalised);
       }
@@ -44,12 +39,35 @@ class _FakeDictionaryRepository extends DictionaryRepository {
 ScoringConfig _testScoringConfig() {
   return ScoringConfig(
     letterScores: <String, int>{
-      'A': 1, 'B': 3, 'C': 4, 'Ç': 4, 'D': 3,
-      'E': 1, 'F': 7, 'G': 5, 'Ğ': 8, 'H': 5,
-      'I': 2, 'İ': 1, 'J': 10, 'K': 1, 'L': 1,
-      'M': 2, 'N': 1, 'O': 2, 'Ö': 7, 'P': 5,
-      'R': 1, 'S': 2, 'Ş': 4, 'T': 1, 'U': 2,
-      'Ü': 3, 'V': 7, 'Y': 3, 'Z': 4,
+      'A': 1,
+      'B': 3,
+      'C': 4,
+      'Ç': 4,
+      'D': 3,
+      'E': 1,
+      'F': 7,
+      'G': 5,
+      'Ğ': 8,
+      'H': 5,
+      'I': 2,
+      'İ': 1,
+      'J': 10,
+      'K': 1,
+      'L': 1,
+      'M': 2,
+      'N': 1,
+      'O': 2,
+      'Ö': 7,
+      'P': 5,
+      'R': 1,
+      'S': 2,
+      'Ş': 4,
+      'T': 1,
+      'U': 2,
+      'Ü': 3,
+      'V': 7,
+      'Y': 3,
+      'Z': 4,
     },
   );
 }
@@ -63,12 +81,12 @@ void main() {
     test('ADANA → detects contiguous subwords (ada, ana)', () async {
       // "adana" has contiguous substrings: ada, dan, ana, adan, dana
       // We mark only "ada" and "ana" as dictionary words.
-      final _FakeDictionaryRepository repo = _FakeDictionaryRepository(
-        <String>{'ada', 'ana', 'adana'},
-      );
-      final ComboDetector detector = ComboDetector(
-        dictionaryRepository: repo,
-      );
+      final _FakeDictionaryRepository repo = _FakeDictionaryRepository(<String>{
+        'ada',
+        'ana',
+        'adana',
+      });
+      final ComboDetector detector = ComboDetector(dictionaryRepository: repo);
 
       final ComboResult result = await detector.detect('ADANA');
 
@@ -80,71 +98,63 @@ void main() {
     });
 
     test('MASAL → detects masa, asal as valid subwords', () async {
-      final _FakeDictionaryRepository repo = _FakeDictionaryRepository(
-        <String>{'masal', 'masa', 'asal', 'sal'},
-      );
-      final ComboDetector detector = ComboDetector(
-        dictionaryRepository: repo,
-      );
+      final _FakeDictionaryRepository repo = _FakeDictionaryRepository(<String>{
+        'masal',
+        'masa',
+        'asal',
+        'sal',
+      });
+      final ComboDetector detector = ComboDetector(dictionaryRepository: repo);
 
       final ComboResult result = await detector.detect('MASAL');
 
       expect(result.mainWord, 'masal');
-      expect(
-        result.subWords,
-        unorderedEquals(<String>['masa', 'asal', 'sal']),
-      );
+      expect(result.subWords, unorderedEquals(<String>['masa', 'asal', 'sal']));
       expect(result.comboCount, 4);
     });
 
     test('SARI → detects valid contiguous subwords', () async {
       // "SARI" normalises to "sarı" (Turkish I→ı).
       // Contiguous substrings ≥3 (excluding main): sar, arı
-      final _FakeDictionaryRepository repo = _FakeDictionaryRepository(
-        <String>{'sarı', 'arı', 'sar'},
-      );
-      final ComboDetector detector = ComboDetector(
-        dictionaryRepository: repo,
-      );
+      final _FakeDictionaryRepository repo = _FakeDictionaryRepository(<String>{
+        'sarı',
+        'arı',
+        'sar',
+      });
+      final ComboDetector detector = ComboDetector(dictionaryRepository: repo);
 
       final ComboResult result = await detector.detect('SARI');
 
       expect(result.mainWord, 'sarı');
       // Both "sar" and "arı" are valid dictionary substrings.
-      expect(
-        result.subWords,
-        unorderedEquals(<String>['arı', 'sar']),
-      );
+      expect(result.subWords, unorderedEquals(<String>['arı', 'sar']));
       expect(result.comboCount, 3);
     });
 
     test('duplicate subwords are counted once', () async {
       // "abcabc" has "abc" appearing twice as a substring.
       // Dictionary marks "abc" as valid.
-      final _FakeDictionaryRepository repo = _FakeDictionaryRepository(
-        <String>{'abc', 'abcabc'},
-      );
-      final ComboDetector detector = ComboDetector(
-        dictionaryRepository: repo,
-      );
+      final _FakeDictionaryRepository repo = _FakeDictionaryRepository(<String>{
+        'abc',
+        'abcabc',
+      });
+      final ComboDetector detector = ComboDetector(dictionaryRepository: repo);
 
       final ComboResult result = await detector.detect('ABCABC');
 
       // "abc" should appear only once despite occurring at
       // positions 0-3 and 3-6.
-      final int abcOccurrences =
-          result.subWords.where((String w) => w == 'abc').length;
+      final int abcOccurrences = result.subWords
+          .where((String w) => w == 'abc')
+          .length;
       expect(abcOccurrences, 1);
     });
 
-    test('word shorter than minSubWordLength returns no combo',
-        () async {
-      final _FakeDictionaryRepository repo = _FakeDictionaryRepository(
-        <String>{'ab'},
-      );
-      final ComboDetector detector = ComboDetector(
-        dictionaryRepository: repo,
-      );
+    test('word shorter than minSubWordLength returns no combo', () async {
+      final _FakeDictionaryRepository repo = _FakeDictionaryRepository(<String>{
+        'ab',
+      });
+      final ComboDetector detector = ComboDetector(dictionaryRepository: repo);
 
       final ComboResult result = await detector.detect('AB');
 
@@ -157,12 +167,10 @@ void main() {
         'no combo', () async {
       // "xyz" has no contiguous substrings ≥ 3 that differ
       // from the main word.
-      final _FakeDictionaryRepository repo = _FakeDictionaryRepository(
-        <String>{'xyz'},
-      );
-      final ComboDetector detector = ComboDetector(
-        dictionaryRepository: repo,
-      );
+      final _FakeDictionaryRepository repo = _FakeDictionaryRepository(<String>{
+        'xyz',
+      });
+      final ComboDetector detector = ComboDetector(dictionaryRepository: repo);
 
       final ComboResult result = await detector.detect('XYZ');
 
@@ -171,20 +179,17 @@ void main() {
     });
 
     test('main word is excluded from subword list', () async {
-      final _FakeDictionaryRepository repo = _FakeDictionaryRepository(
-        <String>{'test', 'tes', 'est'},
-      );
-      final ComboDetector detector = ComboDetector(
-        dictionaryRepository: repo,
-      );
+      final _FakeDictionaryRepository repo = _FakeDictionaryRepository(<String>{
+        'test',
+        'tes',
+        'est',
+      });
+      final ComboDetector detector = ComboDetector(dictionaryRepository: repo);
 
       final ComboResult result = await detector.detect('TEST');
 
       expect(result.subWords, isNot(contains('test')));
-      expect(
-        result.subWords,
-        unorderedEquals(<String>['tes', 'est']),
-      );
+      expect(result.subWords, unorderedEquals(<String>['tes', 'est']));
     });
   });
 
@@ -196,13 +201,10 @@ void main() {
     late ComboScoringEngine engine;
 
     setUp(() {
-      engine = ComboScoringEngine(
-        scoringConfig: _testScoringConfig(),
-      );
+      engine = ComboScoringEngine(scoringConfig: _testScoringConfig());
     });
 
-    test('reuses canonical letter-score table for sub-words',
-        () {
+    test('reuses canonical letter-score table for sub-words', () {
       // "ADA" → A(1) + D(3) + A(1) = 5
       // "ANA" → A(1) + N(1) + A(1) = 3
       // Main "ADANA" → A(1)+D(3)+A(1)+N(1)+A(1) = 7
@@ -242,8 +244,7 @@ void main() {
       expect(result.hasCombo, isFalse);
     });
 
-    test('MASAL total reflects main plus all sub-word scores',
-        () {
+    test('MASAL total reflects main plus all sub-word scores', () {
       // Main "MASAL" → M(2)+A(1)+S(2)+A(1)+L(1) = 7
       // "MASA" → M(2)+A(1)+S(2)+A(1) = 6
       // "ASAL" → A(1)+S(2)+A(1)+L(1) = 5
