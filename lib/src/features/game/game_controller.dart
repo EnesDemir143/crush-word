@@ -14,6 +14,7 @@ import 'package:crush_word/src/core/gameplay/services/scoring_engine.dart';
 import 'package:crush_word/src/core/gameplay/services/word_validator.dart';
 import 'package:crush_word/src/core/models/game_config.dart';
 import 'package:crush_word/src/core/models/game_result.dart';
+import 'package:crush_word/src/core/models/power_tile.dart';
 import 'package:crush_word/src/core/repositories/dictionary_repository.dart';
 import 'package:crush_word/src/core/repositories/game_history_repository.dart';
 import 'package:crush_word/src/core/repositories/session_checkpoint_repository.dart';
@@ -170,6 +171,15 @@ class GameController extends ChangeNotifier {
   /// Total points earned from combo sub-words on the last valid word.
   int _lastComboBonus = 0;
 
+  /// The power tile created by the last valid word, if any.
+  PowerTile? _lastCreatedPower;
+
+  /// Power effects activated by the last valid word, if any.
+  List<PowerTileType> _lastActivatedPowers = const <PowerTileType>[];
+
+  /// Monotonic token used by the UI to detect a new clear/effect event.
+  int _lastBoardEffectToken = 0;
+
   /// Whether a finalization is already running (prevents double-taps).
   bool _isFinalizing = false;
 
@@ -186,6 +196,9 @@ class GameController extends ChangeNotifier {
   int get lastWordScore => _lastWordScore;
   int get lastComboCount => _lastComboCount;
   int get lastComboBonus => _lastComboBonus;
+  PowerTile? get lastCreatedPower => _lastCreatedPower;
+  List<PowerTileType> get lastActivatedPowers => _lastActivatedPowers;
+  int get lastBoardEffectToken => _lastBoardEffectToken;
   bool get isFinalizing => _isFinalizing;
   bool get isGameOver => movesLeft <= 0;
 
@@ -290,6 +303,8 @@ class GameController extends ChangeNotifier {
     _lastWordScore = 0;
     _lastComboCount = 0;
     _lastComboBonus = 0;
+    _lastCreatedPower = null;
+    _lastActivatedPowers = const <PowerTileType>[];
 
     _session = activeSession.copyWith(selectedCellIds: <String>[cell.id]);
     notifyListeners();
@@ -418,13 +433,20 @@ class GameController extends ChangeNotifier {
             _lastRemovedCellIds = resolved.removedCells
                 .map((BoardCell cell) => cell.id)
                 .toList(growable: false);
+            _lastCreatedPower = resolved.createdPower;
+            _lastActivatedPowers =
+                resolved.powerActivation?.activatedPowers ??
+                const <PowerTileType>[];
           } else {
             _lastRemovedCellIds = const <String>[];
+            _lastCreatedPower = null;
+            _lastActivatedPowers = const <PowerTileType>[];
           }
 
           _lastWordScore = wordScore;
           _lastComboCount = comboCount;
           _lastComboBonus = comboBonus;
+          _lastBoardEffectToken += 1;
           updatedSession = activeSession.copyWith(
             board: newBoard,
             selectedCellIds: const <String>[],
@@ -455,6 +477,8 @@ class GameController extends ChangeNotifier {
           _lastWordScore = 0;
           _lastComboCount = 0;
           _lastComboBonus = 0;
+          _lastCreatedPower = null;
+          _lastActivatedPowers = const <PowerTileType>[];
           _lastInvalidFeedback = InvalidAttemptFeedback(
             reason: result.reason,
             word: result.word,
@@ -472,6 +496,8 @@ class GameController extends ChangeNotifier {
         _lastWordScore = 0;
         _lastComboCount = 0;
         _lastComboBonus = 0;
+        _lastCreatedPower = null;
+        _lastActivatedPowers = const <PowerTileType>[];
         _lastInvalidFeedback = InvalidAttemptFeedback(
           reason: WordValidationReason.notInDictionary,
           word: activeSession.selectedCellIds
