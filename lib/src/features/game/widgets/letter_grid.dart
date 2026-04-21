@@ -219,12 +219,14 @@ class _LetterGridState extends State<LetterGrid> {
                             _effectOverlay!.removedCells.length == 1)
                           Positioned.fill(
                             child: IgnorePointer(
-                              child: _LollipopHammerOverlay(
-                                key: ValueKey<String>(
-                                  'lollipop-hammer-${_effectOverlay!.token}',
+                              child: ExcludeSemantics(
+                                child: _LollipopHammerOverlay(
+                                  key: ValueKey<String>(
+                                    'lollipop-hammer-${_effectOverlay!.token}',
+                                  ),
+                                  gridLayout: gridLayout,
+                                  target: _effectOverlay!.removedCells.single,
                                 ),
-                                gridLayout: gridLayout,
-                                target: _effectOverlay!.removedCells.single,
                               ),
                             ),
                           ),
@@ -234,19 +236,23 @@ class _LetterGridState extends State<LetterGrid> {
                               'party-cast-${widget.partyCastToken}',
                             ),
                             child: IgnorePointer(
-                              child: _PartyCastOverlay(
-                                token: widget.partyCastToken,
-                                gridLayout: gridLayout,
-                                board: widget.session.board,
+                              child: ExcludeSemantics(
+                                child: _PartyCastOverlay(
+                                  token: widget.partyCastToken,
+                                  gridLayout: gridLayout,
+                                  board: widget.session.board,
+                                ),
                               ),
                             ),
                           ),
                         if (_effectOverlay != null)
                           Positioned.fill(
                             child: IgnorePointer(
-                              child: _GridEffectOverlay(
-                                data: _effectOverlay!,
-                                gridLayout: gridLayout,
+                              child: ExcludeSemantics(
+                                child: _GridEffectOverlay(
+                                  data: _effectOverlay!,
+                                  gridLayout: gridLayout,
+                                ),
                               ),
                             ),
                           ),
@@ -315,6 +321,11 @@ class _LetterGridState extends State<LetterGrid> {
       creationAnchor = oldBoardById[oldWidget.selectedCellIds.last];
     }
 
+    int durationMs = 1200;
+    if (widget.lastJokerEffectId == JokerIds.lollipopBreaker) {
+      durationMs = 460;
+    }
+
     _overlayResetTimer?.cancel();
     setState(() {
       _effectOverlay = _GridEffectOverlayData(
@@ -327,7 +338,7 @@ class _LetterGridState extends State<LetterGrid> {
         jokerId: widget.lastJokerEffectId,
       );
     });
-    _overlayResetTimer = Timer(const Duration(milliseconds: 1200), () {
+    _overlayResetTimer = Timer(Duration(milliseconds: durationMs), () {
       if (!mounted || _effectOverlay?.token != widget.effectToken) {
         return;
       }
@@ -730,22 +741,23 @@ class _LollipopHammerOverlay extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        width: 32,
-                        height: 28,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          gradient: const LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
+                        width: 42,
+                        height: 42,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: RadialGradient(
+                            center: Alignment(-0.2, -0.3),
+                            radius: 0.8,
                             colors: <Color>[
-                              Color(0xFFF4F4F4),
-                              Color(0xFFC5C5C5),
+                              Color(0xFFFFB0D9),
+                              Color(0xFFE91E63),
+                              Color(0xFFC2185B),
                             ],
                           ),
-                          boxShadow: const <BoxShadow>[
+                          boxShadow: <BoxShadow>[
                             BoxShadow(
-                              color: Color(0x44000000),
-                              blurRadius: 8,
+                              color: Color(0x55000000),
+                              blurRadius: 6,
                               offset: Offset(0, 3),
                             ),
                           ],
