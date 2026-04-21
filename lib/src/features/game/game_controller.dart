@@ -225,15 +225,13 @@ class GameController extends ChangeNotifier {
   Map<String, int> get jokerInventory =>
       _session?.jokerInventory ?? const <String, int>{};
 
-  List<MarketJokerDefinition> get ownedJokers {
+  List<MarketJokerDefinition> get availableJokers {
     final MarketRules? market = _cachedRules?.market;
     if (market == null) {
       return const <MarketJokerDefinition>[];
     }
 
-    return market.jokers
-        .where((MarketJokerDefinition joker) => quantityForJoker(joker.id) > 0)
-        .toList(growable: false);
+    return market.jokers.toList(growable: false);
   }
 
   int quantityForJoker(String jokerId) => jokerInventory[jokerId] ?? 0;

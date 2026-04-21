@@ -176,7 +176,7 @@ class _GameBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final InvalidAttemptFeedback? feedback = controller.lastInvalidFeedback;
     final Widget jokerBar = JokerBar(
-      jokers: controller.ownedJokers,
+      jokers: controller.availableJokers,
       inventoryById: controller.jokerInventory,
       activeJokerId: controller.activeJokerId,
       helperText: controller.jokerHintText,
@@ -216,7 +216,6 @@ class _GameBody extends StatelessWidget {
                           child: Column(
                             children: <Widget>[
                               GameHeader(
-                                config: session.config,
                                 score: controller.score,
                                 movesLeft: controller.movesLeft,
                                 activeWord: controller.selectedWord,
@@ -242,7 +241,6 @@ class _GameBody extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 GameHeader(
-                  config: session.config,
                   score: controller.score,
                   movesLeft: controller.movesLeft,
                   activeWord: controller.selectedWord,

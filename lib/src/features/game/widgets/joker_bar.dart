@@ -23,13 +23,7 @@ class JokerBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<MarketJokerDefinition> ownedJokers = jokers
-        .where(
-          (MarketJokerDefinition joker) => (inventoryById[joker.id] ?? 0) > 0,
-        )
-        .toList(growable: false);
-
-    if (ownedJokers.isEmpty) {
+    if (jokers.isEmpty) {
       return const SizedBox.shrink();
     }
 
@@ -86,11 +80,11 @@ class JokerBar extends StatelessWidget {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: ownedJokers
+                children: jokers
                     .map(
                       (MarketJokerDefinition joker) => Padding(
-                        padding: const EdgeInsets.only(right: 10),
-                        child: _JokerChip(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: _JokerOrb(
                           joker: joker,
                           quantity: inventoryById[joker.id] ?? 0,
                           isActive: activeJokerId == joker.id,
@@ -109,8 +103,8 @@ class JokerBar extends StatelessWidget {
   }
 }
 
-class _JokerChip extends StatelessWidget {
-  const _JokerChip({
+class _JokerOrb extends StatelessWidget {
+  const _JokerOrb({
     required this.joker,
     required this.quantity,
     required this.isActive,
@@ -126,64 +120,82 @@ class _JokerChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isAvailable = enabled && quantity > 0;
+    final Color accentColor = isActive
+        ? const Color(0xFF0F615B)
+        : quantity > 0
+        ? const Color(0xFF7A4E15)
+        : const Color(0xFFB7AA96);
+
     return Material(
       color: Colors.transparent,
-      child: InkWell(
-        key: Key('joker-bar-${joker.id}'),
-        onTap: enabled ? onPressed : null,
-        borderRadius: BorderRadius.circular(18),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          width: 116,
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: isActive
-                  ? const <Color>[Color(0xFF1D6D67), Color(0xFF0F4E4A)]
-                  : const <Color>[Color(0xFFFFFCF6), Color(0xFFF4E8D5)],
-            ),
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: isActive
-                  ? const Color(0xFFFFE7B0)
-                  : const Color(0xFFE5D4BA),
-              width: isActive ? 2 : 1.2,
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Icon(
-                _iconFor(joker.id),
-                color: isActive ? Colors.white : const Color(0xFF7A4E15),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                joker.name,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 13,
-                  height: 1.15,
-                  fontWeight: FontWeight.w800,
-                  color: isActive ? Colors.white : const Color(0xFF3A3025),
+      child: Semantics(
+        button: true,
+        enabled: isAvailable,
+        label: '${joker.name}, x$quantity',
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            InkWell(
+              key: Key('joker-bar-${joker.id}'),
+              onTap: isAvailable ? onPressed : null,
+              borderRadius: BorderRadius.circular(999),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                width: 72,
+                height: 72,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: isActive
+                        ? const <Color>[Color(0xFF1D6D67), Color(0xFF0F4E4A)]
+                        : quantity > 0
+                        ? const <Color>[Color(0xFFFFFCF6), Color(0xFFF4E8D5)]
+                        : const <Color>[Color(0xFFF2ECE2), Color(0xFFE3D9CB)],
+                  ),
+                  border: Border.all(
+                    color: isActive
+                        ? const Color(0xFFFFE7B0)
+                        : quantity > 0
+                        ? const Color(0xFFE5D4BA)
+                        : const Color(0xFFD5C8B7),
+                    width: isActive ? 2.6 : 1.4,
+                  ),
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                      color: accentColor.withValues(
+                        alpha: isActive ? 0.24 : 0.12,
+                      ),
+                      blurRadius: isActive ? 18 : 10,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Icon(
+                    _iconFor(joker.id),
+                    size: 30,
+                    color: isActive
+                        ? Colors.white
+                        : quantity > 0
+                        ? const Color(0xFF7A4E15)
+                        : const Color(0xFF9A8C7A),
+                  ),
                 ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                'Adet: $quantity',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  color: isActive
-                      ? Colors.white.withValues(alpha: 0.92)
-                      : const Color(0xFF6F6355),
-                ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'x$quantity',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w900,
+                color: isActive ? const Color(0xFF0F615B) : accentColor,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
