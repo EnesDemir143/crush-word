@@ -9,10 +9,9 @@ import 'package:crush_word/src/core/gameplay/services/board_generator.dart';
 /// Recovers a dead board by first attempting to shuffle existing
 /// letters, then falling back to full controlled regeneration.
 ///
-/// This service is the initial-session guard: it guarantees that
-/// the first board shown to the player always contains at least
-/// one valid word. Post-move recovery and header counts are
-/// deferred to Phase 4.
+/// This service is used by both initial-session guard and
+/// post-move continuity checks to guarantee at least one valid
+/// word remains available after board mutations.
 class BoardRecovery {
   BoardRecovery({
     required this.analyzer,
@@ -76,9 +75,14 @@ class BoardRecovery {
         rules: rules,
       );
 
-      if (_isPlayable(regenerated, dictionary)) {
+      final GameSession candidate = session.copyWith(
+        board: regenerated.board,
+        selectedCellIds: const <String>[],
+      );
+
+      if (_isPlayable(candidate, dictionary)) {
         lastStrategy = RecoveryStrategy.regenerate;
-        return regenerated;
+        return candidate;
       }
     }
 

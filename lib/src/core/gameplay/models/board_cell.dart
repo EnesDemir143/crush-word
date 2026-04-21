@@ -1,22 +1,4 @@
-enum BoardCellPower {
-  rowClear,
-  areaBlast,
-  columnClear,
-  megaBlast;
-
-  static BoardCellPower fromName(String value) {
-    return values.firstWhere(
-      (BoardCellPower power) => power.name == value,
-      orElse: () {
-        throw ArgumentError.value(
-          value,
-          'value',
-          'Unknown board cell power name.',
-        );
-      },
-    );
-  }
-}
+import 'package:crush_word/src/core/models/power_tile.dart';
 
 class BoardCell {
   const BoardCell({
@@ -30,7 +12,7 @@ class BoardCell {
   final int row;
   final int column;
   final String letter;
-  final BoardCellPower? power;
+  final PowerTile? power;
   final bool isJoker;
 
   String get id => '$row:$column';
@@ -39,7 +21,7 @@ class BoardCell {
     int? row,
     int? column,
     String? letter,
-    BoardCellPower? power,
+    PowerTile? power,
     bool clearPower = false,
     bool? isJoker,
   }) {
@@ -57,7 +39,7 @@ class BoardCell {
       'row': row,
       'column': column,
       'letter': letter,
-      'power': power?.name,
+      'power': power?.toJson(),
       'isJoker': isJoker,
     };
   }
@@ -66,7 +48,7 @@ class BoardCell {
     final int? row = (json['row'] as num?)?.toInt();
     final int? column = (json['column'] as num?)?.toInt();
     final String letter = (json['letter'] as String?)?.trim() ?? '';
-    final String? powerName = (json['power'] as String?)?.trim();
+    final Object? powerJson = json['power'];
     final bool isJoker = json['isJoker'] as bool? ?? false;
 
     if (row == null || column == null || letter.isEmpty) {
@@ -79,9 +61,7 @@ class BoardCell {
       row: row,
       column: column,
       letter: letter,
-      power: powerName == null || powerName.isEmpty
-          ? null
-          : BoardCellPower.fromName(powerName),
+      power: powerJson == null ? null : PowerTile.fromJson(powerJson),
       isJoker: isJoker,
     );
   }

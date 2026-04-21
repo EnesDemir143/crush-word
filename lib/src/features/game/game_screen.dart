@@ -208,6 +208,7 @@ class _GameBody extends StatelessWidget {
                           activeWord: controller.selectedWord,
                           compact: constraints.maxHeight < 760,
                           lastWordScore: controller.lastWordScore,
+                          playableWordCount: controller.playableWordCount,
                         ),
                         const SizedBox(height: 12),
                         _AnimatedFeedback(feedback: feedback),
@@ -228,6 +229,7 @@ class _GameBody extends StatelessWidget {
                   activeWord: controller.selectedWord,
                   compact: useCompactChrome,
                   lastWordScore: controller.lastWordScore,
+                  playableWordCount: controller.playableWordCount,
                 ),
                 _AnimatedFeedback(feedback: feedback),
                 const SizedBox(height: 8),
@@ -278,11 +280,15 @@ class _BoardStage extends StatefulWidget {
 }
 
 class _BoardStageState extends State<_BoardStage>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late final AnimationController _shakeController;
+  late final AnimationController _impactController;
   late final Animation<double> _shakeOffset;
+  late final Animation<double> _impactScale;
+  late final Animation<double> _impactGlow;
 
   InvalidAttemptFeedback? _lastFeedback;
+  int _lastBoardEffectToken = 0;
 
   @override
   void initState() {
@@ -315,6 +321,47 @@ class _BoardStageState extends State<_BoardStage>
         ),
       ],
     ).animate(CurvedAnimation(parent: _shakeController, curve: Curves.easeOut));
+
+    _impactController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 620),
+    );
+    _impactScale =
+        TweenSequence<double>(<TweenSequenceItem<double>>[
+          TweenSequenceItem<double>(
+            tween: Tween<double>(begin: 1, end: 0.975),
+            weight: 24,
+          ),
+          TweenSequenceItem<double>(
+            tween: Tween<double>(begin: 0.975, end: 1.02),
+            weight: 38,
+          ),
+          TweenSequenceItem<double>(
+            tween: Tween<double>(begin: 1.02, end: 1),
+            weight: 38,
+          ),
+        ]).animate(
+          CurvedAnimation(
+            parent: _impactController,
+            curve: Curves.easeOutCubic,
+          ),
+        );
+    _impactGlow =
+        TweenSequence<double>(<TweenSequenceItem<double>>[
+          TweenSequenceItem<double>(
+            tween: Tween<double>(begin: 0, end: 1),
+            weight: 35,
+          ),
+          TweenSequenceItem<double>(
+            tween: Tween<double>(begin: 1, end: 0),
+            weight: 65,
+          ),
+        ]).animate(
+          CurvedAnimation(
+            parent: _impactController,
+            curve: Curves.easeOutCubic,
+          ),
+        );
   }
 
   @override
@@ -329,11 +376,19 @@ class _BoardStageState extends State<_BoardStage>
         ..reset()
         ..forward();
     }
+
+    if (widget.controller.lastBoardEffectToken != _lastBoardEffectToken) {
+      _lastBoardEffectToken = widget.controller.lastBoardEffectToken;
+      _impactController
+        ..reset()
+        ..forward();
+    }
   }
 
   @override
   void dispose() {
     _shakeController.dispose();
+    _impactController.dispose();
     super.dispose();
   }
 
@@ -351,6 +406,10 @@ class _BoardStageState extends State<_BoardStage>
         onSelectionExtend: widget.controller.extendSelection,
         onSelectionEnd: () => unawaited(widget.controller.endSelection()),
         lastRemovedCellIds: widget.controller.lastRemovedCellIds,
+        effectToken: widget.controller.lastBoardEffectToken,
+        comboCount: widget.controller.lastComboCount,
+        createdPower: widget.controller.lastCreatedPower,
+        activatedPowers: widget.controller.lastActivatedPowers,
       ),
     );
 
@@ -375,7 +434,23 @@ class _BoardStageState extends State<_BoardStage>
             builder: (BuildContext context, Widget? child) {
               return Transform.translate(
                 offset: Offset(_shakeOffset.value, 0),
-                child: child,
+                child: Transform.scale(
+                  scale: _impactScale.value,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                          color: const Color(
+                            0xFFFCB44B,
+                          ).withValues(alpha: 0.20 * _impactGlow.value),
+                          blurRadius: 36 * _impactGlow.value,
+                          spreadRadius: 8 * _impactGlow.value,
+                        ),
+                      ],
+                    ),
+                    child: child,
+                  ),
+                ),
               );
             },
             child: TweenAnimationBuilder<double>(

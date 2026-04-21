@@ -11,6 +11,7 @@ class GameSession {
     this.score = 0,
     this.wordsFoundCount = 0,
     this.longestWord = '',
+    this.playableWordCount = 0,
     DateTime? startedAt,
     List<String> selectedCellIds = const <String>[],
     Map<String, int> jokerInventory = const <String, int>{},
@@ -35,6 +36,9 @@ class GameSession {
   final int score;
   final int wordsFoundCount;
   final String longestWord;
+
+  /// Number of non-overlapping valid words currently on the board.
+  final int playableWordCount;
   final DateTime startedAt;
   final List<String> selectedCellIds;
   final Map<String, int> jokerInventory;
@@ -62,6 +66,7 @@ class GameSession {
     int? score,
     int? wordsFoundCount,
     String? longestWord,
+    int? playableWordCount,
     DateTime? startedAt,
     List<String>? selectedCellIds,
     Map<String, int>? jokerInventory,
@@ -73,6 +78,7 @@ class GameSession {
       score: score ?? this.score,
       wordsFoundCount: wordsFoundCount ?? this.wordsFoundCount,
       longestWord: longestWord ?? this.longestWord,
+      playableWordCount: playableWordCount ?? this.playableWordCount,
       startedAt: startedAt ?? this.startedAt,
       selectedCellIds: selectedCellIds ?? this.selectedCellIds,
       jokerInventory: jokerInventory ?? this.jokerInventory,
@@ -87,6 +93,7 @@ class GameSession {
       'score': score,
       'wordsFoundCount': wordsFoundCount,
       'longestWord': longestWord,
+      'playableWordCount': playableWordCount,
       'startedAt': startedAt.toIso8601String(),
       'selectedCellIds': selectedCellIds,
       'jokerInventory': jokerInventory,
@@ -100,6 +107,8 @@ class GameSession {
     final int score = (json['score'] as num?)?.toInt() ?? 0;
     final int wordsFoundCount = (json['wordsFoundCount'] as num?)?.toInt() ?? 0;
     final String longestWord = (json['longestWord'] as String?)?.trim() ?? '';
+    final int playableWordCount =
+        (json['playableWordCount'] as num?)?.toInt() ?? 0;
     final String? startedAtRaw = json['startedAt'] as String?;
     final Object? selectedCellIdsJson = json['selectedCellIds'];
     final Object? jokerInventoryJson = json['jokerInventory'];
@@ -147,6 +156,7 @@ class GameSession {
       score: score,
       wordsFoundCount: wordsFoundCount,
       longestWord: longestWord,
+      playableWordCount: playableWordCount,
       startedAt: startedAtRaw == null || startedAtRaw.trim().isEmpty
           ? null
           : DateTime.parse(startedAtRaw),
@@ -164,6 +174,7 @@ class GameSession {
         other.score == score &&
         other.wordsFoundCount == wordsFoundCount &&
         other.longestWord == longestWord &&
+        other.playableWordCount == playableWordCount &&
         other.startedAt == startedAt &&
         listEquals(other.selectedCellIds, selectedCellIds) &&
         mapEquals(other.jokerInventory, jokerInventory);
@@ -177,6 +188,7 @@ class GameSession {
     score,
     wordsFoundCount,
     longestWord,
+    playableWordCount,
     startedAt,
     Object.hashAll(selectedCellIds),
     Object.hashAll(

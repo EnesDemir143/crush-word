@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:crush_word/src/core/config/game_rules_config.dart';
+import 'package:crush_word/src/core/config/game_rules_loader.dart';
 import 'package:crush_word/src/core/gameplay/models/board_cell.dart';
 import 'package:crush_word/src/core/gameplay/models/game_session.dart';
 import 'package:crush_word/src/core/models/game_config.dart';
 import 'package:crush_word/src/core/models/game_difficulty.dart';
+import 'package:crush_word/src/core/repositories/dictionary_repository.dart';
 import 'package:crush_word/src/features/game/game_controller.dart';
 import 'package:crush_word/src/features/game/game_screen.dart';
+import 'package:flutter/services.dart';
 
 import 'memory_session_checkpoint_repository.dart';
 
@@ -56,6 +60,42 @@ void main() {
     expect(find.byKey(const Key('letter-cell-0:0')), findsOneWidget);
     expect(find.byKey(const Key('letter-cell-9:9')), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('header shows non-overlapping playable count', (
+    WidgetTester tester,
+  ) async {
+    final GameSession session = _buildSessionFromRows(
+      rows: const <List<String>>[
+        <String>['k', 'a', 'l'],
+        <String>['e', 'x', 'x'],
+        <String>['x', 'x', 'x'],
+      ],
+      movesLeft: 10,
+    );
+    final GameController controller = GameController.fromSession(
+      session,
+      rulesLoader: _InMemoryRulesLoader(_testRules),
+      dictionaryRepository: DictionaryRepository(
+        assetLoader: (_) async => 'kal\nkale\n',
+      ),
+      sessionCheckpointRepository: MemorySessionCheckpointRepository(),
+    );
+
+    await controller.load();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: GameScreen(config: session.config, controller: controller),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // "kal" and "kale" overlap on the same path; visible count
+    // must be non-overlapping and therefore 1.
+    expect(controller.playableWordCount, 1);
+    expect(find.byIcon(Icons.auto_stories_rounded), findsOneWidget);
+    expect(find.text('1'), findsWidgets);
   });
 
   testWidgets('dragging only keeps adjacent cells in the active path', (
@@ -139,6 +179,35 @@ GameSession _buildSession({required int gridSize}) {
   );
 }
 
+GameSession _buildSessionFromRows({
+  required List<List<String>> rows,
+  required int movesLeft,
+}) {
+  final int gridSize = rows.length;
+  final List<String> letters = rows.expand((List<String> row) => row).toList();
+
+  final GameConfig config = GameConfig(
+    difficulty: GameDifficulty.medium,
+    difficultyLabel: 'Orta',
+    gridSize: gridSize,
+    moveLimit: movesLeft,
+  );
+
+  return GameSession(
+    config: config,
+    board: List<BoardCell>.generate(
+      letters.length,
+      (int index) => BoardCell(
+        row: index ~/ gridSize,
+        column: index % gridSize,
+        letter: letters[index],
+      ),
+      growable: false,
+    ),
+    movesLeft: movesLeft,
+  );
+}
+
 String _letterFor(int index) {
   const List<String> letters = <String>[
     'A',
@@ -168,3 +237,64 @@ String _letterFor(int index) {
 
   return letters[index % letters.length];
 }
+
+class _InMemoryRulesLoader extends GameRulesLoader {
+  _InMemoryRulesLoader(this._rules)
+    : super(bundle: _ThrowingBundle(), assetPath: 'unused');
+
+  final GameRulesConfig _rules;
+
+  @override
+  Future<GameRulesConfig> load() async => _rules;
+}
+
+class _ThrowingBundle extends CachingAssetBundle {
+  @override
+  Future<String> loadString(String key, {bool cache = true}) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<ByteData> load(String key) {
+    throw UnimplementedError();
+  }
+}
+
+const GameRulesConfig _testRules = GameRulesConfig(
+  setup: GameSetupRules(
+    difficultyOptions: <GameSetupOption>[
+      GameSetupOption(
+        difficulty: GameDifficulty.medium,
+        label: 'Orta',
+        gridLabel: '3x3 Grid',
+        gridSize: 3,
+      ),
+    ],
+    moveCountOptions: <GameMoveCountOption>[
+      GameMoveCountOption(
+        difficulty: GameDifficulty.medium,
+        label: 'Orta',
+        moveLimit: 20,
+      ),
+    ],
+  ),
+  boardGeneration: GameBoardGenerationRules(
+    letterFrequencyGroups: <LetterFrequencyGroup>[
+      LetterFrequencyGroup(
+        tier: LetterFrequencyTier.high,
+        weight: 1,
+        letters: <String>['k'],
+      ),
+      LetterFrequencyGroup(
+        tier: LetterFrequencyTier.medium,
+        weight: 1,
+        letters: <String>['a'],
+      ),
+      LetterFrequencyGroup(
+        tier: LetterFrequencyTier.low,
+        weight: 1,
+        letters: <String>['l'],
+      ),
+    ],
+  ),
+);

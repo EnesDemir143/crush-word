@@ -204,3 +204,6 @@ graphify-out/graph.json
 CLAUDE.md
 
 report/
+
+.omx/
+report/
