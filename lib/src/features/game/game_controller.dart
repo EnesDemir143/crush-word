@@ -9,7 +9,7 @@ import 'package:crush_word/src/core/gameplay/services/board_generator.dart';
 import 'package:crush_word/src/core/gameplay/services/board_recovery.dart';
 import 'package:crush_word/src/core/gameplay/services/board_resolver.dart';
 import 'package:crush_word/src/core/gameplay/services/combo_engine.dart';
-import 'package:crush_word/src/core/gameplay/services/power_tile_engine.dart';
+import 'package:crush_word/src/core/gameplay/services/power_engine.dart';
 import 'package:crush_word/src/core/gameplay/services/scoring_engine.dart';
 import 'package:crush_word/src/core/gameplay/services/word_validator.dart';
 import 'package:crush_word/src/core/models/game_config.dart';
@@ -112,7 +112,7 @@ class GameController extends ChangeNotifier {
   BoardResolver? _boardResolver;
 
   /// Lazily initialised power tile engine.
-  PowerTileEngine? _powerTileEngine;
+  PowerEngine? _powerEngine;
 
   /// Returns a [BoardResolver] configured with the current power
   /// tile engine (if power config is available).
@@ -120,11 +120,10 @@ class GameController extends ChangeNotifier {
     // Rebuild if the power engine has been initialised since the
     // last resolver was created.
     if (_boardResolver == null ||
-        (_powerTileEngine != null &&
-            _boardResolver!.powerTileEngine == null)) {
+        (_powerEngine != null && _boardResolver!.powerEngine == null)) {
       _boardResolver = BoardResolver(
         boardGenerator: _boardGenerator,
-        powerTileEngine: _powerTileEngine,
+        powerEngine: _powerEngine,
       );
     }
     return _boardResolver!;
@@ -273,8 +272,8 @@ class GameController extends ChangeNotifier {
       _scoringEngine = ScoringEngine(scoringConfig: rules.scoring!);
     }
 
-    if (rules.powerTiles != null && _powerTileEngine == null) {
-      _powerTileEngine = PowerTileEngine(config: rules.powerTiles!);
+    if (rules.powerTiles != null && _powerEngine == null) {
+      _powerEngine = PowerEngine(config: rules.powerTiles!);
     }
   }
 
@@ -392,8 +391,8 @@ class GameController extends ChangeNotifier {
               }
 
               if (_comboScoringEngine != null) {
-                final ComboScoringResult comboScoring =
-                    _comboScoringEngine!.scoreWithCombo(
+                final ComboScoringResult comboScoring = _comboScoringEngine!
+                    .scoreWithCombo(
                       mainWord: result.word,
                       mainWordScore: wordScore,
                       comboResult: comboResult,
@@ -416,7 +415,9 @@ class GameController extends ChangeNotifier {
               wordLength: result.word.length,
             );
             newBoard = resolved.board;
-            _lastRemovedCellIds = activeSession.selectedCellIds;
+            _lastRemovedCellIds = resolved.removedCells
+                .map((BoardCell cell) => cell.id)
+                .toList(growable: false);
           } else {
             _lastRemovedCellIds = const <String>[];
           }
@@ -609,9 +610,7 @@ class GameController extends ChangeNotifier {
 
     if (dictionary == null || rules == null) {
       // Without cached data we can't analyze — return as-is.
-      return session.copyWith(
-        playableWordCount: 0,
-      );
+      return session.copyWith(playableWordCount: 0);
     }
 
     final bool isPlayable = _boardAnalyzer.hasPlayableWord(

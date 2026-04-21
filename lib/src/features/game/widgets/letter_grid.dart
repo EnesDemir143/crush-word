@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:crush_word/src/core/gameplay/models/board_cell.dart';
 import 'package:crush_word/src/core/gameplay/models/game_session.dart';
+import 'package:crush_word/src/core/models/power_tile.dart';
 
 class LetterGrid extends StatefulWidget {
   const LetterGrid({
@@ -283,44 +284,37 @@ class _LetterCell extends StatelessWidget {
               colors: isSelected
                   ? const <Color>[Color(0xFF1D6D67), Color(0xFF0F4E4A)]
                   : hasPower
-                      ? <Color>[
-                          Color.lerp(
-                            const Color(0xFFFFFCF7),
-                            powerColor!,
-                            0.12,
-                          )!,
-                          Color.lerp(
-                            const Color(0xFFF2E6D5),
-                            powerColor,
-                            0.08,
-                          )!,
-                        ]
-                      : const <Color>[Color(0xFFFFFCF7), Color(0xFFF2E6D5)],
+                  ? <Color>[
+                      Color.lerp(const Color(0xFFFFFCF7), powerColor!, 0.12)!,
+                      Color.lerp(const Color(0xFFF2E6D5), powerColor, 0.08)!,
+                    ]
+                  : const <Color>[Color(0xFFFFFCF7), Color(0xFFF2E6D5)],
             ),
             borderRadius: BorderRadius.circular(borderRadius),
             border: Border.all(
               color: isSelected
                   ? const Color(0xFFFFE3A4)
                   : hasPower
-                      ? powerColor!.withValues(alpha: 0.5)
-                      : theme.colorScheme.primary.withValues(alpha: 0.08),
+                  ? powerColor!.withValues(alpha: 0.5)
+                  : theme.colorScheme.primary.withValues(alpha: 0.08),
               width: isSelected
                   ? 2.2
                   : hasPower
-                      ? 2.0
-                      : 1.1,
+                  ? 2.0
+                  : 1.1,
             ),
             boxShadow: <BoxShadow>[
               BoxShadow(
-                color: (hasPower && !isSelected
-                        ? powerColor!
-                        : const Color(0xFF0F172A))
-                    .withValues(alpha: isSelected ? 0.16 : 0.07),
+                color:
+                    (hasPower && !isSelected
+                            ? powerColor!
+                            : const Color(0xFF0F172A))
+                        .withValues(alpha: isSelected ? 0.16 : 0.07),
                 blurRadius: isSelected
                     ? 14
                     : hasPower
-                        ? 12
-                        : 8,
+                    ? 12
+                    : 8,
                 offset: const Offset(0, 5),
               ),
             ],
@@ -388,9 +382,7 @@ class _LetterCell extends StatelessWidget {
                       ],
                     ),
                     child: Padding(
-                      padding: EdgeInsets.all(
-                        math.max(2, cellExtent * 0.06),
-                      ),
+                      padding: EdgeInsets.all(math.max(2, cellExtent * 0.06)),
                       child: Icon(
                         _powerIcon(cell.power!),
                         size: (cellExtent * 0.22).clamp(8, 16),
@@ -406,30 +398,30 @@ class _LetterCell extends StatelessWidget {
     );
   }
 
-  static Color _powerColor(BoardCellPower power) {
-    return switch (power) {
-      BoardCellPower.rowClear => const Color(0xFFE67E22),
-      BoardCellPower.areaBlast => const Color(0xFFE74C3C),
-      BoardCellPower.columnClear => const Color(0xFF3498DB),
-      BoardCellPower.megaBlast => const Color(0xFF9B59B6),
+  static Color _powerColor(PowerTile power) {
+    return switch (power.type) {
+      PowerTileType.rowClear => const Color(0xFFE67E22),
+      PowerTileType.areaBlast => const Color(0xFFE74C3C),
+      PowerTileType.columnClear => const Color(0xFF3498DB),
+      PowerTileType.megaBlast => const Color(0xFF9B59B6),
     };
   }
 
-  static IconData _powerIcon(BoardCellPower power) {
-    return switch (power) {
-      BoardCellPower.rowClear => Icons.swap_horiz_rounded,
-      BoardCellPower.areaBlast => Icons.blur_on_rounded,
-      BoardCellPower.columnClear => Icons.swap_vert_rounded,
-      BoardCellPower.megaBlast => Icons.all_out_rounded,
+  static IconData _powerIcon(PowerTile power) {
+    return switch (power.type) {
+      PowerTileType.rowClear => Icons.swap_horiz_rounded,
+      PowerTileType.areaBlast => Icons.blur_on_rounded,
+      PowerTileType.columnClear => Icons.swap_vert_rounded,
+      PowerTileType.megaBlast => Icons.all_out_rounded,
     };
   }
 
-  static String _powerLabel(BoardCellPower power) {
-    return switch (power) {
-      BoardCellPower.rowClear => 'satır temizleme',
-      BoardCellPower.areaBlast => 'alan patlatma',
-      BoardCellPower.columnClear => 'sütun temizleme',
-      BoardCellPower.megaBlast => 'mega patlatma',
+  static String _powerLabel(PowerTile power) {
+    return switch (power.type) {
+      PowerTileType.rowClear => 'satır temizleme',
+      PowerTileType.areaBlast => 'alan patlatma',
+      PowerTileType.columnClear => 'sütun temizleme',
+      PowerTileType.megaBlast => 'mega patlatma',
     };
   }
 }

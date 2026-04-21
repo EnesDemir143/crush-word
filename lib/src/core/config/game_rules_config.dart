@@ -1,6 +1,6 @@
-import 'package:crush_word/src/core/gameplay/models/board_cell.dart';
 import 'package:crush_word/src/core/models/game_config.dart';
 import 'package:crush_word/src/core/models/game_difficulty.dart';
+import 'package:crush_word/src/core/models/power_tile.dart';
 
 /// Canonical letter-score mapping loaded from `game_rules.json`.
 ///
@@ -432,7 +432,7 @@ class GameMoveCountOption {
 // ── Power Tile Configuration ──────────────────────────────────
 
 /// A single threshold entry that maps a word-length range to a
-/// [BoardCellPower] type.
+/// [PowerTileType] type.
 class PowerTileThreshold {
   const PowerTileThreshold({
     required this.minLength,
@@ -442,7 +442,7 @@ class PowerTileThreshold {
 
   final int minLength;
   final int maxLength;
-  final BoardCellPower power;
+  final PowerTileType power;
 
   /// Returns `true` if a word of [wordLength] matches this threshold.
   bool matches(int wordLength) =>
@@ -462,7 +462,7 @@ class PowerTileThreshold {
     return PowerTileThreshold(
       minLength: minLength,
       maxLength: maxLength,
-      power: BoardCellPower.fromName(powerName),
+      power: PowerTileType.fromName(powerName),
     );
   }
 }
@@ -480,15 +480,15 @@ class PowerTileConfig {
   /// Ordered list of word-length → power mappings.
   final List<PowerTileThreshold> thresholds;
 
-  /// Radius (in cells) for [BoardCellPower.areaBlast] effects.
+  /// Radius (in cells) for [PowerTileType.areaBlast] effects.
   final int areaBlastRadius;
 
-  /// Radius (in cells) for [BoardCellPower.megaBlast] effects.
+  /// Radius (in cells) for [PowerTileType.megaBlast] effects.
   final int megaBlastRadius;
 
   /// Returns the power type for a word of [wordLength], or `null`
   /// if no threshold matches (word too short to earn a power).
-  BoardCellPower? powerForWordLength(int wordLength) {
+  PowerTileType? powerForWordLength(int wordLength) {
     for (final PowerTileThreshold threshold in thresholds) {
       if (threshold.matches(wordLength)) {
         return threshold.power;
@@ -499,10 +499,8 @@ class PowerTileConfig {
 
   factory PowerTileConfig.fromJson(Map<String, dynamic> json) {
     final Object? thresholdsJson = json['thresholds'];
-    final int areaBlastRadius =
-        (json['areaBlastRadius'] as num?)?.toInt() ?? 1;
-    final int megaBlastRadius =
-        (json['megaBlastRadius'] as num?)?.toInt() ?? 2;
+    final int areaBlastRadius = (json['areaBlastRadius'] as num?)?.toInt() ?? 1;
+    final int megaBlastRadius = (json['megaBlastRadius'] as num?)?.toInt() ?? 2;
 
     if (thresholdsJson is! List<dynamic> || thresholdsJson.isEmpty) {
       throw const FormatException(
@@ -526,4 +524,3 @@ class PowerTileConfig {
     );
   }
 }
-
