@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'package:crush_word/src/core/gameplay/models/board_cell.dart';
 import 'package:crush_word/src/core/gameplay/models/game_session.dart';
+import 'package:crush_word/src/core/gameplay/services/joker_engine.dart';
 import 'package:crush_word/src/core/models/power_tile.dart';
 
 class LetterGrid extends StatefulWidget {
@@ -20,6 +21,10 @@ class LetterGrid extends StatefulWidget {
     this.comboCount = 0,
     this.createdPower,
     this.activatedPowers = const <PowerTileType>[],
+    this.lastJokerEffectId,
+    this.partyCastToken = 0,
+    this.isPartyCasting = false,
+    this.lollipopSourceKey,
   });
 
   final GameSession session;
@@ -43,6 +48,18 @@ class LetterGrid extends StatefulWidget {
   /// Power effects activated by the last resolved word, if any.
   final List<PowerTileType> activatedPowers;
 
+  /// Joker id responsible for the latest resolved board effect, if any.
+  final String? lastJokerEffectId;
+
+  /// Monotonic token incremented whenever Party Booster cast starts.
+  final int partyCastToken;
+
+  /// Whether Party Booster pre-cast animation is active.
+  final bool isPartyCasting;
+
+  /// Source widget for the lollipop breaker throw animation.
+  final GlobalKey? lollipopSourceKey;
+
   @override
   State<LetterGrid> createState() => _LetterGridState();
 }
@@ -50,11 +67,8 @@ class LetterGrid extends StatefulWidget {
 class _LetterGridState extends State<LetterGrid> {
   String? _lastDraggedCellId;
 
-  /// Tracks which cell IDs are "new" for entrance animation.
-  Set<String> _animatingCellIds = <String>{};
-
-  /// Incremented to give each board update a unique animation key.
-  int _boardVersion = 0;
+  /// Tracks freshly spawned refill tiles so they can drop in from above.
+  Set<String> _spawningCellAnimationIds = <String>{};
 
   Timer? _overlayResetTimer;
   _GridEffectOverlayData? _effectOverlay;
@@ -63,11 +77,13 @@ class _LetterGridState extends State<LetterGrid> {
   void didUpdateWidget(covariant LetterGrid oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (widget.lastRemovedCellIds.isNotEmpty &&
-        oldWidget.lastRemovedCellIds != widget.lastRemovedCellIds) {
-      _boardVersion += 1;
-      _animatingCellIds = widget.session.board
-          .map((BoardCell cell) => cell.id)
+    if (widget.effectToken != oldWidget.effectToken) {
+      final Set<String> previousAnimationIds = oldWidget.session.board
+          .map((BoardCell cell) => cell.animationId)
+          .toSet();
+      _spawningCellAnimationIds = widget.session.board
+          .map((BoardCell cell) => cell.animationId)
+          .where((String id) => !previousAnimationIds.contains(id))
           .toSet();
     }
 
@@ -104,94 +120,149 @@ class _LetterGridState extends State<LetterGrid> {
               session: widget.session,
               size: constraints.biggest,
             );
+            final Map<String, int> spawnDepthByAnimationId =
+                _buildSpawnDepthByAnimationId();
 
-            return ClipRRect(
-              borderRadius: BorderRadius.circular(gridLayout.outerRadius),
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: <Color>[Color(0xFFF7F1E5), Color(0xFFE7D6BC)],
-                  ),
-                  borderRadius: BorderRadius.circular(gridLayout.outerRadius),
-                  border: Border.all(
-                    color: theme.colorScheme.primary.withValues(alpha: 0.10),
-                  ),
+            final Offset? lollipopSourceCenter = _lollipopSourceCenterInGrid(
+              context,
+              gridLayout,
+            );
+
+            return DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: <Color>[Color(0xFFF7F1E5), Color(0xFFE7D6BC)],
                 ),
-                child: Padding(
-                  padding: EdgeInsets.all(gridLayout.outerPadding),
-                  child: Listener(
-                    behavior: HitTestBehavior.opaque,
-                    onPointerDown: (PointerDownEvent event) {
-                      _handleSelectionStart(
-                        gridLayout.cellAtOffset(event.localPosition),
-                      );
-                    },
-                    onPointerMove: (PointerMoveEvent event) {
-                      _handleSelectionUpdate(
-                        gridLayout.cellAtOffset(event.localPosition),
-                      );
-                    },
-                    onPointerUp: (_) => _finishSelection(),
-                    onPointerCancel: (_) => _finishSelection(),
-                    child: Stack(
-                      clipBehavior: Clip.none,
-                      children: <Widget>[
+                borderRadius: BorderRadius.circular(gridLayout.outerRadius),
+                border: Border.all(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.10),
+                ),
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(gridLayout.outerPadding),
+                child: Listener(
+                  behavior: HitTestBehavior.opaque,
+                  onPointerDown: (PointerDownEvent event) {
+                    _handleSelectionStart(
+                      gridLayout.cellAtOffset(event.localPosition),
+                    );
+                  },
+                  onPointerMove: (PointerMoveEvent event) {
+                    _handleSelectionUpdate(
+                      gridLayout.cellAtOffset(event.localPosition),
+                    );
+                  },
+                  onPointerUp: (_) => _finishSelection(),
+                  onPointerCancel: (_) => _finishSelection(),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: <Widget>[
+                      Positioned.fill(
+                        child: CustomPaint(
+                          painter: _BoardTexturePainter(
+                            gridLayout: gridLayout,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
+                      ),
+                      Positioned.fill(
+                        child: CustomPaint(
+                          painter: _SelectionPathPainter(
+                            selectedCells:
+                                widget.session.board
+                                    .where(
+                                      (BoardCell cell) =>
+                                          selectionOrder.containsKey(cell.id),
+                                    )
+                                    .toList(growable: false)
+                                  ..sort(
+                                    (BoardCell left, BoardCell right) =>
+                                        selectionOrder[left.id]!.compareTo(
+                                          selectionOrder[right.id]!,
+                                        ),
+                                  ),
+                            gridLayout: gridLayout,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
+                      ),
+                      for (final BoardCell cell in widget.session.board)
+                        AnimatedPositioned(
+                          key: ValueKey<String>(
+                            'board-item-${cell.animationId}',
+                          ),
+                          duration: Duration(
+                            milliseconds: 420 + (widget.comboCount * 40),
+                          ),
+                          curve: Curves.easeInOutCubic,
+                          left: gridLayout.rectFor(cell).left,
+                          top: gridLayout.rectFor(cell).top,
+                          width: gridLayout.rectFor(cell).width,
+                          height: gridLayout.rectFor(cell).height,
+                          child: _AnimatedLetterCell(
+                            key: Key('letter-cell-${cell.id}'),
+                            cell: cell,
+                            selectionIndex: selectionOrder[cell.id],
+                            cellExtent: gridLayout.cellExtent,
+                            cellGap: gridLayout.gap,
+                            showSelectionIndex: gridLayout.showSelectionIndex,
+                            animateSpawn: _spawningCellAnimationIds.contains(
+                              cell.animationId,
+                            ),
+                            spawnDepth:
+                                spawnDepthByAnimationId[cell.animationId] ?? 0,
+                            comboCount: widget.comboCount,
+                            fastSpawn:
+                                widget.lastJokerEffectId ==
+                                JokerIds.partyBooster,
+                          ),
+                        ),
+                      if (_effectOverlay != null &&
+                          _effectOverlay!.jokerId == JokerIds.lollipopBreaker &&
+                          _effectOverlay!.removedCells.length == 1)
                         Positioned.fill(
-                          child: CustomPaint(
-                            painter: _BoardTexturePainter(
-                              gridLayout: gridLayout,
-                              color: theme.colorScheme.primary,
+                          child: IgnorePointer(
+                            child: ExcludeSemantics(
+                              child: _LollipopStrikeOverlay(
+                                key: ValueKey<String>(
+                                  'lollipop-strike-${_effectOverlay!.token}',
+                                ),
+                                gridLayout: gridLayout,
+                                target: _effectOverlay!.removedCells.single,
+                                sourceCenter: lollipopSourceCenter,
+                              ),
                             ),
                           ),
                         ),
+                      if (widget.isPartyCasting)
                         Positioned.fill(
-                          child: CustomPaint(
-                            painter: _SelectionPathPainter(
-                              selectedCells:
-                                  widget.session.board
-                                      .where(
-                                        (BoardCell cell) =>
-                                            selectionOrder.containsKey(cell.id),
-                                      )
-                                      .toList(growable: false)
-                                    ..sort(
-                                      (BoardCell left, BoardCell right) =>
-                                          selectionOrder[left.id]!.compareTo(
-                                            selectionOrder[right.id]!,
-                                          ),
-                                    ),
-                              gridLayout: gridLayout,
-                              color: theme.colorScheme.primary,
+                          key: ValueKey<String>(
+                            'party-cast-${widget.partyCastToken}',
+                          ),
+                          child: IgnorePointer(
+                            child: ExcludeSemantics(
+                              child: _PartyCastOverlay(
+                                token: widget.partyCastToken,
+                                gridLayout: gridLayout,
+                                board: widget.session.board,
+                              ),
                             ),
                           ),
                         ),
-                        for (final BoardCell cell in widget.session.board)
-                          Positioned.fromRect(
-                            rect: gridLayout.rectFor(cell),
-                            child: _AnimatedLetterCell(
-                              key: Key('letter-cell-${cell.id}'),
-                              cell: cell,
-                              selectionIndex: selectionOrder[cell.id],
-                              cellExtent: gridLayout.cellExtent,
-                              showSelectionIndex: gridLayout.showSelectionIndex,
-                              animate: _animatingCellIds.contains(cell.id),
-                              boardVersion: _boardVersion,
-                              comboCount: widget.comboCount,
-                            ),
-                          ),
-                        if (_effectOverlay != null)
-                          Positioned.fill(
-                            child: IgnorePointer(
+                      if (_effectOverlay != null)
+                        Positioned.fill(
+                          child: IgnorePointer(
+                            child: ExcludeSemantics(
                               child: _GridEffectOverlay(
                                 data: _effectOverlay!,
                                 gridLayout: gridLayout,
                               ),
                             ),
                           ),
-                      ],
-                    ),
+                        ),
+                    ],
                   ),
                 ),
               ),
@@ -200,6 +271,33 @@ class _LetterGridState extends State<LetterGrid> {
         ),
       ),
     );
+  }
+
+  Offset? _lollipopSourceCenterInGrid(
+    BuildContext context,
+    _GridLayout gridLayout,
+  ) {
+    final BuildContext? sourceContext =
+        widget.lollipopSourceKey?.currentContext;
+    final RenderObject? sourceObject = sourceContext?.findRenderObject();
+    final RenderObject? gridObject = context.findRenderObject();
+
+    if (sourceObject is! RenderBox ||
+        gridObject is! RenderBox ||
+        !sourceObject.hasSize ||
+        !gridObject.hasSize) {
+      return null;
+    }
+
+    final Offset sourceGlobalCenter = sourceObject.localToGlobal(
+      sourceObject.size.center(Offset.zero),
+    );
+    final Offset sourceInLetterGrid = gridObject.globalToLocal(
+      sourceGlobalCenter,
+    );
+
+    return sourceInLetterGrid -
+        Offset(gridLayout.outerPadding, gridLayout.outerPadding);
   }
 
   void _handleSelectionStart(BoardCell? cell) {
@@ -255,6 +353,11 @@ class _LetterGridState extends State<LetterGrid> {
       creationAnchor = oldBoardById[oldWidget.selectedCellIds.last];
     }
 
+    int durationMs = 1200;
+    if (widget.lastJokerEffectId == JokerIds.lollipopBreaker) {
+      durationMs = 980;
+    }
+
     _overlayResetTimer?.cancel();
     setState(() {
       _effectOverlay = _GridEffectOverlayData(
@@ -264,9 +367,10 @@ class _LetterGridState extends State<LetterGrid> {
         createdPower: widget.createdPower,
         creationAnchor: creationAnchor,
         activatedPowers: activatedEffects,
+        jokerId: widget.lastJokerEffectId,
       );
     });
-    _overlayResetTimer = Timer(const Duration(milliseconds: 1200), () {
+    _overlayResetTimer = Timer(Duration(milliseconds: durationMs), () {
       if (!mounted || _effectOverlay?.token != widget.effectToken) {
         return;
       }
@@ -274,6 +378,34 @@ class _LetterGridState extends State<LetterGrid> {
         _effectOverlay = null;
       });
     });
+  }
+
+  Map<String, int> _buildSpawnDepthByAnimationId() {
+    final List<BoardCell> newCells =
+        widget.session.board
+            .where(
+              (BoardCell cell) =>
+                  _spawningCellAnimationIds.contains(cell.animationId),
+            )
+            .toList(growable: false)
+          ..sort((BoardCell left, BoardCell right) {
+            final int columnCompare = left.column.compareTo(right.column);
+            if (columnCompare != 0) {
+              return columnCompare;
+            }
+            return left.row.compareTo(right.row);
+          });
+
+    final Map<int, int> seenByColumn = <int, int>{};
+    final Map<String, int> spawnDepthByAnimationId = <String, int>{};
+
+    for (final BoardCell cell in newCells) {
+      final int nextDepth = (seenByColumn[cell.column] ?? 0) + 1;
+      seenByColumn[cell.column] = nextDepth;
+      spawnDepthByAnimationId[cell.animationId] = nextDepth;
+    }
+
+    return spawnDepthByAnimationId;
   }
 }
 
@@ -284,19 +416,23 @@ class _AnimatedLetterCell extends StatelessWidget {
     required this.cell,
     required this.selectionIndex,
     required this.cellExtent,
+    required this.cellGap,
     required this.showSelectionIndex,
-    required this.animate,
-    required this.boardVersion,
+    required this.animateSpawn,
+    required this.spawnDepth,
     required this.comboCount,
+    required this.fastSpawn,
   });
 
   final BoardCell cell;
   final int? selectionIndex;
   final double cellExtent;
+  final double cellGap;
   final bool showSelectionIndex;
-  final bool animate;
-  final int boardVersion;
+  final bool animateSpawn;
+  final int spawnDepth;
   final int comboCount;
+  final bool fastSpawn;
 
   @override
   Widget build(BuildContext context) {
@@ -307,19 +443,29 @@ class _AnimatedLetterCell extends StatelessWidget {
       showSelectionIndex: showSelectionIndex,
     );
 
-    if (!animate) {
+    if (!animateSpawn || spawnDepth <= 0) {
       return child;
     }
 
+    final double dropDistance = (cellExtent + cellGap) * (spawnDepth + 0.4);
+
     return TweenAnimationBuilder<double>(
-      key: ValueKey<String>('anim-${cell.id}-v$boardVersion'),
-      duration: Duration(milliseconds: 460 + (comboCount * 60)),
-      curve: Curves.easeOutBack,
+      key: ValueKey<String>('spawn-${cell.animationId}'),
+      duration: Duration(
+        milliseconds: fastSpawn
+            ? 300 + (spawnDepth * 30)
+            : 520 + (comboCount * 60),
+      ),
+      curve: Curves.easeOutCubic,
       tween: Tween<double>(begin: 0, end: 1),
       builder: (BuildContext context, double value, Widget? child) {
-        final double opacity = value.clamp(0, 1);
-        final double scale = 0.6 + (value * 0.4);
-        final double glowOpacity = (1 - value).clamp(0, 1) * 0.28;
+        final double delayedProgress = Curves.easeOutCubic.transform(
+          Interval(0.12, 1).transform(value.clamp(0, 1)),
+        );
+        final double opacity = (0.55 + (delayedProgress * 0.45)).clamp(0, 1);
+        final double translateY = (1 - delayedProgress) * -dropDistance;
+        final double scale = 0.92 + (delayedProgress * 0.08);
+        final double glowOpacity = (1 - delayedProgress).clamp(0, 1) * 0.20;
         return Stack(
           fit: StackFit.expand,
           children: <Widget>[
@@ -342,7 +488,10 @@ class _AnimatedLetterCell extends StatelessWidget {
             ),
             Opacity(
               opacity: opacity,
-              child: Transform.scale(scale: scale, child: child),
+              child: Transform.translate(
+                offset: Offset(0, translateY),
+                child: Transform.scale(scale: scale, child: child),
+              ),
             ),
           ],
         );
@@ -519,6 +668,7 @@ class _GridEffectOverlayData {
     required this.createdPower,
     required this.creationAnchor,
     required this.activatedPowers,
+    required this.jokerId,
   });
 
   final int token;
@@ -527,6 +677,7 @@ class _GridEffectOverlayData {
   final PowerTile? createdPower;
   final BoardCell? creationAnchor;
   final List<_ActivatedPowerOverlay> activatedPowers;
+  final String? jokerId;
 
   PowerTileType? get primaryPowerType {
     if (activatedPowers.isNotEmpty) {
@@ -536,11 +687,564 @@ class _GridEffectOverlayData {
   }
 }
 
+class _LollipopStrikeOverlay extends StatelessWidget {
+  const _LollipopStrikeOverlay({
+    super.key,
+    required this.gridLayout,
+    required this.target,
+    required this.sourceCenter,
+  });
+
+  final _GridLayout gridLayout;
+  final BoardCell target;
+  final Offset? sourceCenter;
+
+  @override
+  Widget build(BuildContext context) {
+    final Rect targetRect = gridLayout.rectFor(target);
+    final Offset targetCenter = targetRect.center;
+    final double boardExtent = _boardExtent(gridLayout);
+    final double imageSize = (gridLayout.cellExtent * 1.78)
+        .clamp(64.0, 112.0)
+        .toDouble();
+    final bool entersFromRight = targetCenter.dx < boardExtent * 0.55;
+    final Offset fallbackLaunchPoint = Offset(
+      entersFromRight ? boardExtent + imageSize * 0.76 : -imageSize * 0.76,
+      boardExtent + imageSize * 0.34,
+    );
+    final Offset launchPoint = sourceCenter ?? fallbackLaunchPoint;
+    final Offset controlPoint = Offset(
+      (launchPoint.dx + targetCenter.dx) / 2,
+      math.max(-imageSize * 0.45, targetCenter.dy - boardExtent * 0.34),
+    );
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0, end: 1),
+      duration: const Duration(milliseconds: 980),
+      curve: Curves.linear,
+      builder: (BuildContext context, double value, Widget? child) {
+        final double flight = _intervalValue(
+          value,
+          0,
+          0.62,
+          Curves.easeInCubic,
+        );
+        final double impact = _intervalValue(
+          value,
+          0.52,
+          0.72,
+          Curves.easeOutCubic,
+        );
+        final double settle = _intervalValue(
+          value,
+          0.62,
+          1,
+          Curves.easeOutBack,
+        );
+        final double fadeOut = _intervalValue(
+          value,
+          0.74,
+          1,
+          Curves.easeInCubic,
+        );
+        final Offset candyCenter = _quadraticBezier(
+          launchPoint,
+          controlPoint,
+          targetCenter,
+          flight,
+        );
+        final double entryOpacity = _intervalValue(
+          value,
+          0,
+          0.12,
+          Curves.easeOut,
+        );
+        final double imageOpacity = (entryOpacity * (1 - fadeOut * 0.78))
+            .clamp(0, 1)
+            .toDouble();
+        final double baseRotation = entersFromRight ? -0.68 : 0.68;
+        final double rotation =
+            (baseRotation * (1 - flight)) +
+            ((entersFromRight ? 1 : -1) * 0.18 * settle);
+        final double squash = 1 - (impact * 0.18) + (settle * 0.08);
+        final double popScale = 0.78 + (flight * 0.22) + (impact * 0.14);
+        final double shadowOpacity = imageOpacity * (0.18 + impact * 0.16);
+
+        return Stack(
+          clipBehavior: Clip.none,
+          children: <Widget>[
+            if (value < 0.66)
+              ...List<Widget>.generate(3, (int index) {
+                final double trailT = (flight - (0.065 * (index + 1)))
+                    .clamp(0, 1)
+                    .toDouble();
+                final Offset trailCenter = _quadraticBezier(
+                  launchPoint,
+                  controlPoint,
+                  targetCenter,
+                  trailT,
+                );
+                final double trailSize = imageSize * (0.78 - index * 0.1);
+                return Positioned(
+                  left: trailCenter.dx - trailSize / 2,
+                  top: trailCenter.dy - trailSize / 2,
+                  width: trailSize,
+                  height: trailSize,
+                  child: Opacity(
+                    opacity: imageOpacity * (0.18 - index * 0.04),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: RadialGradient(
+                          colors: <Color>[
+                            Colors.white.withValues(alpha: 0.92),
+                            const Color(0xFFFF7AB6).withValues(alpha: 0.62),
+                            Colors.transparent,
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            Positioned.fill(
+              child: CustomPaint(
+                painter: _LollipopImpactPainter(
+                  center: targetCenter,
+                  cellExtent: gridLayout.cellExtent,
+                  progress: impact,
+                  settle: settle,
+                ),
+              ),
+            ),
+            Positioned(
+              left: candyCenter.dx - imageSize / 2,
+              top: candyCenter.dy - imageSize / 2,
+              width: imageSize,
+              height: imageSize,
+              child: Opacity(
+                opacity: imageOpacity,
+                child: Transform.rotate(
+                  angle: rotation,
+                  child: Transform.scale(
+                    scaleX: squash,
+                    scaleY: 1 / squash.clamp(0.78, 1.18).toDouble(),
+                    child: Transform.scale(
+                      scale: popScale,
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        children: <Widget>[
+                          Positioned.fill(
+                            top: imageSize * 0.12,
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                boxShadow: <BoxShadow>[
+                                  BoxShadow(
+                                    color: const Color(
+                                      0xFF5B1838,
+                                    ).withValues(alpha: shadowOpacity),
+                                    blurRadius: 18,
+                                    spreadRadius: 1,
+                                    offset: const Offset(0, 9),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          _FlyingLollipopCandy(
+                            key: const Key('lollipop-strike-candy'),
+                            size: imageSize,
+                            impact: impact,
+                          ),
+                          Positioned(
+                            left: imageSize * 0.12,
+                            top: imageSize * 0.08,
+                            width: imageSize * 0.38,
+                            height: imageSize * 0.18,
+                            child: IgnorePointer(
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(999),
+                                  gradient: LinearGradient(
+                                    colors: <Color>[
+                                      Colors.white.withValues(alpha: 0.65),
+                                      Colors.white.withValues(alpha: 0.04),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _FlyingLollipopCandy extends StatelessWidget {
+  const _FlyingLollipopCandy({
+    super.key,
+    required this.size,
+    required this.impact,
+  });
+
+  final double size;
+  final double impact;
+
+  @override
+  Widget build(BuildContext context) {
+    final double crackOpacity = (impact * 1.4).clamp(0, 1).toDouble();
+    final double hitSquash = 1 + (impact * 0.08);
+
+    return SizedBox(
+      width: size,
+      height: size * 1.16,
+      child: Transform.scale(
+        scaleX: hitSquash,
+        scaleY: 1 / hitSquash,
+        child: CustomPaint(
+          painter: _LollipopMalletPainter(crackOpacity: crackOpacity),
+        ),
+      ),
+    );
+  }
+}
+
+class _LollipopMalletPainter extends CustomPainter {
+  const _LollipopMalletPainter({required this.crackOpacity});
+
+  final double crackOpacity;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final double headRadius = size.width * 0.26;
+    final Offset headCenter = Offset(size.width * 0.42, size.height * 0.28);
+    final Offset handleStart = Offset(size.width * 0.53, size.height * 0.45);
+    final Offset handleEnd = Offset(size.width * 0.82, size.height * 0.94);
+
+    final Paint handleShadow = Paint()
+      ..color = const Color(0xFF4A2E17).withValues(alpha: 0.2)
+      ..strokeWidth = math.max(7, size.width * 0.12)
+      ..strokeCap = StrokeCap.round;
+    canvas.drawLine(
+      handleStart + const Offset(3, 5),
+      handleEnd + const Offset(3, 5),
+      handleShadow,
+    );
+
+    final Paint handlePaint = Paint()
+      ..shader = const LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: <Color>[
+          Color(0xFFFFF8DD),
+          Color(0xFFE6C07C),
+          Color(0xFFB87936),
+        ],
+      ).createShader(Rect.fromPoints(handleStart, handleEnd))
+      ..strokeWidth = math.max(5, size.width * 0.085)
+      ..strokeCap = StrokeCap.round;
+    canvas.drawLine(handleStart, handleEnd, handlePaint);
+
+    final Paint headShadow = Paint()
+      ..color = const Color(0xFF5B1838).withValues(alpha: 0.26)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10);
+    canvas.drawCircle(
+      headCenter + const Offset(4, 8),
+      headRadius * 1.02,
+      headShadow,
+    );
+
+    final Paint headPaint = Paint()
+      ..shader = RadialGradient(
+        center: const Alignment(-0.32, -0.34),
+        radius: 0.92,
+        colors: <Color>[
+          const Color(0xFFFFFFFF),
+          const Color(0xFFFFA6CF),
+          const Color(0xFFFF4FA3),
+          const Color(0xFFC2185B),
+        ],
+      ).createShader(Rect.fromCircle(center: headCenter, radius: headRadius));
+    canvas.drawCircle(headCenter, headRadius, headPaint);
+
+    final Paint rimPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = math.max(2.2, size.width * 0.035)
+      ..color = Colors.white.withValues(alpha: 0.88);
+    canvas.drawCircle(headCenter, headRadius * 0.96, rimPaint);
+
+    final Paint swirlPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = math.max(2.1, headRadius * 0.16)
+      ..color = Colors.white.withValues(alpha: 0.76);
+    final Path swirl = Path()..moveTo(headCenter.dx, headCenter.dy);
+    for (double t = 0.18; t <= 1.0; t += 0.045) {
+      final double angle = t * math.pi * 4.8;
+      final double distance = headRadius * 0.76 * t;
+      swirl.lineTo(
+        headCenter.dx + math.cos(angle) * distance,
+        headCenter.dy + math.sin(angle) * distance,
+      );
+    }
+    canvas.drawPath(swirl, swirlPaint);
+
+    final Paint highlightPaint = Paint()
+      ..shader =
+          LinearGradient(
+            colors: <Color>[
+              Colors.white.withValues(alpha: 0.72),
+              Colors.white.withValues(alpha: 0.04),
+            ],
+          ).createShader(
+            Rect.fromCenter(
+              center:
+                  headCenter + Offset(-headRadius * 0.26, -headRadius * 0.34),
+              width: headRadius * 0.9,
+              height: headRadius * 0.32,
+            ),
+          );
+    canvas.save();
+    canvas.translate(headCenter.dx, headCenter.dy);
+    canvas.rotate(-0.38);
+    canvas.translate(-headCenter.dx, -headCenter.dy);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(
+          center: headCenter + Offset(-headRadius * 0.22, -headRadius * 0.36),
+          width: headRadius * 0.9,
+          height: headRadius * 0.28,
+        ),
+        Radius.circular(headRadius),
+      ),
+      highlightPaint,
+    );
+    canvas.restore();
+
+    if (crackOpacity > 0) {
+      final Paint crackPaint = Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeCap = StrokeCap.round
+        ..strokeWidth = math.max(1.5, headRadius * 0.075)
+        ..color = const Color(0xFF7C1746).withValues(alpha: crackOpacity * 0.5);
+      final Path crack = Path()
+        ..moveTo(
+          headCenter.dx + headRadius * 0.1,
+          headCenter.dy - headRadius * 0.52,
+        )
+        ..lineTo(
+          headCenter.dx - headRadius * 0.02,
+          headCenter.dy - headRadius * 0.14,
+        )
+        ..lineTo(
+          headCenter.dx + headRadius * 0.18,
+          headCenter.dy + headRadius * 0.08,
+        )
+        ..lineTo(
+          headCenter.dx + headRadius * 0.02,
+          headCenter.dy + headRadius * 0.46,
+        );
+      canvas.drawPath(crack, crackPaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _LollipopMalletPainter oldDelegate) {
+    return oldDelegate.crackOpacity != crackOpacity;
+  }
+}
+
+class _LollipopImpactPainter extends CustomPainter {
+  const _LollipopImpactPainter({
+    required this.center,
+    required this.cellExtent,
+    required this.progress,
+    required this.settle,
+  });
+
+  final Offset center;
+  final double cellExtent;
+  final double progress;
+  final double settle;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (progress <= 0) {
+      return;
+    }
+
+    final double fade = (1 - settle).clamp(0, 1).toDouble();
+    final Paint flashPaint = Paint()
+      ..shader =
+          RadialGradient(
+            colors: <Color>[
+              Colors.white.withValues(alpha: 0.78 * fade),
+              const Color(0xFFFFD166).withValues(alpha: 0.58 * fade),
+              const Color(0xFFFF4FA3).withValues(alpha: 0.18 * fade),
+              Colors.transparent,
+            ],
+          ).createShader(
+            Rect.fromCircle(
+              center: center,
+              radius: cellExtent * (0.72 + progress),
+            ),
+          );
+
+    canvas.drawCircle(
+      center,
+      cellExtent * (0.56 + progress * 0.72),
+      flashPaint,
+    );
+
+    final Paint ringPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = math.max(2, cellExtent * 0.055)
+      ..color = const Color(0xFFFFF2B8).withValues(alpha: fade * 0.82);
+    canvas.drawCircle(center, cellExtent * (0.38 + progress * 0.88), ringPaint);
+
+    final Paint crackPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeWidth = math.max(1.4, cellExtent * 0.035)
+      ..color = const Color(0xFF8E3A68).withValues(alpha: fade * 0.58);
+    for (int index = 0; index < 5; index += 1) {
+      final double angle = (-math.pi / 2.5) + (index * math.pi / 5.2);
+      final double start = cellExtent * 0.20;
+      final double end =
+          cellExtent * (0.36 + progress * (0.24 + index * 0.015));
+      final Offset p1 =
+          center + Offset(math.cos(angle), math.sin(angle)) * start;
+      final Offset p2 = center + Offset(math.cos(angle), math.sin(angle)) * end;
+      canvas.drawLine(p1, p2, crackPaint);
+    }
+
+    for (int index = 0; index < 10; index += 1) {
+      final double angle = (math.pi * 2 / 10) * index - math.pi / 2;
+      final double distance =
+          cellExtent * (0.28 + progress * (0.58 + index % 3 * 0.06));
+      final Offset particleCenter =
+          center + Offset(math.cos(angle), math.sin(angle)) * distance;
+      final double particleSize = cellExtent * (index.isEven ? 0.07 : 0.045);
+      final Paint particlePaint = Paint()
+        ..color =
+            (index.isEven ? const Color(0xFFFF7AB6) : const Color(0xFFFFD166))
+                .withValues(alpha: fade * 0.9);
+      final RRect particle = RRect.fromRectAndRadius(
+        Rect.fromCenter(
+          center: particleCenter,
+          width: particleSize,
+          height: particleSize * 1.7,
+        ),
+        Radius.circular(particleSize),
+      );
+      canvas.save();
+      canvas.translate(particleCenter.dx, particleCenter.dy);
+      canvas.rotate(angle + progress * 1.6);
+      canvas.translate(-particleCenter.dx, -particleCenter.dy);
+      canvas.drawRRect(particle, particlePaint);
+      canvas.restore();
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _LollipopImpactPainter oldDelegate) {
+    return oldDelegate.center != center ||
+        oldDelegate.cellExtent != cellExtent ||
+        oldDelegate.progress != progress ||
+        oldDelegate.settle != settle;
+  }
+}
+
+double _intervalValue(double value, double begin, double end, Curve curve) {
+  if (value <= begin) {
+    return 0;
+  }
+  if (value >= end) {
+    return 1;
+  }
+
+  final double normalized = ((value - begin) / (end - begin))
+      .clamp(0, 1)
+      .toDouble();
+  return curve.transform(normalized);
+}
+
+Offset _quadraticBezier(Offset start, Offset control, Offset end, double t) {
+  final double inverse = 1 - t;
+  return (start * inverse * inverse) +
+      (control * 2 * inverse * t) +
+      (end * t * t);
+}
+
 class _ActivatedPowerOverlay {
   const _ActivatedPowerOverlay({required this.anchor, required this.powerType});
 
   final BoardCell anchor;
   final PowerTileType powerType;
+}
+
+class _LollipopHeldLetterOverlay extends StatelessWidget {
+  const _LollipopHeldLetterOverlay({
+    super.key,
+    required this.cell,
+    required this.cellExtent,
+    required this.showSelectionIndex,
+  });
+
+  final BoardCell cell;
+  final double cellExtent;
+  final bool showSelectionIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0, end: 1),
+      duration: const Duration(milliseconds: 980),
+      curve: Curves.linear,
+      builder: (BuildContext context, double value, Widget? child) {
+        final double anticipation = _intervalValue(
+          value,
+          0.48,
+          0.58,
+          Curves.easeOutCubic,
+        );
+        final double breakaway = _intervalValue(
+          value,
+          0.58,
+          0.76,
+          Curves.easeInCubic,
+        );
+        final double opacity = (1 - breakaway).clamp(0, 1).toDouble();
+        final double wobble = math.sin(anticipation * math.pi * 4) * 2.4;
+        final double scale = 1 + (anticipation * 0.04) + (breakaway * 0.16);
+
+        return Opacity(
+          opacity: opacity,
+          child: Transform.translate(
+            offset: Offset(wobble, -breakaway * cellExtent * 0.08),
+            child: Transform.scale(scale: scale, child: child),
+          ),
+        );
+      },
+      child: _LetterCell(
+        cell: cell,
+        selectionIndex: null,
+        cellExtent: cellExtent,
+        showSelectionIndex: showSelectionIndex,
+      ),
+    );
+  }
 }
 
 class _GridEffectOverlay extends StatelessWidget {
@@ -555,10 +1259,22 @@ class _GridEffectOverlay extends StatelessWidget {
       data.primaryPowerType,
       comboCount: data.comboCount,
     );
+    final _ComboPresentation comboPresentation = _comboPresentationFor(
+      data.comboCount,
+      accent: accent,
+    );
 
     return Stack(
       clipBehavior: Clip.none,
       children: <Widget>[
+        if (data.comboCount > 1)
+          Positioned.fill(
+            child: _ComboCelebrationOverlay(
+              key: ValueKey<String>('combo-celebration-${data.token}'),
+              gridLayout: gridLayout,
+              presentation: comboPresentation,
+            ),
+          ),
         for (final _ActivatedPowerOverlay effect in data.activatedPowers)
           _PowerSweepOverlay(
             key: ValueKey<String>(
@@ -568,16 +1284,48 @@ class _GridEffectOverlay extends StatelessWidget {
             gridLayout: gridLayout,
             comboCount: data.comboCount,
           ),
-        for (final BoardCell cell in data.removedCells)
-          Positioned.fromRect(
-            rect: gridLayout.rectFor(cell),
-            child: _CellBurstOverlay(
-              key: ValueKey<String>('cell-burst-${data.token}-${cell.id}'),
-              cellExtent: gridLayout.cellExtent,
-              color: accent,
-              comboCount: data.comboCount,
+        if (data.jokerId == JokerIds.lollipopBreaker)
+          for (final BoardCell cell in data.removedCells)
+            Positioned.fromRect(
+              rect: gridLayout.rectFor(cell),
+              child: _LollipopHeldLetterOverlay(
+                key: ValueKey<String>('lollipop-held-${data.token}-${cell.id}'),
+                cell: cell,
+                cellExtent: gridLayout.cellExtent,
+                showSelectionIndex: gridLayout.showSelectionIndex,
+              ),
             ),
-          ),
+        for (final BoardCell cell in data.removedCells)
+          () {
+            final double boardSize = _boardExtent(gridLayout);
+            final Offset boardCenter = Offset(boardSize / 2, boardSize / 2);
+            final Offset cellCenter = gridLayout.rectFor(cell).center;
+            final double maxDistance = boardCenter.distance;
+            final double distanceRatio = maxDistance == 0
+                ? 0
+                : ((cellCenter - boardCenter).distance / maxDistance);
+            final bool isParty = data.jokerId == JokerIds.partyBooster;
+
+            return Positioned.fromRect(
+              rect: gridLayout.rectFor(cell),
+              child: _CellBurstOverlay(
+                key: ValueKey<String>('cell-burst-${data.token}-${cell.id}'),
+                cellExtent: gridLayout.cellExtent,
+                color: accent,
+                comboCount: data.comboCount,
+                startDelayMs: isParty
+                    ? (distanceRatio * 220).round()
+                    : data.jokerId == JokerIds.lollipopBreaker
+                    ? 560
+                    : 0,
+                burstDurationMs: isParty
+                    ? 240
+                    : data.jokerId == JokerIds.lollipopBreaker
+                    ? 340
+                    : null,
+              ),
+            );
+          }(),
         if (data.creationAnchor != null && data.createdPower != null)
           Positioned.fromRect(
             rect: gridLayout.rectFor(data.creationAnchor!),
@@ -596,12 +1344,28 @@ class _GridEffectOverlay extends StatelessWidget {
             child: _ComboBanner(
               key: ValueKey<String>('combo-banner-${data.token}'),
               comboCount: data.comboCount,
-              accent: accent,
+              presentation: comboPresentation,
             ),
           ),
       ],
     );
   }
+}
+
+enum _ComboFlavor { sweetPop, tastyBlast, sugarRush }
+
+class _ComboPresentation {
+  const _ComboPresentation({
+    required this.flavor,
+    required this.title,
+    required this.accent,
+    required this.secondary,
+  });
+
+  final _ComboFlavor flavor;
+  final String title;
+  final Color accent;
+  final Color secondary;
 }
 
 class _CellBurstOverlay extends StatelessWidget {
@@ -610,24 +1374,38 @@ class _CellBurstOverlay extends StatelessWidget {
     required this.cellExtent,
     required this.color,
     required this.comboCount,
+    this.startDelayMs = 0,
+    this.burstDurationMs,
   });
 
   final double cellExtent;
   final Color color;
   final int comboCount;
+  final int startDelayMs;
+  final int? burstDurationMs;
 
   @override
   Widget build(BuildContext context) {
     final int streakCount = 6 + comboCount.clamp(0, 5);
     final double maxScale = 1.15 + (comboCount * 0.08);
+    final int effectDurationMs = burstDurationMs ?? (440 + (comboCount * 70));
+    final int totalDurationMs = effectDurationMs + startDelayMs;
 
     return TweenAnimationBuilder<double>(
       tween: Tween<double>(begin: 0, end: 1),
-      duration: Duration(milliseconds: 440 + (comboCount * 70)),
+      duration: Duration(milliseconds: totalDurationMs),
       curve: Curves.easeOutCubic,
       builder: (BuildContext context, double value, Widget? child) {
-        final double fadeOut = (1 - value).clamp(0, 1);
-        final double ringScale = 0.25 + (value * maxScale);
+        final double local =
+            ((value * totalDurationMs - startDelayMs) / effectDurationMs)
+                .clamp(0, 1)
+                .toDouble();
+        if (local <= 0) {
+          return const SizedBox.shrink();
+        }
+
+        final double fadeOut = (1 - local).clamp(0, 1);
+        final double ringScale = 0.25 + (local * maxScale);
 
         return Stack(
           alignment: Alignment.center,
@@ -655,7 +1433,7 @@ class _CellBurstOverlay extends StatelessWidget {
               Transform.rotate(
                 angle: (math.pi * 2 / streakCount) * index,
                 child: Transform.translate(
-                  offset: Offset(0, -cellExtent * 0.18 * value),
+                  offset: Offset(0, -cellExtent * 0.18 * local),
                   child: Opacity(
                     opacity: fadeOut,
                     child: Align(
@@ -683,6 +1461,370 @@ class _CellBurstOverlay extends StatelessWidget {
         );
       },
     );
+  }
+}
+
+class _ComboCelebrationOverlay extends StatelessWidget {
+  const _ComboCelebrationOverlay({
+    super.key,
+    required this.gridLayout,
+    required this.presentation,
+  });
+
+  final _GridLayout gridLayout;
+  final _ComboPresentation presentation;
+
+  @override
+  Widget build(BuildContext context) {
+    final double boardExtent = _boardExtent(gridLayout);
+    final Offset center = Offset(boardExtent / 2, boardExtent * 0.44);
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0, end: 1),
+      duration: Duration(
+        milliseconds: switch (presentation.flavor) {
+          _ComboFlavor.sweetPop => 620,
+          _ComboFlavor.tastyBlast => 760,
+          _ComboFlavor.sugarRush => 960,
+        },
+      ),
+      curve: Curves.easeOutCubic,
+      builder: (BuildContext context, double value, Widget? child) {
+        final double fadeOut = (1 - value).clamp(0, 1);
+        final double flashOpacity = switch (presentation.flavor) {
+          _ComboFlavor.sweetPop => 0.08,
+          _ComboFlavor.tastyBlast => 0.12,
+          _ComboFlavor.sugarRush => 0.16,
+        };
+        final int shardCount = switch (presentation.flavor) {
+          _ComboFlavor.sweetPop => 8,
+          _ComboFlavor.tastyBlast => 12,
+          _ComboFlavor.sugarRush => 18,
+        };
+
+        return Stack(
+          clipBehavior: Clip.none,
+          children: <Widget>[
+            Positioned.fill(
+              child: Opacity(
+                opacity: fadeOut * flashOpacity,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: RadialGradient(
+                      center: Alignment(
+                        ((center.dx / boardExtent) * 2) - 1,
+                        ((center.dy / boardExtent) * 2) - 1,
+                      ),
+                      radius: 1.05,
+                      colors: <Color>[
+                        presentation.secondary.withValues(alpha: 0.95),
+                        presentation.accent.withValues(alpha: 0.35),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            if (presentation.flavor != _ComboFlavor.sweetPop)
+              ...List<Widget>.generate(2, (int index) {
+                final bool horizontal = index == 0;
+                return Positioned.fill(
+                  child: Transform.rotate(
+                    angle: horizontal ? 0 : math.pi / 2.8,
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Opacity(
+                        opacity: fadeOut * 0.55,
+                        child: Container(
+                          width: horizontal ? boardExtent * 0.72 : 20,
+                          height: horizontal ? 20 : boardExtent * 0.72,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(999),
+                            gradient: LinearGradient(
+                              colors: <Color>[
+                                Colors.transparent,
+                                presentation.secondary.withValues(alpha: 0.7),
+                                presentation.accent.withValues(alpha: 0.9),
+                                Colors.transparent,
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            Positioned(
+              left: center.dx - (boardExtent * 0.22),
+              top: center.dy - (boardExtent * 0.22),
+              width: boardExtent * 0.44,
+              height: boardExtent * 0.44,
+              child: Transform.scale(
+                scale: 0.35 + (value * 1.2),
+                child: Opacity(
+                  opacity: fadeOut * 0.7,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: <Color>[
+                          presentation.secondary.withValues(alpha: 0.95),
+                          presentation.accent.withValues(alpha: 0.18),
+                          Colors.transparent,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            ...List<Widget>.generate(shardCount, (int index) {
+              final double angle = (math.pi * 2 / shardCount) * index;
+              final double distance =
+                  (boardExtent * 0.1) + (value * boardExtent * 0.18);
+              final Offset shardCenter = Offset(
+                center.dx + (math.cos(angle) * distance),
+                center.dy + (math.sin(angle) * distance),
+              );
+              final double width = switch (presentation.flavor) {
+                _ComboFlavor.sweetPop => gridLayout.cellExtent * 0.16,
+                _ComboFlavor.tastyBlast => gridLayout.cellExtent * 0.19,
+                _ComboFlavor.sugarRush => gridLayout.cellExtent * 0.21,
+              };
+              final double height = switch (presentation.flavor) {
+                _ComboFlavor.sweetPop => gridLayout.cellExtent * 0.36,
+                _ComboFlavor.tastyBlast => gridLayout.cellExtent * 0.44,
+                _ComboFlavor.sugarRush => gridLayout.cellExtent * 0.52,
+              };
+              final Color shardColor = index.isEven
+                  ? presentation.accent
+                  : presentation.secondary;
+
+              return Positioned(
+                left: shardCenter.dx - width / 2,
+                top: shardCenter.dy - height / 2,
+                child: Transform.rotate(
+                  angle: angle + (math.pi / 4),
+                  child: Opacity(
+                    opacity: fadeOut * 0.95,
+                    child: Container(
+                      width: width,
+                      height: height,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(999),
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: <Color>[
+                            Colors.white,
+                            shardColor,
+                            shardColor.withValues(alpha: 0.28),
+                          ],
+                        ),
+                        boxShadow: <BoxShadow>[
+                          BoxShadow(
+                            color: shardColor.withValues(alpha: 0.4),
+                            blurRadius: 8,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }),
+            if (presentation.flavor == _ComboFlavor.sugarRush)
+              ...List<Widget>.generate(10, (int index) {
+                final double lane = index / 9;
+                final double x = boardExtent * (0.06 + (lane * 0.88));
+                final double y =
+                    (boardExtent * 0.08) + (value * boardExtent * 0.82);
+                return Positioned(
+                  left: x,
+                  top: y - (index.isEven ? 30 : 0),
+                  child: Opacity(
+                    opacity: fadeOut * 0.85,
+                    child: Transform.rotate(
+                      angle: (index.isEven ? -1 : 1) * 0.48,
+                      child: Container(
+                        width: 10,
+                        height: gridLayout.cellExtent * 0.34,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(999),
+                          color: index.isEven
+                              ? presentation.secondary
+                              : presentation.accent,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _PartyCastOverlay extends StatelessWidget {
+  const _PartyCastOverlay({
+    required this.token,
+    required this.gridLayout,
+    required this.board,
+  });
+
+  final int token;
+  final _GridLayout gridLayout;
+  final List<BoardCell> board;
+
+  @override
+  Widget build(BuildContext context) {
+    final double extent = _boardExtent(gridLayout);
+    final Offset center = Offset(extent / 2, extent / 2);
+    final List<Offset> targets = board
+        .map((BoardCell cell) => gridLayout.rectFor(cell).center)
+        .toList(growable: false);
+
+    return TweenAnimationBuilder<double>(
+      key: ValueKey<int>(token),
+      tween: Tween<double>(begin: 0, end: 1),
+      duration: const Duration(milliseconds: 420),
+      curve: Curves.easeOutCubic,
+      builder: (BuildContext context, double value, Widget? child) {
+        final double fade = (1 - value).clamp(0, 1);
+
+        return Stack(
+          children: <Widget>[
+            Positioned.fill(
+              child: Opacity(
+                opacity: 0.34 * fade,
+                child: DecoratedBox(
+                  decoration: const BoxDecoration(
+                    gradient: RadialGradient(
+                      center: Alignment.center,
+                      radius: 0.9,
+                      colors: <Color>[
+                        Color(0xFFB43DBB),
+                        Color(0x884A148C),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              left: center.dx - (extent * 0.18),
+              top: center.dy - (extent * 0.18),
+              width: extent * 0.36,
+              height: extent * 0.36,
+              child: Transform.scale(
+                scale: 0.4 + (value * 1.4),
+                child: Opacity(
+                  opacity: fade * 0.85,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: <Color>[
+                          Colors.white.withValues(alpha: 0.95),
+                          const Color(0xFFFFD86E),
+                          const Color(0x00FFD86E),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned.fill(
+              child: CustomPaint(
+                painter: _PartyRayPainter(
+                  center: center,
+                  targets: targets,
+                  progress: value,
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Opacity(
+                  opacity: fade,
+                  child: Transform.translate(
+                    offset: Offset(0, -6 + (value * 6)),
+                    child: const Text(
+                      'PARTY BOOSTER!',
+                      style: TextStyle(
+                        color: Color(0xFFFFF5D6),
+                        fontSize: 15,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.1,
+                        shadows: <Shadow>[
+                          Shadow(color: Color(0xAA7B2CBF), blurRadius: 8),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _PartyRayPainter extends CustomPainter {
+  const _PartyRayPainter({
+    required this.center,
+    required this.targets,
+    required this.progress,
+  });
+
+  final Offset center;
+  final List<Offset> targets;
+  final double progress;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final double alpha = (1 - progress).clamp(0, 1);
+    final Paint rayPaint = Paint()
+      ..shader = const LinearGradient(
+        colors: <Color>[
+          Color(0xFFFFD86E),
+          Color(0xFFFF8AD6),
+          Colors.transparent,
+        ],
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
+      ..strokeWidth = 2
+      ..strokeCap = StrokeCap.round;
+
+    for (final Offset target in targets) {
+      final Offset current = Offset.lerp(center, target, progress)!;
+      canvas.drawLine(
+        center,
+        current,
+        rayPaint..color = Colors.white.withValues(alpha: 0.82 * alpha),
+      );
+
+      final Paint pulsePaint = Paint()
+        ..color = const Color(0xFFFFD86E).withValues(alpha: 0.24 * alpha)
+        ..style = PaintingStyle.fill;
+      canvas.drawCircle(current, 5 + (progress * 8), pulsePaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _PartyRayPainter oldDelegate) {
+    return oldDelegate.center != center ||
+        oldDelegate.targets != targets ||
+        oldDelegate.progress != progress;
   }
 }
 
@@ -954,11 +2096,11 @@ class _ComboBanner extends StatelessWidget {
   const _ComboBanner({
     super.key,
     required this.comboCount,
-    required this.accent,
+    required this.presentation,
   });
 
   final int comboCount;
-  final Color accent;
+  final _ComboPresentation presentation;
 
   @override
   Widget build(BuildContext context) {
@@ -981,12 +2123,18 @@ class _ComboBanner extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(999),
             gradient: LinearGradient(
-              colors: <Color>[Colors.white, accent.withValues(alpha: 0.18)],
+              colors: <Color>[
+                Colors.white,
+                presentation.secondary.withValues(alpha: 0.45),
+                presentation.accent.withValues(alpha: 0.14),
+              ],
             ),
-            border: Border.all(color: accent.withValues(alpha: 0.35)),
+            border: Border.all(
+              color: presentation.accent.withValues(alpha: 0.35),
+            ),
             boxShadow: <BoxShadow>[
               BoxShadow(
-                color: accent.withValues(alpha: 0.22),
+                color: presentation.accent.withValues(alpha: 0.22),
                 blurRadius: 18,
                 spreadRadius: 2,
               ),
@@ -995,9 +2143,9 @@ class _ComboBanner extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             child: Text(
-              'COMBO x$comboCount',
+              '${presentation.title} • COMBO x$comboCount',
               style: TextStyle(
-                color: accent,
+                color: presentation.accent,
                 fontSize: 14,
                 fontWeight: FontWeight.w900,
                 letterSpacing: 0.9,
@@ -1008,6 +2156,36 @@ class _ComboBanner extends StatelessWidget {
       ),
     );
   }
+}
+
+_ComboPresentation _comboPresentationFor(
+  int comboCount, {
+  required Color accent,
+}) {
+  if (comboCount >= 4) {
+    return _ComboPresentation(
+      flavor: _ComboFlavor.sugarRush,
+      title: 'DELICIOUS!',
+      accent: accent,
+      secondary: const Color(0xFFFFD86E),
+    );
+  }
+
+  if (comboCount == 3) {
+    return _ComboPresentation(
+      flavor: _ComboFlavor.tastyBlast,
+      title: 'TASTY!',
+      accent: accent,
+      secondary: const Color(0xFFFFA7D8),
+    );
+  }
+
+  return _ComboPresentation(
+    flavor: _ComboFlavor.sweetPop,
+    title: 'SWEET!',
+    accent: accent,
+    secondary: const Color(0xFFFFF3A8),
+  );
 }
 
 Color _powerColorFor(PowerTile power) {

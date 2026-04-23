@@ -194,6 +194,15 @@ class GameController extends ChangeNotifier {
   /// Monotonic token used by the UI to detect a new clear/effect event.
   int _lastBoardEffectToken = 0;
 
+  /// Joker ID used on the latest applied joker effect.
+  String? _lastJokerEffectId;
+
+  /// Monotonic token used to trigger Party Booster pre-cast animation.
+  int _partyCastToken = 0;
+
+  /// Whether Party Booster pre-cast animation is currently active.
+  bool _isPartyCasting = false;
+
   /// Whether a finalization is already running (prevents double-taps).
   bool _isFinalizing = false;
 
@@ -215,6 +224,9 @@ class GameController extends ChangeNotifier {
   PowerTile? get lastCreatedPower => _lastCreatedPower;
   List<PowerTileType> get lastActivatedPowers => _lastActivatedPowers;
   int get lastBoardEffectToken => _lastBoardEffectToken;
+  String? get lastJokerEffectId => _lastJokerEffectId;
+  int get partyCastToken => _partyCastToken;
+  bool get isPartyCasting => _isPartyCasting;
   bool get isFinalizing => _isFinalizing;
   bool get isGameOver => movesLeft <= 0;
   String? get activeJokerId => _activeJokerId;
@@ -225,15 +237,13 @@ class GameController extends ChangeNotifier {
   Map<String, int> get jokerInventory =>
       _session?.jokerInventory ?? const <String, int>{};
 
-  List<MarketJokerDefinition> get ownedJokers {
+  List<MarketJokerDefinition> get availableJokers {
     final MarketRules? market = _cachedRules?.market;
     if (market == null) {
       return const <MarketJokerDefinition>[];
     }
 
-    return market.jokers
-        .where((MarketJokerDefinition joker) => quantityForJoker(joker.id) > 0)
-        .toList(growable: false);
+    return market.jokers.toList(growable: false);
   }
 
   int quantityForJoker(String jokerId) => jokerInventory[jokerId] ?? 0;
@@ -349,6 +359,13 @@ class GameController extends ChangeNotifier {
     } catch (_) {
       return const <String, int>{};
     }
+  }
+
+  Future<void> refreshInventory() async {
+    if (_session == null) return;
+    final Map<String, int> inventory = await _loadJokerInventorySafe();
+    _session = _session!.copyWith(jokerInventory: inventory);
+    notifyListeners();
   }
 
   void startSelection(BoardCell cell) {
@@ -654,6 +671,7 @@ class GameController extends ChangeNotifier {
     _lastComboBonus = 0;
     _lastCreatedPower = null;
     _lastActivatedPowers = const <PowerTileType>[];
+    _lastJokerEffectId = null;
   }
 
   Future<void> _applyJoker({
@@ -664,6 +682,15 @@ class GameController extends ChangeNotifier {
     final GameRulesConfig? rules = _cachedRules;
     if (activeSession == null || rules == null) {
       return;
+    }
+
+    if (jokerId == JokerIds.partyBooster) {
+      _partyCastToken += 1;
+      _isPartyCasting = true;
+      notifyListeners();
+      await Future<void>.delayed(const Duration(milliseconds: 420));
+      _isPartyCasting = false;
+      notifyListeners();
     }
 
     final JokerEffectResult result = _jokerEngine.apply(
@@ -687,6 +714,7 @@ class GameController extends ChangeNotifier {
 
     _clearTransientFeedback();
     _lastRemovedCellIds = result.removedCellIds;
+    _lastJokerEffectId = jokerId;
     _lastBoardEffectToken += 1;
     _activeJokerId = null;
 

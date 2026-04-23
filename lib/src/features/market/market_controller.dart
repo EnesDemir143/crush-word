@@ -160,4 +160,10 @@ class MarketController extends ChangeNotifier {
     notifyListeners();
     return status;
   }
+
+  Future<void> setGoldBalanceForDebug(int goldBalance) async {
+    await _walletRepository.setGoldBalance(goldBalance);
+    _goldBalance = goldBalance;
+    notifyListeners();
+  }
 }

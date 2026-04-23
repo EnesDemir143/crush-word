@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import 'package:crush_word/src/core/gameplay/models/game_session.dart';
+import 'package:crush_word/src/core/gameplay/services/joker_engine.dart';
 import 'package:crush_word/src/core/gameplay/services/word_validator.dart';
 import 'package:crush_word/src/core/models/game_config.dart';
 import 'package:crush_word/src/features/game/game_controller.dart';
@@ -11,6 +12,8 @@ import 'package:crush_word/src/features/game/exit_confirmation_dialog.dart';
 import 'package:crush_word/src/features/game/widgets/game_header.dart';
 import 'package:crush_word/src/features/game/widgets/joker_bar.dart';
 import 'package:crush_word/src/features/game/widgets/letter_grid.dart';
+import 'package:crush_word/src/features/market/market_controller.dart';
+import 'package:crush_word/src/core/presentation/joker_art.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({super.key, required this.config, this.controller});
@@ -25,6 +28,9 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   late final GameController _controller;
   late final bool _ownsController;
+  final GlobalKey _lollipopJokerKey = GlobalKey(
+    debugLabel: 'lollipop-joker-source',
+  );
   bool _allowPop = false;
 
   @override
@@ -69,58 +75,68 @@ class _GameScreenState extends State<GameScreen> {
               elevation: 0,
             ),
             extendBodyBehindAppBar: true,
-            body: DecoratedBox(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: <Color>[
-                    Color(0xFFF6EFE3),
-                    Color(0xFFEDE6D8),
-                    Color(0xFFDCE8E0),
-                  ],
+            body: Stack(
+              children: <Widget>[
+                Positioned.fill(
+                  child: Image.asset(
+                    'assets/images/gameplay_background.png',
+                    fit: BoxFit.cover,
+                    filterQuality: FilterQuality.high,
+                  ),
                 ),
-              ),
-              child: Stack(
-                children: <Widget>[
-                  const _BackgroundGlow(
-                    alignment: Alignment.topLeft,
-                    color: Color(0x3395C9A3),
-                    diameter: 240,
-                  ),
-                  const _BackgroundGlow(
-                    alignment: Alignment.centerRight,
-                    color: Color(0x33D29A5A),
-                    diameter: 280,
-                  ),
-                  const _BackgroundGlow(
-                    alignment: Alignment.bottomLeft,
-                    color: Color(0x33538F87),
-                    diameter: 220,
-                  ),
-                  SafeArea(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                      child: switch ((session, _controller.isLoading)) {
-                        (null, true) => const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                        (null, false) => _GameLoadError(
-                          message:
-                              _controller.errorMessage ??
-                              'Oyun tahtası yüklenemedi.',
-                          onRetry: () => _controller.load(force: true),
-                        ),
-                        _ => _GameBody(
-                          session: session!,
-                          controller: _controller,
-                          onReturnHome: _returnHome,
-                        ),
-                      },
+                Positioned.fill(
+                  child: DecoratedBox(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: <Color>[
+                          Color(0x66FFF8EE),
+                          Color(0x52FFF4E2),
+                          Color(0x5EE8F8FF),
+                        ],
+                      ),
                     ),
                   ),
-                ],
-              ),
+                ),
+                const _BackgroundGlow(
+                  alignment: Alignment.topLeft,
+                  color: Color(0x2695C9A3),
+                  diameter: 240,
+                ),
+                const _BackgroundGlow(
+                  alignment: Alignment.centerRight,
+                  color: Color(0x26D29A5A),
+                  diameter: 280,
+                ),
+                const _BackgroundGlow(
+                  alignment: Alignment.bottomLeft,
+                  color: Color(0x22538F87),
+                  diameter: 220,
+                ),
+                SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                    child: switch ((session, _controller.isLoading)) {
+                      (null, true) => const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                      (null, false) => _GameLoadError(
+                        message:
+                            _controller.errorMessage ??
+                            'Oyun tahtası yüklenemedi.',
+                        onRetry: () => _controller.load(force: true),
+                      ),
+                      _ => _GameBody(
+                        session: session!,
+                        controller: _controller,
+                        onReturnHome: _returnHome,
+                        lollipopJokerKey: _lollipopJokerKey,
+                      ),
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
         );
@@ -164,25 +180,45 @@ class _GameBody extends StatelessWidget {
     required this.session,
     required this.controller,
     required this.onReturnHome,
+    required this.lollipopJokerKey,
   });
 
   final GameSession session;
   final GameController controller;
   final VoidCallback onReturnHome;
+  final GlobalKey lollipopJokerKey;
 
   bool get _isGameOver => controller.isGameOver;
+
+  static const double _regularFixedHeaderHeight = 84;
+  static const double _compactFixedHeaderHeight = 76;
+  static const double _regularDynamicChromeHeight = 74;
+  static const double _compactDynamicChromeHeight = 64;
+  static const double _regularJokerChromeHeight = 112;
+  static const double _compactJokerChromeHeight = 100;
+  static const double _regularTopToBoardGap = 8;
+  static const double _compactTopToBoardGap = 6;
+  static const double _regularBoardToJokerGap = 12;
+  static const double _compactBoardToJokerGap = 8;
 
   @override
   Widget build(BuildContext context) {
     final InvalidAttemptFeedback? feedback = controller.lastInvalidFeedback;
+    final availableJokers = controller.availableJokers;
     final Widget jokerBar = JokerBar(
-      jokers: controller.ownedJokers,
+      jokers: availableJokers,
       inventoryById: controller.jokerInventory,
       activeJokerId: controller.activeJokerId,
       helperText: controller.jokerHintText,
       enabled: !controller.isLoading && !controller.isGameOver,
       onJokerPressed: (String jokerId) {
         unawaited(controller.activateJoker(jokerId));
+      },
+      onJokerBuyRequested: (String jokerId) {
+        unawaited(_buyJokerInGame(context, jokerId));
+      },
+      jokerButtonKeys: <String, GlobalKey>{
+        JokerIds.lollipopBreaker: lollipopJokerKey,
       },
     );
 
@@ -208,6 +244,7 @@ class _GameBody extends StatelessWidget {
                             session: session,
                             controller: controller,
                             boardSide: _resolveWideBoardSide(constraints),
+                            lollipopSourceKey: lollipopJokerKey,
                           ),
                         ),
                         const SizedBox(width: 24),
@@ -216,12 +253,12 @@ class _GameBody extends StatelessWidget {
                           child: Column(
                             children: <Widget>[
                               GameHeader(
-                                config: session.config,
                                 score: controller.score,
                                 movesLeft: controller.movesLeft,
                                 activeWord: controller.selectedWord,
                                 compact: constraints.maxHeight < 760,
                                 lastWordScore: controller.lastWordScore,
+                                comboCount: controller.lastComboCount,
                                 playableWordCount: controller.playableWordCount,
                               ),
                               const SizedBox(height: 12),
@@ -238,25 +275,67 @@ class _GameBody extends StatelessWidget {
               );
             }
 
+            final Widget header = GameHeader(
+              score: controller.score,
+              movesLeft: controller.movesLeft,
+              activeWord: controller.selectedWord,
+              compact: useCompactChrome,
+              lastWordScore: controller.lastWordScore,
+              comboCount: controller.lastComboCount,
+              playableWordCount: controller.playableWordCount,
+              showActiveWord: false,
+            );
+            final Widget dynamicChrome = _ActiveWordFeedbackChrome(
+              activeWord: controller.selectedWord,
+              feedback: feedback,
+            );
+            final _NarrowGameLayoutMetrics layout = _resolveNarrowGameLayout(
+              constraints: constraints,
+              useCompactChrome: useCompactChrome,
+              gridSize: session.gridSize,
+              hasJokerBar: availableJokers.isNotEmpty,
+            );
+
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                GameHeader(
-                  config: session.config,
-                  score: controller.score,
-                  movesLeft: controller.movesLeft,
-                  activeWord: controller.selectedWord,
-                  compact: useCompactChrome,
-                  lastWordScore: controller.lastWordScore,
-                  playableWordCount: controller.playableWordCount,
+                SizedBox(
+                  height: layout.fixedHeaderHeight,
+                  child: _FixedChromeSlot(
+                    key: const Key('game-fixed-header-slot'),
+                    alignment: Alignment.topCenter,
+                    child: header,
+                  ),
                 ),
-                _AnimatedFeedback(feedback: feedback),
-                const SizedBox(height: 8),
-                Expanded(
-                  child: _BoardStage(session: session, controller: controller),
+                SizedBox(
+                  height: layout.dynamicChromeHeight,
+                  child: _FixedChromeSlot(
+                    key: const Key('game-dynamic-word-slot'),
+                    alignment: Alignment.topCenter,
+                    child: dynamicChrome,
+                  ),
                 ),
-                const SizedBox(height: 12),
-                jokerBar,
+                SizedBox(height: layout.topToBoardGap),
+                SizedBox(
+                  height: layout.boardOuterSide,
+                  child: _BoardStage(
+                    session: session,
+                    controller: controller,
+                    boardSide: layout.boardSide,
+                    lollipopSourceKey: lollipopJokerKey,
+                  ),
+                ),
+                SizedBox(height: layout.boardToJokerGap),
+                SizedBox(
+                  height: layout.bottomChromeHeight,
+                  child: availableJokers.isEmpty
+                      ? const SizedBox.shrink()
+                      : _FixedChromeSlot(
+                          key: const Key('game-bottom-chrome-slot'),
+                          alignment: Alignment.topCenter,
+                          child: jokerBar,
+                        ),
+                ),
               ],
             );
           },
@@ -273,6 +352,96 @@ class _GameBody extends StatelessWidget {
     );
   }
 
+  _NarrowGameLayoutMetrics _resolveNarrowGameLayout({
+    required BoxConstraints constraints,
+    required bool useCompactChrome,
+    required int gridSize,
+    required bool hasJokerBar,
+  }) {
+    final double stagePadding = _boardStagePaddingForGridSize(gridSize);
+    final double maxBoardSideByWidth = math.max(
+      0,
+      constraints.maxWidth - (stagePadding * 2),
+    );
+    final double targetBoardOuterSide =
+        maxBoardSideByWidth + (stagePadding * 2);
+    final double fixedHeaderHeight = useCompactChrome
+        ? _compactFixedHeaderHeight
+        : _regularFixedHeaderHeight;
+    final double dynamicChromeHeight = useCompactChrome
+        ? _compactDynamicChromeHeight
+        : _regularDynamicChromeHeight;
+    final double baseBottomChromeHeight = hasJokerBar
+        ? (useCompactChrome
+              ? _compactJokerChromeHeight
+              : _regularJokerChromeHeight)
+        : 0;
+    final double topToBoardGap = useCompactChrome
+        ? _compactTopToBoardGap
+        : _regularTopToBoardGap;
+    final double boardToJokerGap = hasJokerBar
+        ? (useCompactChrome ? _compactBoardToJokerGap : _regularBoardToJokerGap)
+        : 0;
+
+    final double baseReservedHeight =
+        fixedHeaderHeight +
+        dynamicChromeHeight +
+        topToBoardGap +
+        targetBoardOuterSide +
+        boardToJokerGap +
+        baseBottomChromeHeight;
+
+    if (!constraints.maxHeight.isFinite || constraints.maxHeight <= 0) {
+      return _NarrowGameLayoutMetrics(
+        fixedHeaderHeight: fixedHeaderHeight,
+        dynamicChromeHeight: dynamicChromeHeight,
+        topToBoardGap: topToBoardGap,
+        boardSide: maxBoardSideByWidth,
+        stagePadding: stagePadding,
+        boardToJokerGap: boardToJokerGap,
+        bottomChromeHeight: baseBottomChromeHeight,
+      );
+    }
+
+    if (baseReservedHeight <= constraints.maxHeight) {
+      final double extraHeight = constraints.maxHeight - baseReservedHeight;
+
+      return _NarrowGameLayoutMetrics(
+        fixedHeaderHeight: fixedHeaderHeight,
+        dynamicChromeHeight: dynamicChromeHeight,
+        topToBoardGap: topToBoardGap,
+        boardSide: maxBoardSideByWidth,
+        stagePadding: stagePadding,
+        boardToJokerGap: boardToJokerGap,
+        bottomChromeHeight: baseBottomChromeHeight + extraHeight,
+      );
+    }
+
+    final double availableBoardOuterSide = math.max(
+      0,
+      constraints.maxHeight -
+          fixedHeaderHeight -
+          dynamicChromeHeight -
+          topToBoardGap -
+          boardToJokerGap -
+          baseBottomChromeHeight,
+    );
+    final double boardSide = math.min(
+      maxBoardSideByWidth,
+      math.max(0, availableBoardOuterSide - (stagePadding * 2)),
+    );
+
+    return _NarrowGameLayoutMetrics(
+      fixedHeaderHeight: fixedHeaderHeight,
+      dynamicChromeHeight: dynamicChromeHeight,
+      topToBoardGap: topToBoardGap,
+      boardSide: boardSide,
+      stagePadding: stagePadding,
+      boardToJokerGap: boardToJokerGap,
+      bottomChromeHeight: baseBottomChromeHeight,
+    );
+  }
+
   double _resolveWideBoardSide(BoxConstraints constraints) {
     const double boardChrome = 28;
     return math.min(
@@ -283,6 +452,286 @@ class _GameBody extends StatelessWidget {
       ),
     );
   }
+
+  Future<void> _buyJokerInGame(BuildContext context, String jokerId) async {
+    final joker = controller.availableJokers.firstWhere((j) => j.id == jokerId);
+
+    // Briefly show a loading indicator while we check gold balance
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext ctx) =>
+          const Center(child: CircularProgressIndicator()),
+    );
+
+    final MarketController market = MarketController();
+    await market.load();
+
+    if (!context.mounted) {
+      market.dispose();
+      return;
+    }
+
+    // Dismiss the loader
+    Navigator.of(context).pop();
+
+    final int currentGold = market.goldBalance;
+    final bool canAfford = currentGold >= joker.cost;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext ctx) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 340),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(28),
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: <Color>[Color(0xFFFFFCF7), Color(0xFFF6EFE2)],
+                ),
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                    color: const Color(0xFF0F172A).withValues(alpha: 0.15),
+                    blurRadius: 40,
+                    offset: const Offset(0, 20),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    DecoratedBox(
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          colors: <Color>[Color(0xFF1A5D57), Color(0xFF2E8B7A)],
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: JokerArtImage(
+                          jokerId: joker.id,
+                          size: 48,
+                          circular: true,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      '${joker.name} Satın Al',
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF3A3025),
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Bu jokerden kalmadı. ${joker.cost} Altın karşılığında hemen satın alıp oynamaya devam edebilirsin.',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF7A6F62),
+                        height: 1.45,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFDF8F0),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: const Color(0xFFE5D4BA)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          const Text(
+                            'Bakiyen:',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF6E5432),
+                            ),
+                          ),
+                          Row(
+                            children: <Widget>[
+                              const Icon(
+                                Icons.monetization_on_rounded,
+                                color: Color(0xFF9A6B00),
+                                size: 18,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '$currentGold',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w900,
+                                  color: canAfford
+                                      ? const Color(0xFF6E5432)
+                                      : const Color(0xFFB91C1C),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 28),
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () => Navigator.of(ctx).pop(false),
+                            style: TextButton.styleFrom(
+                              foregroundColor: const Color(0xFF7A6F62),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(999),
+                              ),
+                            ),
+                            child: const Text(
+                              'İptal',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: FilledButton.icon(
+                            onPressed: canAfford
+                                ? () => Navigator.of(ctx).pop(true)
+                                : null,
+                            icon: const Icon(
+                              Icons.shopping_cart_checkout_rounded,
+                              size: 18,
+                            ),
+                            label: const Text(
+                              'Satın Al',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            style: FilledButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+
+    if (confirmed != true) {
+      market.dispose();
+      return;
+    }
+
+    if (!context.mounted) {
+      market.dispose();
+      return;
+    }
+
+    // Show loading overlay during purchase
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext ctx) =>
+          const Center(child: CircularProgressIndicator()),
+    );
+
+    final MarketPurchaseStatus status = await market.purchaseJoker(joker);
+    market.dispose();
+
+    if (!context.mounted) return;
+
+    // Close loading overlay
+    Navigator.of(context).pop();
+
+    if (status == MarketPurchaseStatus.success) {
+      await controller.refreshInventory();
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text('${joker.name} alındı! Kullanabilirsin.')),
+        );
+    } else if (status == MarketPurchaseStatus.insufficientGold) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(const SnackBar(content: Text('Yeterli altının yok.')));
+    } else {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(const SnackBar(content: Text('İşlem devam ediyor.')));
+    }
+  }
+}
+
+class _NarrowGameLayoutMetrics {
+  const _NarrowGameLayoutMetrics({
+    required this.fixedHeaderHeight,
+    required this.dynamicChromeHeight,
+    required this.topToBoardGap,
+    required this.boardSide,
+    required this.stagePadding,
+    required this.boardToJokerGap,
+    required this.bottomChromeHeight,
+  });
+
+  final double fixedHeaderHeight;
+  final double dynamicChromeHeight;
+  final double topToBoardGap;
+  final double boardSide;
+  final double stagePadding;
+  final double boardToJokerGap;
+  final double bottomChromeHeight;
+
+  double get boardOuterSide => boardSide + (stagePadding * 2);
+}
+
+class _FixedChromeSlot extends StatelessWidget {
+  const _FixedChromeSlot({
+    super.key,
+    required this.child,
+    required this.alignment,
+  });
+
+  final Widget child;
+  final Alignment alignment;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        return ClipRect(
+          child: Align(
+            alignment: alignment,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: alignment,
+              child: SizedBox(width: constraints.maxWidth, child: child),
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
 
 class _BoardStage extends StatefulWidget {
@@ -290,11 +739,13 @@ class _BoardStage extends StatefulWidget {
     required this.session,
     required this.controller,
     this.boardSide,
+    this.lollipopSourceKey,
   });
 
   final GameSession session;
   final GameController controller;
   final double? boardSide;
+  final GlobalKey? lollipopSourceKey;
 
   @override
   State<_BoardStage> createState() => _BoardStageState();
@@ -416,7 +867,9 @@ class _BoardStageState extends State<_BoardStage>
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final double stagePadding = widget.session.gridSize >= 10 ? 6 : 10;
+    final double stagePadding = _boardStagePaddingForGridSize(
+      widget.session.gridSize,
+    );
 
     final Widget gridContent = RepaintBoundary(
       child: LetterGrid(
@@ -431,6 +884,10 @@ class _BoardStageState extends State<_BoardStage>
         comboCount: widget.controller.lastComboCount,
         createdPower: widget.controller.lastCreatedPower,
         activatedPowers: widget.controller.lastActivatedPowers,
+        lastJokerEffectId: widget.controller.lastJokerEffectId,
+        partyCastToken: widget.controller.partyCastToken,
+        isPartyCasting: widget.controller.isPartyCasting,
+        lollipopSourceKey: widget.lollipopSourceKey,
       ),
     );
 
@@ -512,6 +969,103 @@ class _BoardStageState extends State<_BoardStage>
           ),
         );
       },
+    );
+  }
+}
+
+double _boardStagePaddingForGridSize(int gridSize) => gridSize >= 10 ? 6 : 10;
+
+class _ActiveWordFeedbackChrome extends StatelessWidget {
+  const _ActiveWordFeedbackChrome({
+    required this.activeWord,
+    required this.feedback,
+  });
+
+  final String activeWord;
+  final InvalidAttemptFeedback? feedback;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 220),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeInCubic,
+          transitionBuilder: (Widget child, Animation<double> animation) {
+            return SizeTransition(
+              sizeFactor: animation,
+              axisAlignment: -1,
+              child: FadeTransition(opacity: animation, child: child),
+            );
+          },
+          child: activeWord.isEmpty
+              ? const SizedBox.shrink(key: ValueKey<String>('word-empty'))
+              : _ActiveWordPill(
+                  key: const ValueKey<String>('word-active'),
+                  word: activeWord,
+                ),
+        ),
+        _AnimatedFeedback(feedback: feedback),
+      ],
+    );
+  }
+}
+
+class _ActiveWordPill extends StatelessWidget {
+  const _ActiveWordPill({super.key, required this.word});
+
+  final String word;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: <Color>[Color(0xFF2E8B7A), Color(0xFF1A5D57)],
+          ),
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: const Color(0xFF1A5D57).withValues(alpha: 0.18),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          child: Row(
+            children: <Widget>[
+              Icon(
+                Icons.text_fields_rounded,
+                color: Colors.white.withValues(alpha: 0.7),
+                size: 16,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  word,
+                  key: const Key('active-word-path-text'),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 2,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

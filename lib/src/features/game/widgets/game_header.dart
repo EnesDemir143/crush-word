@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 
-import 'package:crush_word/src/core/models/game_config.dart';
-
 class GameHeader extends StatelessWidget {
   const GameHeader({
     super.key,
-    required this.config,
     required this.score,
     required this.movesLeft,
     required this.activeWord,
     required this.compact,
     this.lastWordScore = 0,
+    this.comboCount = 1,
     this.playableWordCount = 0,
+    this.showActiveWord = true,
   });
 
-  final GameConfig config;
   final int score;
   final int movesLeft;
   final String activeWord;
@@ -23,8 +21,14 @@ class GameHeader extends StatelessWidget {
   /// Score earned on the last valid word — triggers "+X" animation.
   final int lastWordScore;
 
+  /// Combo count from the last valid word (x1 = no extra combo).
+  final int comboCount;
+
   /// Number of non-overlapping playable words on the current board.
   final int playableWordCount;
+
+  /// Whether the active-word strip is rendered inside this fixed panel.
+  final bool showActiveWord;
 
   @override
   Widget build(BuildContext context) {
@@ -54,39 +58,55 @@ class GameHeader extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            // ── Top row: difficulty + score + moves ──────
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              alignment: WrapAlignment.spaceBetween,
-              children: <Widget>[
-                _PillBadge(
-                  icon: Icons.tune_rounded,
-                  label: config.difficultyLabel,
-                  color: theme.colorScheme.primary,
-                ),
-                _PillBadge(
-                  icon: Icons.grid_4x4_rounded,
-                  label: '${config.gridSize}×${config.gridSize}',
-                  color: theme.colorScheme.primary,
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
+            LayoutBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+                final Widget movesBadge = _PillBadge(
+                  icon: Icons.swipe_rounded,
+                  label: '$movesLeft hamle',
+                  color: movesLeft <= 3
+                      ? const Color(0xFFB91C1C)
+                      : const Color(0xFF2E8B7A),
+                );
+                final Widget scorePill = _AnimatedScorePill(
+                  score: score,
+                  lastWordScore: lastWordScore,
+                  comboCount: comboCount,
+                );
+                final Widget playablePill = _PlayableWordCountPill(
+                  count: playableWordCount,
+                );
+
+                if (compact || constraints.maxWidth < 360) {
+                  return Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    alignment: WrapAlignment.center,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: <Widget>[movesBadge, scorePill, playablePill],
+                  );
+                }
+
+                return Row(
                   children: <Widget>[
-                    _AnimatedScorePill(
-                      score: score,
-                      lastWordScore: lastWordScore,
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: movesBadge,
+                      ),
                     ),
-                    const SizedBox(width: 8),
-                    _AnimatedMovesPill(movesLeft: movesLeft),
-                    const SizedBox(width: 8),
-                    _PlayableWordCountPill(count: playableWordCount),
+                    scorePill,
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: playablePill,
+                      ),
+                    ),
                   ],
-                ),
-              ],
+                );
+              },
             ),
             // ── Active word strip ────────────────────────
-            if (activeWord.isNotEmpty) ...[
+            if (showActiveWord && activeWord.isNotEmpty) ...[
               const SizedBox(height: 8),
               _ActiveWordStrip(word: activeWord),
             ],
@@ -97,15 +117,16 @@ class GameHeader extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// Animated Score Pill — shows "+X" floating up on score change
-// ─────────────────────────────────────────────────────────────
-
 class _AnimatedScorePill extends StatefulWidget {
-  const _AnimatedScorePill({required this.score, required this.lastWordScore});
+  const _AnimatedScorePill({
+    required this.score,
+    required this.lastWordScore,
+    required this.comboCount,
+  });
 
   final int score;
   final int lastWordScore;
+  final int comboCount;
 
   @override
   State<_AnimatedScorePill> createState() => _AnimatedScorePillState();
@@ -186,7 +207,7 @@ class _AnimatedScorePillState extends State<_AnimatedScorePill>
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 33,
+      height: 62,
       child: Stack(
         clipBehavior: Clip.none,
         alignment: Alignment.center,
@@ -216,86 +237,12 @@ class _AnimatedScorePillState extends State<_AnimatedScorePill>
             builder: (BuildContext context, Widget? child) {
               return Transform.scale(scale: _pulseScale.value, child: child);
             },
-            child: _MetricPill(
-              icon: Icons.star_rounded,
-              value: '$_displayedScore',
-              color: const Color(0xFFD4A017),
+            child: _DigitalScoreDisplay(
+              value: _formatScore(_displayedScore),
+              comboCount: widget.comboCount,
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _AnimatedMovesPill extends StatefulWidget {
-  const _AnimatedMovesPill({required this.movesLeft});
-
-  final int movesLeft;
-
-  @override
-  State<_AnimatedMovesPill> createState() => _AnimatedMovesPillState();
-}
-
-class _AnimatedMovesPillState extends State<_AnimatedMovesPill>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _pulseController;
-  late final Animation<double> _pulseScale;
-
-  @override
-  void initState() {
-    super.initState();
-    _pulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 350),
-    );
-    _pulseScale =
-        TweenSequence<double>(<TweenSequenceItem<double>>[
-          TweenSequenceItem<double>(
-            tween: Tween<double>(begin: 1, end: 1.2),
-            weight: 40,
-          ),
-          TweenSequenceItem<double>(
-            tween: Tween<double>(begin: 1.2, end: 1),
-            weight: 60,
-          ),
-        ]).animate(
-          CurvedAnimation(parent: _pulseController, curve: Curves.easeOutCubic),
-        );
-  }
-
-  @override
-  void didUpdateWidget(covariant _AnimatedMovesPill oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.movesLeft < oldWidget.movesLeft) {
-      _pulseController
-        ..reset()
-        ..forward();
-    }
-  }
-
-  @override
-  void dispose() {
-    _pulseController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final bool isCritical = widget.movesLeft <= 3;
-    final Color color = isCritical
-        ? const Color(0xFFB91C1C)
-        : const Color(0xFF2E8B7A);
-
-    return AnimatedBuilder(
-      animation: _pulseController,
-      builder: (BuildContext context, Widget? child) {
-        return Transform.scale(scale: _pulseScale.value, child: child);
-      },
-      child: _MetricPill(
-        icon: Icons.swipe_rounded,
-        value: '${widget.movesLeft}',
-        color: color,
       ),
     );
   }
@@ -332,6 +279,94 @@ class _PillBadge extends StatelessWidget {
                 color: color,
                 fontSize: 12,
                 fontWeight: FontWeight.w800,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+String _formatScore(int score) {
+  final String raw = score.toString();
+  return raw.length >= 4 ? raw : raw.padLeft(4, '0');
+}
+
+class _DigitalScoreDisplay extends StatelessWidget {
+  const _DigitalScoreDisplay({required this.value, required this.comboCount});
+
+  final String value;
+  final int comboCount;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: <Color>[Color(0xFFFFF7E6), Color(0xFFF3E4BE)],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2C98C), width: 1.2),
+        boxShadow: const <BoxShadow>[
+          BoxShadow(
+            color: Color(0x1F8B6A12),
+            blurRadius: 10,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 5, 12, 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Text(
+              'SKOR',
+              style: TextStyle(
+                color: const Color(0xFF8B6A12).withValues(alpha: 0.92),
+                fontSize: 9,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 1.6,
+                height: 1,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              value,
+              key: const Key('game-score-display'),
+              style: const TextStyle(
+                color: Color(0xFFD28C00),
+                fontSize: 22,
+                fontWeight: FontWeight.w900,
+                height: 1,
+                letterSpacing: 2.8,
+                fontFamily: 'monospace',
+                fontFeatures: <FontFeature>[FontFeature.tabularFigures()],
+                shadows: <Shadow>[
+                  Shadow(color: Color(0x66FFD54F), blurRadius: 8),
+                  Shadow(
+                    color: Color(0x33FFF8E1),
+                    offset: Offset(0, 1),
+                    blurRadius: 2,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              'x${comboCount <= 0 ? 1 : comboCount}',
+              key: const Key('game-combo-display'),
+              style: TextStyle(
+                color: comboCount > 1
+                    ? const Color(0xFFB77A00)
+                    : const Color(0xFF8B6A12).withValues(alpha: 0.7),
+                fontSize: 10,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.8,
+                height: 1,
               ),
             ),
           ],
