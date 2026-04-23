@@ -183,8 +183,10 @@ class _GameBody extends StatelessWidget {
 
   bool get _isGameOver => controller.isGameOver;
 
-  static const double _regularTopChromeHeight = 124;
-  static const double _compactTopChromeHeight = 104;
+  static const double _regularFixedHeaderHeight = 84;
+  static const double _compactFixedHeaderHeight = 76;
+  static const double _regularDynamicChromeHeight = 74;
+  static const double _compactDynamicChromeHeight = 64;
   static const double _regularJokerChromeHeight = 112;
   static const double _compactJokerChromeHeight = 100;
   static const double _regularTopToBoardGap = 8;
@@ -270,6 +272,11 @@ class _GameBody extends StatelessWidget {
               lastWordScore: controller.lastWordScore,
               comboCount: controller.lastComboCount,
               playableWordCount: controller.playableWordCount,
+              showActiveWord: false,
+            );
+            final Widget dynamicChrome = _ActiveWordFeedbackChrome(
+              activeWord: controller.selectedWord,
+              feedback: feedback,
             );
             final _NarrowGameLayoutMetrics layout = _resolveNarrowGameLayout(
               constraints: constraints,
@@ -282,17 +289,19 @@ class _GameBody extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 SizedBox(
-                  height: layout.topChromeHeight,
+                  height: layout.fixedHeaderHeight,
                   child: _FixedChromeSlot(
-                    key: const Key('game-top-chrome-slot'),
-                    alignment: Alignment.bottomCenter,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        header,
-                        _AnimatedFeedback(feedback: feedback),
-                      ],
-                    ),
+                    key: const Key('game-fixed-header-slot'),
+                    alignment: Alignment.topCenter,
+                    child: header,
+                  ),
+                ),
+                SizedBox(
+                  height: layout.dynamicChromeHeight,
+                  child: _FixedChromeSlot(
+                    key: const Key('game-dynamic-word-slot'),
+                    alignment: Alignment.topCenter,
+                    child: dynamicChrome,
                   ),
                 ),
                 SizedBox(height: layout.topToBoardGap),
@@ -344,9 +353,12 @@ class _GameBody extends StatelessWidget {
     );
     final double targetBoardOuterSide =
         maxBoardSideByWidth + (stagePadding * 2);
-    final double baseTopChromeHeight = useCompactChrome
-        ? _compactTopChromeHeight
-        : _regularTopChromeHeight;
+    final double fixedHeaderHeight = useCompactChrome
+        ? _compactFixedHeaderHeight
+        : _regularFixedHeaderHeight;
+    final double dynamicChromeHeight = useCompactChrome
+        ? _compactDynamicChromeHeight
+        : _regularDynamicChromeHeight;
     final double baseBottomChromeHeight = hasJokerBar
         ? (useCompactChrome
               ? _compactJokerChromeHeight
@@ -360,7 +372,8 @@ class _GameBody extends StatelessWidget {
         : 0;
 
     final double baseReservedHeight =
-        baseTopChromeHeight +
+        fixedHeaderHeight +
+        dynamicChromeHeight +
         topToBoardGap +
         targetBoardOuterSide +
         boardToJokerGap +
@@ -368,7 +381,8 @@ class _GameBody extends StatelessWidget {
 
     if (!constraints.maxHeight.isFinite || constraints.maxHeight <= 0) {
       return _NarrowGameLayoutMetrics(
-        topChromeHeight: baseTopChromeHeight,
+        fixedHeaderHeight: fixedHeaderHeight,
+        dynamicChromeHeight: dynamicChromeHeight,
         topToBoardGap: topToBoardGap,
         boardSide: maxBoardSideByWidth,
         stagePadding: stagePadding,
@@ -379,22 +393,23 @@ class _GameBody extends StatelessWidget {
 
     if (baseReservedHeight <= constraints.maxHeight) {
       final double extraHeight = constraints.maxHeight - baseReservedHeight;
-      final double balancedSlack = extraHeight / 2;
 
       return _NarrowGameLayoutMetrics(
-        topChromeHeight: baseTopChromeHeight + balancedSlack,
+        fixedHeaderHeight: fixedHeaderHeight,
+        dynamicChromeHeight: dynamicChromeHeight,
         topToBoardGap: topToBoardGap,
         boardSide: maxBoardSideByWidth,
         stagePadding: stagePadding,
         boardToJokerGap: boardToJokerGap,
-        bottomChromeHeight: baseBottomChromeHeight + balancedSlack,
+        bottomChromeHeight: baseBottomChromeHeight + extraHeight,
       );
     }
 
     final double availableBoardOuterSide = math.max(
       0,
       constraints.maxHeight -
-          baseTopChromeHeight -
+          fixedHeaderHeight -
+          dynamicChromeHeight -
           topToBoardGap -
           boardToJokerGap -
           baseBottomChromeHeight,
@@ -405,7 +420,8 @@ class _GameBody extends StatelessWidget {
     );
 
     return _NarrowGameLayoutMetrics(
-      topChromeHeight: baseTopChromeHeight,
+      fixedHeaderHeight: fixedHeaderHeight,
+      dynamicChromeHeight: dynamicChromeHeight,
       topToBoardGap: topToBoardGap,
       boardSide: boardSide,
       stagePadding: stagePadding,
@@ -657,7 +673,8 @@ class _GameBody extends StatelessWidget {
 
 class _NarrowGameLayoutMetrics {
   const _NarrowGameLayoutMetrics({
-    required this.topChromeHeight,
+    required this.fixedHeaderHeight,
+    required this.dynamicChromeHeight,
     required this.topToBoardGap,
     required this.boardSide,
     required this.stagePadding,
@@ -665,7 +682,8 @@ class _NarrowGameLayoutMetrics {
     required this.bottomChromeHeight,
   });
 
-  final double topChromeHeight;
+  final double fixedHeaderHeight;
+  final double dynamicChromeHeight;
   final double topToBoardGap;
   final double boardSide;
   final double stagePadding;
@@ -941,6 +959,101 @@ class _BoardStageState extends State<_BoardStage>
 }
 
 double _boardStagePaddingForGridSize(int gridSize) => gridSize >= 10 ? 6 : 10;
+
+class _ActiveWordFeedbackChrome extends StatelessWidget {
+  const _ActiveWordFeedbackChrome({
+    required this.activeWord,
+    required this.feedback,
+  });
+
+  final String activeWord;
+  final InvalidAttemptFeedback? feedback;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 220),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeInCubic,
+          transitionBuilder: (Widget child, Animation<double> animation) {
+            return SizeTransition(
+              sizeFactor: animation,
+              axisAlignment: -1,
+              child: FadeTransition(opacity: animation, child: child),
+            );
+          },
+          child: activeWord.isEmpty
+              ? const SizedBox.shrink(key: ValueKey<String>('word-empty'))
+              : _ActiveWordPill(
+                  key: const ValueKey<String>('word-active'),
+                  word: activeWord,
+                ),
+        ),
+        _AnimatedFeedback(feedback: feedback),
+      ],
+    );
+  }
+}
+
+class _ActiveWordPill extends StatelessWidget {
+  const _ActiveWordPill({super.key, required this.word});
+
+  final String word;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: <Color>[Color(0xFF2E8B7A), Color(0xFF1A5D57)],
+          ),
+          borderRadius: BorderRadius.circular(14),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: const Color(0xFF1A5D57).withValues(alpha: 0.18),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          child: Row(
+            children: <Widget>[
+              Icon(
+                Icons.text_fields_rounded,
+                color: Colors.white.withValues(alpha: 0.7),
+                size: 16,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  word,
+                  key: const Key('active-word-path-text'),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 2,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class _AnimatedFeedback extends StatelessWidget {
   const _AnimatedFeedback({required this.feedback});

@@ -10,6 +10,7 @@ class GameHeader extends StatelessWidget {
     this.lastWordScore = 0,
     this.comboCount = 1,
     this.playableWordCount = 0,
+    this.showActiveWord = true,
   });
 
   final int score;
@@ -25,6 +26,9 @@ class GameHeader extends StatelessWidget {
 
   /// Number of non-overlapping playable words on the current board.
   final int playableWordCount;
+
+  /// Whether the active-word strip is rendered inside this fixed panel.
+  final bool showActiveWord;
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +106,7 @@ class GameHeader extends StatelessWidget {
               },
             ),
             // ── Active word strip ────────────────────────
-            if (activeWord.isNotEmpty) ...[
+            if (showActiveWord && activeWord.isNotEmpty) ...[
               const SizedBox(height: 8),
               _ActiveWordStrip(word: activeWord),
             ],

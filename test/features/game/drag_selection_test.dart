@@ -100,6 +100,48 @@ void main() {
     await gesture.up();
   });
 
+  testWidgets('active word path appends letters without moving the tracker', (
+    WidgetTester tester,
+  ) async {
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.binding.setSurfaceSize(const Size(390, 844));
+
+    final GameSession session = _buildSession(gridSize: 3);
+    final GameController controller = GameController.fromSession(
+      session,
+      sessionCheckpointRepository: MemorySessionCheckpointRepository(),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: GameScreen(config: session.config, controller: controller),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final TestGesture gesture = await tester.startGesture(
+      tester.getCenter(find.byKey(const Key('letter-cell-0:0'))),
+    );
+    await tester.pump();
+
+    final Finder activeWordFinder = find.byKey(
+      const Key('active-word-path-text'),
+    );
+
+    expect(activeWordFinder, findsOneWidget);
+    expect(tester.widget<Text>(activeWordFinder).data, 'A');
+    await gesture.moveTo(
+      tester.getCenter(find.byKey(const Key('letter-cell-0:1'))),
+    );
+    await tester.pump();
+
+    expect(activeWordFinder, findsOneWidget);
+    expect(tester.widget<Text>(activeWordFinder).data, 'AB');
+    expect(tester.takeException(), isNull);
+
+    await gesture.up();
+  });
+
   testWidgets('header shows non-overlapping playable count', (
     WidgetTester tester,
   ) async {
