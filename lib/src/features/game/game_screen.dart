@@ -183,11 +183,21 @@ class _GameBody extends StatelessWidget {
 
   bool get _isGameOver => controller.isGameOver;
 
+  static const double _regularTopChromeHeight = 124;
+  static const double _compactTopChromeHeight = 104;
+  static const double _regularJokerChromeHeight = 112;
+  static const double _compactJokerChromeHeight = 100;
+  static const double _regularTopToBoardGap = 8;
+  static const double _compactTopToBoardGap = 6;
+  static const double _regularBoardToJokerGap = 12;
+  static const double _compactBoardToJokerGap = 8;
+
   @override
   Widget build(BuildContext context) {
     final InvalidAttemptFeedback? feedback = controller.lastInvalidFeedback;
+    final availableJokers = controller.availableJokers;
     final Widget jokerBar = JokerBar(
-      jokers: controller.availableJokers,
+      jokers: availableJokers,
       inventoryById: controller.jokerInventory,
       activeJokerId: controller.activeJokerId,
       helperText: controller.jokerHintText,
@@ -252,25 +262,59 @@ class _GameBody extends StatelessWidget {
               );
             }
 
+            final Widget header = GameHeader(
+              score: controller.score,
+              movesLeft: controller.movesLeft,
+              activeWord: controller.selectedWord,
+              compact: useCompactChrome,
+              lastWordScore: controller.lastWordScore,
+              comboCount: controller.lastComboCount,
+              playableWordCount: controller.playableWordCount,
+            );
+            final _NarrowGameLayoutMetrics layout = _resolveNarrowGameLayout(
+              constraints: constraints,
+              useCompactChrome: useCompactChrome,
+              gridSize: session.gridSize,
+              hasJokerBar: availableJokers.isNotEmpty,
+            );
+
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                GameHeader(
-                  score: controller.score,
-                  movesLeft: controller.movesLeft,
-                  activeWord: controller.selectedWord,
-                  compact: useCompactChrome,
-                  lastWordScore: controller.lastWordScore,
-                  comboCount: controller.lastComboCount,
-                  playableWordCount: controller.playableWordCount,
+                SizedBox(
+                  height: layout.topChromeHeight,
+                  child: _FixedChromeSlot(
+                    key: const Key('game-top-chrome-slot'),
+                    alignment: Alignment.bottomCenter,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        header,
+                        _AnimatedFeedback(feedback: feedback),
+                      ],
+                    ),
+                  ),
                 ),
-                _AnimatedFeedback(feedback: feedback),
-                const SizedBox(height: 8),
-                Expanded(
-                  child: _BoardStage(session: session, controller: controller),
+                SizedBox(height: layout.topToBoardGap),
+                SizedBox(
+                  height: layout.boardOuterSide,
+                  child: _BoardStage(
+                    session: session,
+                    controller: controller,
+                    boardSide: layout.boardSide,
+                  ),
                 ),
-                const SizedBox(height: 12),
-                jokerBar,
+                SizedBox(height: layout.boardToJokerGap),
+                SizedBox(
+                  height: layout.bottomChromeHeight,
+                  child: availableJokers.isEmpty
+                      ? const SizedBox.shrink()
+                      : _FixedChromeSlot(
+                          key: const Key('game-bottom-chrome-slot'),
+                          alignment: Alignment.topCenter,
+                          child: jokerBar,
+                        ),
+                ),
               ],
             );
           },
@@ -284,6 +328,89 @@ class _GameBody extends StatelessWidget {
             onReturnHome: onReturnHome,
           ),
       ],
+    );
+  }
+
+  _NarrowGameLayoutMetrics _resolveNarrowGameLayout({
+    required BoxConstraints constraints,
+    required bool useCompactChrome,
+    required int gridSize,
+    required bool hasJokerBar,
+  }) {
+    final double stagePadding = _boardStagePaddingForGridSize(gridSize);
+    final double maxBoardSideByWidth = math.max(
+      0,
+      constraints.maxWidth - (stagePadding * 2),
+    );
+    final double targetBoardOuterSide =
+        maxBoardSideByWidth + (stagePadding * 2);
+    final double baseTopChromeHeight = useCompactChrome
+        ? _compactTopChromeHeight
+        : _regularTopChromeHeight;
+    final double baseBottomChromeHeight = hasJokerBar
+        ? (useCompactChrome
+              ? _compactJokerChromeHeight
+              : _regularJokerChromeHeight)
+        : 0;
+    final double topToBoardGap = useCompactChrome
+        ? _compactTopToBoardGap
+        : _regularTopToBoardGap;
+    final double boardToJokerGap = hasJokerBar
+        ? (useCompactChrome ? _compactBoardToJokerGap : _regularBoardToJokerGap)
+        : 0;
+
+    final double baseReservedHeight =
+        baseTopChromeHeight +
+        topToBoardGap +
+        targetBoardOuterSide +
+        boardToJokerGap +
+        baseBottomChromeHeight;
+
+    if (!constraints.maxHeight.isFinite || constraints.maxHeight <= 0) {
+      return _NarrowGameLayoutMetrics(
+        topChromeHeight: baseTopChromeHeight,
+        topToBoardGap: topToBoardGap,
+        boardSide: maxBoardSideByWidth,
+        stagePadding: stagePadding,
+        boardToJokerGap: boardToJokerGap,
+        bottomChromeHeight: baseBottomChromeHeight,
+      );
+    }
+
+    if (baseReservedHeight <= constraints.maxHeight) {
+      final double extraHeight = constraints.maxHeight - baseReservedHeight;
+      final double balancedSlack = extraHeight / 2;
+
+      return _NarrowGameLayoutMetrics(
+        topChromeHeight: baseTopChromeHeight + balancedSlack,
+        topToBoardGap: topToBoardGap,
+        boardSide: maxBoardSideByWidth,
+        stagePadding: stagePadding,
+        boardToJokerGap: boardToJokerGap,
+        bottomChromeHeight: baseBottomChromeHeight + balancedSlack,
+      );
+    }
+
+    final double availableBoardOuterSide = math.max(
+      0,
+      constraints.maxHeight -
+          baseTopChromeHeight -
+          topToBoardGap -
+          boardToJokerGap -
+          baseBottomChromeHeight,
+    );
+    final double boardSide = math.min(
+      maxBoardSideByWidth,
+      math.max(0, availableBoardOuterSide - (stagePadding * 2)),
+    );
+
+    return _NarrowGameLayoutMetrics(
+      topChromeHeight: baseTopChromeHeight,
+      topToBoardGap: topToBoardGap,
+      boardSide: boardSide,
+      stagePadding: stagePadding,
+      boardToJokerGap: boardToJokerGap,
+      bottomChromeHeight: baseBottomChromeHeight,
     );
   }
 
@@ -528,6 +655,55 @@ class _GameBody extends StatelessWidget {
   }
 }
 
+class _NarrowGameLayoutMetrics {
+  const _NarrowGameLayoutMetrics({
+    required this.topChromeHeight,
+    required this.topToBoardGap,
+    required this.boardSide,
+    required this.stagePadding,
+    required this.boardToJokerGap,
+    required this.bottomChromeHeight,
+  });
+
+  final double topChromeHeight;
+  final double topToBoardGap;
+  final double boardSide;
+  final double stagePadding;
+  final double boardToJokerGap;
+  final double bottomChromeHeight;
+
+  double get boardOuterSide => boardSide + (stagePadding * 2);
+}
+
+class _FixedChromeSlot extends StatelessWidget {
+  const _FixedChromeSlot({
+    super.key,
+    required this.child,
+    required this.alignment,
+  });
+
+  final Widget child;
+  final Alignment alignment;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        return ClipRect(
+          child: Align(
+            alignment: alignment,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: alignment,
+              child: SizedBox(width: constraints.maxWidth, child: child),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
 class _BoardStage extends StatefulWidget {
   const _BoardStage({
     required this.session,
@@ -659,7 +835,9 @@ class _BoardStageState extends State<_BoardStage>
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final double stagePadding = widget.session.gridSize >= 10 ? 6 : 10;
+    final double stagePadding = _boardStagePaddingForGridSize(
+      widget.session.gridSize,
+    );
 
     final Widget gridContent = RepaintBoundary(
       child: LetterGrid(
@@ -761,6 +939,8 @@ class _BoardStageState extends State<_BoardStage>
     );
   }
 }
+
+double _boardStagePaddingForGridSize(int gridSize) => gridSize >= 10 ? 6 : 10;
 
 class _AnimatedFeedback extends StatelessWidget {
   const _AnimatedFeedback({required this.feedback});

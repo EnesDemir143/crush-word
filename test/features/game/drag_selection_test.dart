@@ -62,6 +62,44 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('letter grid channel stays fixed while header expands', (
+    WidgetTester tester,
+  ) async {
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.binding.setSurfaceSize(const Size(390, 844));
+
+    final GameSession session = _buildSession(gridSize: 6);
+    final GameController controller = GameController.fromSession(
+      session,
+      sessionCheckpointRepository: MemorySessionCheckpointRepository(),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: GameScreen(config: session.config, controller: controller),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final Finder gridFinder = find.byKey(const Key('game-letter-grid'));
+    final Rect initialGridRect = tester.getRect(gridFinder);
+
+    final TestGesture gesture = await tester.startGesture(
+      tester.getCenter(find.byKey(const Key('letter-cell-0:0'))),
+    );
+    await tester.pump();
+
+    expect(controller.selectedWord, isNotEmpty);
+
+    final Rect expandedHeaderGridRect = tester.getRect(gridFinder);
+    expect(expandedHeaderGridRect.top, closeTo(initialGridRect.top, 0.1));
+    expect(expandedHeaderGridRect.left, closeTo(initialGridRect.left, 0.1));
+    expect(expandedHeaderGridRect.width, closeTo(initialGridRect.width, 0.1));
+    expect(expandedHeaderGridRect.height, closeTo(initialGridRect.height, 0.1));
+
+    await gesture.up();
+  });
+
   testWidgets('header shows non-overlapping playable count', (
     WidgetTester tester,
   ) async {
