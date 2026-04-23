@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import 'package:crush_word/src/core/gameplay/models/game_session.dart';
+import 'package:crush_word/src/core/gameplay/services/joker_engine.dart';
 import 'package:crush_word/src/core/gameplay/services/word_validator.dart';
 import 'package:crush_word/src/core/models/game_config.dart';
 import 'package:crush_word/src/features/game/game_controller.dart';
@@ -27,6 +28,9 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   late final GameController _controller;
   late final bool _ownsController;
+  final GlobalKey _lollipopJokerKey = GlobalKey(
+    debugLabel: 'lollipop-joker-source',
+  );
   bool _allowPop = false;
 
   @override
@@ -127,6 +131,7 @@ class _GameScreenState extends State<GameScreen> {
                         session: session!,
                         controller: _controller,
                         onReturnHome: _returnHome,
+                        lollipopJokerKey: _lollipopJokerKey,
                       ),
                     },
                   ),
@@ -175,11 +180,13 @@ class _GameBody extends StatelessWidget {
     required this.session,
     required this.controller,
     required this.onReturnHome,
+    required this.lollipopJokerKey,
   });
 
   final GameSession session;
   final GameController controller;
   final VoidCallback onReturnHome;
+  final GlobalKey lollipopJokerKey;
 
   bool get _isGameOver => controller.isGameOver;
 
@@ -210,6 +217,9 @@ class _GameBody extends StatelessWidget {
       onJokerBuyRequested: (String jokerId) {
         unawaited(_buyJokerInGame(context, jokerId));
       },
+      jokerButtonKeys: <String, GlobalKey>{
+        JokerIds.lollipopBreaker: lollipopJokerKey,
+      },
     );
 
     return Stack(
@@ -234,6 +244,7 @@ class _GameBody extends StatelessWidget {
                             session: session,
                             controller: controller,
                             boardSide: _resolveWideBoardSide(constraints),
+                            lollipopSourceKey: lollipopJokerKey,
                           ),
                         ),
                         const SizedBox(width: 24),
@@ -311,6 +322,7 @@ class _GameBody extends StatelessWidget {
                     session: session,
                     controller: controller,
                     boardSide: layout.boardSide,
+                    lollipopSourceKey: lollipopJokerKey,
                   ),
                 ),
                 SizedBox(height: layout.boardToJokerGap),
@@ -727,11 +739,13 @@ class _BoardStage extends StatefulWidget {
     required this.session,
     required this.controller,
     this.boardSide,
+    this.lollipopSourceKey,
   });
 
   final GameSession session;
   final GameController controller;
   final double? boardSide;
+  final GlobalKey? lollipopSourceKey;
 
   @override
   State<_BoardStage> createState() => _BoardStageState();
@@ -873,6 +887,7 @@ class _BoardStageState extends State<_BoardStage>
         lastJokerEffectId: widget.controller.lastJokerEffectId,
         partyCastToken: widget.controller.partyCastToken,
         isPartyCasting: widget.controller.isPartyCasting,
+        lollipopSourceKey: widget.lollipopSourceKey,
       ),
     );
 

@@ -15,6 +15,7 @@ class JokerBar extends StatelessWidget {
     this.activeJokerId,
     this.helperText,
     this.enabled = true,
+    this.jokerButtonKeys = const <String, GlobalKey>{},
   });
 
   final List<MarketJokerDefinition> jokers;
@@ -24,6 +25,7 @@ class JokerBar extends StatelessWidget {
   final String? activeJokerId;
   final String? helperText;
   final bool enabled;
+  final Map<String, GlobalKey> jokerButtonKeys;
 
   @override
   Widget build(BuildContext context) {
@@ -76,6 +78,7 @@ class JokerBar extends StatelessWidget {
                           quantity: inventoryById[joker.id] ?? 0,
                           isActive: activeJokerId == joker.id,
                           enabled: enabled,
+                          buttonKey: jokerButtonKeys[joker.id],
                           onPressed: () => onJokerPressed(joker.id),
                           onBuyRequested: onJokerBuyRequested != null
                               ? () => onJokerBuyRequested!(joker.id)
@@ -100,6 +103,7 @@ class _JokerOrb extends StatefulWidget {
     required this.isActive,
     required this.enabled,
     required this.onPressed,
+    this.buttonKey,
     this.onBuyRequested,
   });
 
@@ -107,6 +111,7 @@ class _JokerOrb extends StatefulWidget {
   final int quantity;
   final bool isActive;
   final bool enabled;
+  final GlobalKey? buttonKey;
   final VoidCallback onPressed;
   final VoidCallback? onBuyRequested;
 
@@ -210,7 +215,7 @@ class _JokerOrbState extends State<_JokerOrb> with TickerProviderStateMixin {
                   0,
                 ),
                 child: InkWell(
-                  key: Key('joker-bar-${widget.joker.id}'),
+                  key: widget.buttonKey ?? Key('joker-bar-${widget.joker.id}'),
                   onTap: isInteractive
                       ? () {
                           if (widget.quantity > 0) {
