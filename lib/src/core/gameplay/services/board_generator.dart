@@ -23,6 +23,7 @@ class BoardGenerator {
     : _randomSource = randomSource ?? DartRandomSource();
 
   final RandomSource _randomSource;
+  int _nextTileSerial = 0;
 
   GameSession createSession({
     required GameConfig config,
@@ -34,7 +35,7 @@ class BoardGenerator {
       config: config,
       board: List<BoardCell>.generate(
         gridSize * gridSize,
-        (int index) => BoardCell(
+        (int index) => createCell(
           row: index ~/ gridSize,
           column: index % gridSize,
           letter: pickWeightedLetter(rules.boardGeneration),
@@ -42,6 +43,19 @@ class BoardGenerator {
         growable: false,
       ),
       movesLeft: config.moveLimit,
+    );
+  }
+
+  BoardCell createCell({
+    required int row,
+    required int column,
+    required String letter,
+  }) {
+    return BoardCell(
+      row: row,
+      column: column,
+      letter: letter,
+      tileId: 'tile_${_nextTileSerial++}',
     );
   }
 

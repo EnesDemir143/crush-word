@@ -15,8 +15,8 @@ Bu roadmap, varsayilan Flutter starter uygulamasini ders dokumanindaki zorunlu k
 - [x] **Phase 2: Game Setup and Board Foundation** - Yeni oyun ayarlari, agirlikli harf uretimi ve board UI temelini kur.
 - [x] **Phase 02.1: Initial Board Solvability Gate** - Phase 2 tamamlanir tamamlanmaz ilk gosterilen board'un dead gelmesini engelle ve ilk render oncesi recovery kapisini kapat.
 - [x] **Phase 3: Core Gameplay and Session Results** - Kelime dogrulama, puanlama, refill ve oyun sonu kayit akislarini tamamla.
-- [ ] **Phase 4: Advanced Board Mechanics** - Her zaman oynanabilir board, combo ve ozel guc davranislarini ekle.
-- [ ] **Phase 5: Market and Score History** - Joker ekonomisi, market kullanimi ve skor tablosu ekranlarini tamamla.
+- [x] **Phase 4: Advanced Board Mechanics** - Her zaman oynanabilir board, combo ve ozel guc davranislarini ekle.
+- [x] **Phase 5: Market and Score History** - Joker ekonomisi, market kullanimi ve skor tablosu ekranlarini tamamla.
 - [ ] **Phase 6: Mobile Polish and Delivery** - Mobil sunum sertlestirmesi, testler ve LaTeX/teslim varliklarini kapat.
 
 ## Phase Details
@@ -154,9 +154,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 04-01: Extend playable-word analyzer to post-move recovery and visible count
-- [ ] 04-02: Implement combo detection and combo scoring
-- [ ] 04-03: Add power-tile creation, storage and activation effects
+- [x] 04-01: Extend playable-word analyzer to post-move recovery and visible count
+- [x] 04-02: Implement combo detection and combo scoring
+- [x] 04-03: Add power-tile creation, storage and activation effects
 
 ### Phase 5: Market and Score History
 **Goal**: Market ekonomisini, joker satin alma/kullanma akislarini ve skor tablosu ekranini tamamlamak.
@@ -178,9 +178,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 05-01: Build market catalog, gold balance and purchase persistence
-- [ ] 05-02: Execute joker actions from in-game inventory
-- [ ] 05-03: Implement score summary metrics and history list UI
+- [x] 05-01: Build market catalog, gold balance and purchase persistence
+- [x] 05-02: Execute joker actions from in-game inventory
+- [x] 05-03: Implement score summary metrics and history list UI
 
 ### Phase 6: Mobile Polish and Delivery
 **Goal**: Mobil sunum guvenilirligini, kritik test kapsamlarini ve LaTeX/teslim varliklarini tamamlamak.
@@ -214,6 +214,6 @@ Phases execute in numeric order: 1 -> 1.1 -> 2 -> 2.1 -> 3 -> 4 -> 5 -> 6
 | 2. Game Setup and Board Foundation | 3/3 | Completed | 2026-04-18 |
 | 02.1 Initial Board Solvability Gate | 1/1 | Completed | 2026-04-18 |
 | 3. Core Gameplay and Session Results | 4/4 | Completed | 2026-04-18 |
-| 4. Advanced Board Mechanics | 0/3 | Not started | - |
-| 5. Market and Score History | 0/3 | Not started | - |
+| 4. Advanced Board Mechanics | 3/3 | Completed | 2026-04-21 |
+| 5. Market and Score History | 3/3 | Completed | 2026-04-21 |
 | 6. Mobile Polish and Delivery | 0/3 | Not started | - |

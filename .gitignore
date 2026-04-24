@@ -202,3 +202,8 @@ graphify-out/graph.json
 .augment/
 
 CLAUDE.md
+
+report/
+
+.omx/
+report/

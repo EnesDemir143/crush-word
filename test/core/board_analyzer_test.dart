@@ -246,6 +246,40 @@ void main() {
 
       expect(result, isFalse);
     });
+
+    test('counts non-overlapping words on the same board', () {
+      final List<BoardCell> board = _boardNxN(3, <String>[
+        'k',
+        'a',
+        'l',
+        'x',
+        'x',
+        'x',
+        'e',
+        'l',
+        'a',
+      ]);
+
+      final int count = analyzer.countNonOverlappingWords(
+        board: board,
+        gridSize: 3,
+        words: const <String>{'kal', 'ela'},
+      );
+
+      expect(count, 2);
+    });
+
+    test('counts overlapping candidates as a single playable slot', () {
+      final List<BoardCell> board = _board2x2(<String>['k', 'a', 'l', 'e']);
+
+      final int count = analyzer.countNonOverlappingWords(
+        board: board,
+        gridSize: 2,
+        words: const <String>{'kal', 'kale'},
+      );
+
+      expect(count, 1);
+    });
   });
 
   // ──────────────────────────────────────────────

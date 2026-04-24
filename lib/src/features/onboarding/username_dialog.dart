@@ -76,40 +76,149 @@ class _UsernameDialogState extends State<UsernameDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(widget.title),
-      content: Form(
-        key: _formKey,
-        autovalidateMode: _submitted
-            ? AutovalidateMode.onUserInteraction
-            : AutovalidateMode.disabled,
-        child: TextFormField(
-          controller: _controller,
-          focusNode: _focusNode,
-          textInputAction: TextInputAction.done,
-          maxLength: 20,
-          decoration: const InputDecoration(
-            labelText: 'Oyuncu adı',
-            hintText: 'Adını yaz ve devam et',
-          ),
-          onFieldSubmitted: (_) => _submit(),
-          validator: (String? value) {
-            if ((value?.trim() ?? '').isEmpty) {
-              return 'Devam etmek için bir kullanıcı adı gir.';
-            }
+    final ThemeData theme = Theme.of(context);
 
-            return null;
-          },
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 380),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(28),
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: <Color>[Color(0xFFFFFCF7), Color(0xFFF6EFE2)],
+            ),
+            border: Border.all(
+              color: theme.colorScheme.primary.withValues(alpha: 0.10),
+            ),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: const Color(0xFF0F172A).withValues(alpha: 0.16),
+                blurRadius: 28,
+                offset: const Offset(0, 16),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: const Color(0x1A1A5D57),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Icon(
+                      Icons.person_rounded,
+                      color: Color(0xFF1A5D57),
+                      size: 20,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  widget.title,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                    color: Color(0xFF3A3025),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Bu isim ana menude ve oyun icinde gorunecek.',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: const Color(0xFF6F6252),
+                    height: 1.35,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Form(
+                  key: _formKey,
+                  autovalidateMode: _submitted
+                      ? AutovalidateMode.onUserInteraction
+                      : AutovalidateMode.disabled,
+                  child: TextFormField(
+                    controller: _controller,
+                    focusNode: _focusNode,
+                    textInputAction: TextInputAction.done,
+                    maxLength: 20,
+                    decoration: InputDecoration(
+                      labelText: 'Oyuncu adi',
+                      hintText: 'Adini yaz ve devam et',
+                      filled: true,
+                      fillColor: Colors.white.withValues(alpha: 0.86),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(color: Color(0xFFDCCAA8)),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(color: Color(0xFFDCCAA8)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(
+                          color: Color(0xFF1A5D57),
+                          width: 1.6,
+                        ),
+                      ),
+                      counterStyle: const TextStyle(
+                        color: Color(0xFF7A6F62),
+                        fontSize: 11,
+                      ),
+                    ),
+                    onFieldSubmitted: (_) => _submit(),
+                    validator: (String? value) {
+                      if ((value?.trim() ?? '').isEmpty) {
+                        return 'Devam etmek icin bir kullanici adi gir.';
+                      }
+
+                      return null;
+                    },
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Row(
+                  children: <Widget>[
+                    if (widget.allowCancel)
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: const Color(0xFF6F6252),
+                            side: const BorderSide(color: Color(0xFFDCCAA8)),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                          ),
+                          child: const Text('Vazgec'),
+                        ),
+                      ),
+                    if (widget.allowCancel) const SizedBox(width: 10),
+                    Expanded(
+                      child: FilledButton(
+                        onPressed: _submit,
+                        style: FilledButton.styleFrom(
+                          backgroundColor: const Color(0xFF1A5D57),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: Text(widget.confirmLabel),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
         ),
       ),
-      actions: [
-        if (widget.allowCancel)
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Vazgeç'),
-          ),
-        FilledButton(onPressed: _submit, child: Text(widget.confirmLabel)),
-      ],
     );
   }
 }

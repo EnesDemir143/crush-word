@@ -1,6 +1,6 @@
 {
-    "name": "crush_word",
-    "short_name": "crush_word",
+    "name": "Word Crush",
+    "short_name": "Word Crush",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

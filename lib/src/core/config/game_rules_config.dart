@@ -1,5 +1,6 @@
 import 'package:crush_word/src/core/models/game_config.dart';
 import 'package:crush_word/src/core/models/game_difficulty.dart';
+import 'package:crush_word/src/core/models/power_tile.dart';
 
 /// Canonical letter-score mapping loaded from `game_rules.json`.
 ///
@@ -47,6 +48,8 @@ class GameRulesConfig {
     required this.setup,
     required this.boardGeneration,
     this.scoring,
+    this.market,
+    this.powerTiles,
   });
 
   final GameSetupRules setup;
@@ -55,11 +58,18 @@ class GameRulesConfig {
   /// Null when loaded from legacy JSON that predates the scoring
   /// section — callers must handle this gracefully.
   final ScoringConfig? scoring;
+  final MarketRules? market;
+
+  /// Null when loaded from legacy JSON that predates the power
+  /// tiles section — callers must handle this gracefully.
+  final PowerTileConfig? powerTiles;
 
   factory GameRulesConfig.fromJson(Map<String, dynamic> json) {
     final Object? setupJson = json['setup'];
     final Object? boardGenerationJson = json['boardGeneration'];
     final Object? scoringJson = json['scoring'];
+    final Object? marketJson = json['market'];
+    final Object? powerTilesJson = json['powerTiles'];
 
     if (setupJson is! Map<String, dynamic>) {
       throw const FormatException(
@@ -79,6 +89,99 @@ class GameRulesConfig {
       scoring: scoringJson is Map<String, dynamic>
           ? ScoringConfig.fromJson(scoringJson)
           : null,
+      market: marketJson is Map<String, dynamic>
+          ? MarketRules.fromJson(marketJson)
+          : null,
+      powerTiles: powerTilesJson is Map<String, dynamic>
+          ? PowerTileConfig.fromJson(powerTilesJson)
+          : null,
+    );
+  }
+}
+
+class MarketRules {
+  const MarketRules({required this.initialGold, required this.jokers});
+
+  final int initialGold;
+  final List<MarketJokerDefinition> jokers;
+
+  factory MarketRules.fromJson(Map<String, dynamic> json) {
+    final int? initialGold = (json['initialGold'] as num?)?.toInt();
+    final Object? jokersJson = json['jokers'];
+
+    if (initialGold == null || initialGold < 0) {
+      throw const FormatException(
+        'Market rules require a non-negative initialGold value.',
+      );
+    }
+
+    if (jokersJson is! List<dynamic> || jokersJson.isEmpty) {
+      throw const FormatException(
+        'Market rules require at least one joker definition.',
+      );
+    }
+
+    return MarketRules(
+      initialGold: initialGold,
+      jokers: jokersJson
+          .map((Object? jokerJson) {
+            if (jokerJson is! Map<String, dynamic>) {
+              throw const FormatException(
+                'Each joker definition must be a JSON object.',
+              );
+            }
+
+            return MarketJokerDefinition.fromJson(jokerJson);
+          })
+          .toList(growable: false),
+    );
+  }
+}
+
+class MarketJokerDefinition {
+  const MarketJokerDefinition({
+    required this.id,
+    required this.name,
+    required this.cost,
+    required this.description,
+    required this.purpose,
+    required this.usage,
+  });
+
+  final String id;
+  final String name;
+  final int cost;
+  final String description;
+  final String purpose;
+  final String usage;
+
+  factory MarketJokerDefinition.fromJson(Map<String, dynamic> json) {
+    final String id = (json['id'] as String?)?.trim() ?? '';
+    final String name = (json['name'] as String?)?.trim() ?? '';
+    final int? cost = (json['cost'] as num?)?.toInt();
+    final String description = (json['description'] as String?)?.trim() ?? '';
+    final String purpose = (json['purpose'] as String?)?.trim() ?? '';
+    final String usage = (json['usage'] as String?)?.trim() ?? '';
+
+    if (id.isEmpty ||
+        name.isEmpty ||
+        cost == null ||
+        cost < 0 ||
+        description.isEmpty ||
+        purpose.isEmpty ||
+        usage.isEmpty) {
+      throw const FormatException(
+        'Each joker definition requires id, name, cost and display text.',
+      );
+    }
+
+    return MarketJokerDefinition(
+      id: id,
+      name: name,
+      cost: cost,
+      description: description,
+      purpose: purpose,
+      usage: usage,
     );
   }
 }
@@ -322,6 +425,102 @@ class GameMoveCountOption {
       difficulty: GameDifficulty.fromName(difficultyName),
       label: label,
       moveLimit: moveLimit,
+    );
+  }
+}
+
+// ── Power Tile Configuration ──────────────────────────────────
+
+/// A single threshold entry that maps a word-length range to a
+/// [PowerTileType] type.
+class PowerTileThreshold {
+  const PowerTileThreshold({
+    required this.minLength,
+    required this.maxLength,
+    required this.power,
+  });
+
+  final int minLength;
+  final int maxLength;
+  final PowerTileType power;
+
+  /// Returns `true` if a word of [wordLength] matches this threshold.
+  bool matches(int wordLength) =>
+      wordLength >= minLength && wordLength <= maxLength;
+
+  factory PowerTileThreshold.fromJson(Map<String, dynamic> json) {
+    final int? minLength = (json['minLength'] as num?)?.toInt();
+    final int? maxLength = (json['maxLength'] as num?)?.toInt();
+    final String powerName = (json['power'] as String?)?.trim() ?? '';
+
+    if (minLength == null || maxLength == null || powerName.isEmpty) {
+      throw const FormatException(
+        'PowerTileThreshold requires minLength, maxLength and power.',
+      );
+    }
+
+    return PowerTileThreshold(
+      minLength: minLength,
+      maxLength: maxLength,
+      power: PowerTileType.fromName(powerName),
+    );
+  }
+}
+
+/// Configuration for power-tile creation and blast effects.
+///
+/// Loaded from the `powerTiles` section of `game_rules.json`.
+class PowerTileConfig {
+  const PowerTileConfig({
+    required this.thresholds,
+    this.areaBlastRadius = 1,
+    this.megaBlastRadius = 2,
+  });
+
+  /// Ordered list of word-length → power mappings.
+  final List<PowerTileThreshold> thresholds;
+
+  /// Radius (in cells) for [PowerTileType.areaBlast] effects.
+  final int areaBlastRadius;
+
+  /// Radius (in cells) for [PowerTileType.megaBlast] effects.
+  final int megaBlastRadius;
+
+  /// Returns the power type for a word of [wordLength], or `null`
+  /// if no threshold matches (word too short to earn a power).
+  PowerTileType? powerForWordLength(int wordLength) {
+    for (final PowerTileThreshold threshold in thresholds) {
+      if (threshold.matches(wordLength)) {
+        return threshold.power;
+      }
+    }
+    return null;
+  }
+
+  factory PowerTileConfig.fromJson(Map<String, dynamic> json) {
+    final Object? thresholdsJson = json['thresholds'];
+    final int areaBlastRadius = (json['areaBlastRadius'] as num?)?.toInt() ?? 1;
+    final int megaBlastRadius = (json['megaBlastRadius'] as num?)?.toInt() ?? 2;
+
+    if (thresholdsJson is! List<dynamic> || thresholdsJson.isEmpty) {
+      throw const FormatException(
+        'PowerTileConfig requires at least one threshold.',
+      );
+    }
+
+    return PowerTileConfig(
+      thresholds: thresholdsJson
+          .map((Object? t) {
+            if (t is! Map<String, dynamic>) {
+              throw const FormatException(
+                'Each power tile threshold must be a JSON object.',
+              );
+            }
+            return PowerTileThreshold.fromJson(t);
+          })
+          .toList(growable: false),
+      areaBlastRadius: areaBlastRadius,
+      megaBlastRadius: megaBlastRadius,
     );
   }
 }

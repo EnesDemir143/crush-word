@@ -76,6 +76,7 @@ class _NewGameScreenState extends State<NewGameScreen> {
               surfaceTintColor: Colors.transparent,
               foregroundColor: const Color(0xFF3A3025),
               elevation: 0,
+              scrolledUnderElevation: 0,
               title: Text(
                 _controller.step == GameSetupStep.difficulty
                     ? 'Yeni Oyun'
@@ -92,7 +93,7 @@ class _NewGameScreenState extends State<NewGameScreen> {
                     )
                   : null,
             ),
-            extendBodyBehindAppBar: false,
+            extendBodyBehindAppBar: true,
             body: DecoratedBox(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
@@ -106,9 +107,14 @@ class _NewGameScreenState extends State<NewGameScreen> {
                 ),
               ),
               child: SafeArea(
-                top: false,
+                bottom: false,
                 child: Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.fromLTRB(
+                    24,
+                    kToolbarHeight + 20,
+                    24,
+                    24,
+                  ),
                   child: _buildBody(context),
                 ),
               ),

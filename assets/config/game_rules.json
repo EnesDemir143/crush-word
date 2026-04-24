@@ -71,6 +71,59 @@
       }
     ]
   },
+  "market": {
+    "initialGold": 9999,
+    "jokers": [
+      {
+        "id": "fish",
+        "name": "Balık",
+        "cost": 100,
+        "description": "Gridde rastgele olarak harfleri yok etmektedir. Rastgele yok olan harflerin üzerindeki harfler aşağıya düşmektedir.",
+        "purpose": "Gridde sıkışan alanları açıp yeni kelime fırsatları oluşturmak için kullanılır.",
+        "usage": "Satın aldıktan sonra oyun ekranının altındaki joker alanından seçilerek etkinleştirilir."
+      },
+      {
+        "id": "wheel",
+        "name": "Tekerlek",
+        "cost": 200,
+        "description": "Gridde seçilen harfin bulunduğu satır ve sütundaki tüm harfler yok olmaktadır.",
+        "purpose": "Tek hamlede geniş bir satır ve sütun temizliği yapmak için kullanılır.",
+        "usage": "Joker seçildikten sonra gridde hedeflenen harfe dokunularak uygulanır."
+      },
+      {
+        "id": "lollipop_breaker",
+        "name": "Lolipop Kırıcı",
+        "cost": 75,
+        "description": "Gridde seçilen bir harfi yok etmek için kullanılmaktadır. Bu harf yok olduğunda yukarısındaki kelimeler aşağı düşmektedir.",
+        "purpose": "Tek bir harfi ortadan kaldırıp üstteki dizilimi aşağı düşürmek için kullanılır.",
+        "usage": "Joker aktifken gridde kaldırılmak istenen harf seçilerek kullanılır."
+      },
+      {
+        "id": "free_swap",
+        "name": "Serbest Değiştirme",
+        "cost": 125,
+        "description": "Gridde birbirine temas eden iki harfin yer değiştirilmesini sağlamaktadır.",
+        "purpose": "Komşu iki harfin yerini değiştirerek yeni kelime kombinasyonları hazırlamak için kullanılır.",
+        "usage": "Joker seçildikten sonra birbirine temas eden iki harf peş peşe seçilerek uygulanır."
+      },
+      {
+        "id": "shuffle_letters",
+        "name": "Harf Karıştırma",
+        "cost": 300,
+        "description": "Bu özellik seçildiğinde gridde bulunan harflerin rastgele bir şekilde karıştırılmasını sağlamaktadır.",
+        "purpose": "Tıkanan grid düzenini tamamen değiştirip yeni kelime olasılıkları üretmek için kullanılır.",
+        "usage": "Joker seçildiğinde mevcut griddeki harfler rastgele karıştırılarak yeniden dağıtılır."
+      },
+      {
+        "id": "party_booster",
+        "name": "Parti Güçlendiricisi",
+        "cost": 400,
+        "description": "Bu özellik seçildiğinde gridde bulunan tüm harfler yok edilir ve tekrardan rastgele bir şekilde harfler yukarıdan aşağıya düşmektedir.",
+        "purpose": "Tüm tahtayı sıfırlayıp baştan harf düşürerek büyük bir yeniden kurulum yapmak için kullanılır.",
+        "usage": "Joker etkinleştirildiğinde grid tamamen temizlenir ve yeni harfler yukarıdan aşağıya yeniden gelir."
+      }
+    ]
+  },
   "boardGeneration": {
     "letterFrequencyGroups": [
       {
@@ -89,5 +142,15 @@
         "letters": ["J", "Ğ", "F", "V"]
       }
     ]
+  },
+  "powerTiles": {
+    "thresholds": [
+      { "minLength": 4, "maxLength": 4, "power": "rowClear" },
+      { "minLength": 5, "maxLength": 5, "power": "areaBlast" },
+      { "minLength": 6, "maxLength": 6, "power": "columnClear" },
+      { "minLength": 7, "maxLength": 999, "power": "megaBlast" }
+    ],
+    "areaBlastRadius": 1,
+    "megaBlastRadius": 2
   }
 }

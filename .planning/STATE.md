@@ -5,21 +5,21 @@
 See: .planning/PROJECT.md (updated 2026-04-18)
 
 **Core value:** Oyuncuya her zaman oynanabilir kalan, kurallari acikca gorunen ve ders dokumanindaki tum zorunlu maddeleri eksiksiz yerine getiren bir mobil kelime oyunu sunmak.
-**Current focus:** Phase 4 - Advanced Board Mechanics (Plan 1 next)
+**Current focus:** Phase 6 - Mobile Polish and Delivery (Plan 06-01 next); Phase 5 is now fully completed
 
 ## Current Position
 
-Phase: 4 of 8 (Advanced Board Mechanics)
-Plan: 0 of 3 in current phase (not started)
-Status: Phase 3 completed with session result persistence, checkpoint baseline and confirmed exit flow. Next is 04-01 (post-move solvability continuity and visible count).
-Last activity: 2026-04-18 - Completed Phase 03-03 with sqflite-backed game history, session checkpoint baseline and Evet/Hayir exit confirmation.
+Phase: 6 of 8 (Mobile Polish and Delivery)
+Plan: 1 of 3 in current phase (06-01 next)
+Status: Phase 05 completed — market economy, in-game joker actions and score history are implemented and verified. Next: 06-01 (mobile polish and device-facing UX hardening).
+Last activity: 2026-04-21 - Completed Phase 05-02 with transactional joker purchasing, in-game joker bar, six live joker effects and manual gate approval.
 
-Progress: [█████████░] 88%
+Progress: [██████████] 100% of Phase 5, overall project focus moved to Phase 6
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 11
+- Total plans completed: 13
 - Average duration: planning + implementation karisik; direct compare edilmemeli
 - Total execution time: Tracking not normalized after inserted eval gate
 
@@ -32,10 +32,13 @@ Progress: [█████████░] 88%
 | 2. Game Setup and Board Foundation | 3 | execution tracked in summaries | n/a |
 | 02.1 Initial Board Solvability Gate | 1 | execution tracked in summary | n/a |
 | 3. Core Gameplay and Session Results | 4/4 | completed | n/a |
+| 4. Advanced Board Mechanics | 3/3 | completed | execution tracked in summaries |
+| 5. Market and Score History | 3/3 | completed | execution tracked in summaries |
+| 6. Mobile Polish and Delivery | 0/3 | next | n/a |
 
 **Recent Trend:**
-- Last 5 plans: 02.1-01, 03-01, 03-02, 03-02.1, 03-03 (all completed)
-- Trend: Phase 3 tam kapandi; gameplay artik skor kaydi ve confirmed exit ile uc uca tamamlandi. Siradaki is Phase 4 board continuity ve visible-word ownerligi.
+- Last 5 plans: 05-02, 05-01, 05-03, 04-01, 04-02
+- Trend: Phase 5 tamamen kapandi. Siradaki odak, mobil polish, cihaz uzeri smoke-check ve teslim sertlestirmesi icin Phase 6.
 
 ## Accumulated Context
 
@@ -61,7 +64,13 @@ Decisions are logged in PROJECT.md Key Decisions table.
 - Phase 03-02 completed on 2026-04-18 with ScoringEngine, BoardResolver (clear/gravity/refill), canonical letter-score table in game_rules.json, GameController wiring and 28 new tests
 - Phase 03-02.1 completed on 2026-04-18 with premium UI polish, animations (shake/bounce/pulse) and game over overlay
 - Phase 03-03 completed on 2026-04-18 with sqflite-backed game history, session checkpoint baseline, confirmed exit dialog and focused endgame tests
-- Current next target is Phase 4 `04-01`; post-move solvability continuity and visible count
+- Phase 05-01 completed on 2026-04-19 out of order with canonical joker catalog, wallet/inventory persistence and interactive market UI
+- Phase 05-03 completed on 2026-04-19 out of order with history controller, aggregate summary metrics, newest-first game cards and widget tests
+- Phase 04-01 completed on 2026-04-21 with non-overlapping playable word count, post-move dead-board recovery, session state preservation during regeneration, and 4 new tests
+- Phase 04-02 completed on 2026-04-21 with Combo scoring detection, canonical integration, resolving solver exceptions, and fully validated subword rules.
+- Phase 04-03 completed on 2026-04-21 with dedicated power-tile modeling, surviving-last-letter placement, resolver-integrated activation effects, focused power tests and manual gate approval.
+- Phase 05-02 completed on 2026-04-21 with transactional joker purchasing, owned-joker bar, six documented joker effects, automated coverage and manual gate approval.
+- Current next target is Phase 6 `06-01`; polish mobile UX and verify required flows on device/emulator
 
 ### Pending Todos
 
@@ -70,11 +79,12 @@ None yet.
 ### Blockers/Concerns
 
 - Phase 2 ve sonrasi implementasyonlarda `01.1-EVAL-MATRIX.md` ve `01.1-MANUAL-CHECKLIST.md` zorunlu referans kabul edilmeli.
-- Harf puan tablosu, joker fiyatlari ve power threshold'lari canonical source yazildigi anda kullanicyla manuel teyit gerektiriyor.
-- Resume behavior, newest-first history ve kullaniciya gorunen aggregate/power/count alanlari icin feature-cikisinda kisa smoke-check gerekecek.
+- Harf puan tablosu ve power threshold'lari canonical source ile manuel teyit edildi; joker effect alanlari icin sonraki phase sonunda yine smoke-check gerekecek.
+- Joker fiyat/katalog manual gate'i 2026-04-19 tarihinde onaylandi; gameplay joker effect smoke-check'i de 2026-04-21 tarihinde tamamlandi.
+- Resume behavior, newest-first history ve kullaniciya gorunen aggregate/power/count alanlari icin Phase 6 device smoke-check'inde son kez toplu dogrulama iyi olur.
 
 ## Session Continuity
 
-Last session: 2026-04-18 18:05
-Stopped at: Phase 03-03 completed; persistence and exit flows verified with analyze + targeted tests. Next work is Phase 4 Plan 01.
+Last session: 2026-04-21 04:25
+Stopped at: Phase 05-02 completed with automated verification and manual gate approval. Next: Phase 06-01 mobile polish and device-facing validation.
 Resume file: None

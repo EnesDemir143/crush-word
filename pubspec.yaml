@@ -66,6 +66,7 @@ flutter:
     - assets/dictionary/tr_words.txt
     - assets/config/game_rules.json
     - assets/images/
+    - assets/images/jokers/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

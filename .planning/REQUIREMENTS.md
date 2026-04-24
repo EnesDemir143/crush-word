@@ -47,9 +47,9 @@
 
 ### Market, Altin ve Jokerler
 
-- [ ] **ECON-01**: Oyuncu test/oyun rahatligi icin yuksek veya fiilen sinirsiz altinla baslar; gercek para ile satin alma akisi bulunmaz.
-- [ ] **MKT-01**: Market ekrani mevcut altini, joker aciklamalarini, kullanim amacini, maliyetini ve kullanim seklini gosterir.
-- [ ] **MKT-02**: Markette tam olarak `Balik`, `Tekerlek`, `Lolipop Kirici`, `Serbest Degistirme`, `Harf Karistirma`, `Parti Guclendiricisi` jokerleri bulunur.
+- [x] **ECON-01**: Oyuncu test/oyun rahatligi icin yuksek veya fiilen sinirsiz altinla baslar; gercek para ile satin alma akisi bulunmaz.
+- [x] **MKT-01**: Market ekrani mevcut altini, joker aciklamalarini ve maliyetini gosterir; joker detay popup'i kullanim seklini sunar.
+- [x] **MKT-02**: Markette tam olarak `Balik`, `Tekerlek`, `Lolipop Kirici`, `Serbest Degistirme`, `Harf Karistirma`, `Parti Guclendiricisi` jokerleri bulunur.
 - [ ] **MKT-03**: Yeterli altina sahip kullanici joker satin alabilir.
 - [ ] **MKT-04**: Satin alinan jokerler oyun ekraninin alt kisiminda secilebilir ve kullanilabilir olarak gorunur.
 - [ ] **MKT-05**: Jokerler dokumandaki board etkilerini uygular.
@@ -114,9 +114,9 @@
 | POWER-04 | Phase 4 | Pending |
 | POWER-05 | Phase 4 | Pending |
 | COMBO-01 | Phase 4 | Pending |
-| ECON-01 | Phase 5 | Pending |
-| MKT-01 | Phase 5 | Pending |
-| MKT-02 | Phase 5 | Pending |
+| ECON-01 | Phase 5 | Completed |
+| MKT-01 | Phase 5 | Completed |
+| MKT-02 | Phase 5 | Completed |
 | MKT-03 | Phase 5 | Pending |
 | MKT-04 | Phase 5 | Pending |
 | MKT-05 | Phase 5 | Pending |
@@ -130,6 +130,7 @@
 
 - `GRID-02 ownership`: initial-session solvability guard owner'i Phase `02.1-01`'dir; Phase `04-01` ise post-move recheck, recovery continuity ve visible count integration owner'i olarak kalir.
 - `COMBO-01 note`: compliant implementasyon benzersiz ve sirayi koruyan alt kelimeleri hedefler; substring-only yaklasim yeterli degildir.
+- `MKT-01 display note`: user-onayli market UI kontratinda kartlar sade tutulur; kullanim sekli detail popup icine tasinir.
 - `MKT-05 ownership`: Phase 5, market fiyat/aciklama verisi ile gameplay effect'lerini tek canonical joker katalogu uzerinden senkron tutmalidir.
 - `HIST-01/HIST-02 ownership`: oyuncuya gorunen aggregate + newest-first davranisi Phase 5 / `05-03` owner'ligindedir; Phase 3 repository sirasini sadece veri onkosulu olarak hazirlar.
 - `Persistence gap`: app background/resume session restore su an source requirement ID tasimayan bir architecture gap'tir ve Phase `01.1-02` icinde explicit owner karari gerektirir.
@@ -142,4 +143,4 @@
 
 ---
 *Requirements defined: 2026-04-07*
-*Last updated: 2026-04-18 after Phase 03-03 closure sync*
+*Last updated: 2026-04-19 after Phase 05-01 closure sync*
