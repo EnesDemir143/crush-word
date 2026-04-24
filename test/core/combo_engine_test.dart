@@ -99,41 +99,50 @@ void main() {
 
     // MD Örnek: "ADANA → ADANA, DANA, ANA, ADA → 4x combo"
     // dana gerçek sözlükte de geçerli bir kelime olduğunda 4x combo beklenir.
-    test('ADANA → 4x combo when dana is also in dictionary (MD example)', () async {
-      final _FakeDictionaryRepository repo = _FakeDictionaryRepository(<String>{
-        'adana',
-        'dana',
-        'ana',
-        'ada',
-      });
-      final ComboDetector detector = ComboDetector(dictionaryRepository: repo);
+    test(
+      'ADANA → 4x combo when dana is also in dictionary (MD example)',
+      () async {
+        final _FakeDictionaryRepository repo = _FakeDictionaryRepository(
+          <String>{'adana', 'dana', 'ana', 'ada'},
+        );
+        final ComboDetector detector = ComboDetector(
+          dictionaryRepository: repo,
+        );
 
-      final ComboResult result = await detector.detect('ADANA');
+        final ComboResult result = await detector.detect('ADANA');
 
-      expect(result.mainWord, 'adana');
-      // dana = positions 1-4, ana = positions 2-4, ada = positions 0-2
-      expect(result.subWords, unorderedEquals(<String>['dana', 'ana', 'ada']));
-      // Main (1) + 3 sub-words = 4  ← MD'deki "4x combo"
-      expect(result.comboCount, 4);
-    });
+        expect(result.mainWord, 'adana');
+        // dana = positions 1-4, ana = positions 2-4, ada = positions 0-2
+        expect(
+          result.subWords,
+          unorderedEquals(<String>['dana', 'ana', 'ada']),
+        );
+        // Main (1) + 3 sub-words = 4  ← MD'deki "4x combo"
+        expect(result.comboCount, 4);
+      },
+    );
 
     // MD Örnek: "SARI → SARI, ARI → 2x combo"
-    test('SARI → 2x combo when only arı is in dictionary (MD example)', () async {
-      // MD'de sadece ARI sub-kelime sayılıyor, SAR sayılmıyor.
-      // Dolayısıyla sözlükte sadece arı geçerliyse 2x combo beklenir.
-      final _FakeDictionaryRepository repo = _FakeDictionaryRepository(<String>{
-        'sarı',
-        'arı',
-      });
-      final ComboDetector detector = ComboDetector(dictionaryRepository: repo);
+    test(
+      'SARI → 2x combo when only arı is in dictionary (MD example)',
+      () async {
+        // MD'de sadece ARI sub-kelime sayılıyor, SAR sayılmıyor.
+        // Dolayısıyla sözlükte sadece arı geçerliyse 2x combo beklenir.
+        final _FakeDictionaryRepository repo = _FakeDictionaryRepository(
+          <String>{'sarı', 'arı'},
+        );
+        final ComboDetector detector = ComboDetector(
+          dictionaryRepository: repo,
+        );
 
-      final ComboResult result = await detector.detect('SARI');
+        final ComboResult result = await detector.detect('SARI');
 
-      expect(result.mainWord, 'sarı');
-      expect(result.subWords, unorderedEquals(<String>['arı']));
-      // Main (1) + 1 sub-word = 2  ← MD'deki "2x combo"
-      expect(result.comboCount, 2);
-    });
+        expect(result.mainWord, 'sarı');
+        expect(result.subWords, unorderedEquals(<String>['arı']));
+        // Main (1) + 1 sub-word = 2  ← MD'deki "2x combo"
+        expect(result.comboCount, 2);
+      },
+    );
 
     test('MASAL → detects masa, asal as valid subwords', () async {
       final _FakeDictionaryRepository repo = _FakeDictionaryRepository(<String>{

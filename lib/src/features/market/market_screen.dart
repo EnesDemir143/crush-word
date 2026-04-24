@@ -143,8 +143,7 @@ class _MarketScreenState extends State<MarketScreen> {
     await showDialog<void>(
       context: context,
       barrierDismissible: true,
-      builder: (BuildContext context) =>
-          _HowItWorksDialog(joker: joker),
+      builder: (BuildContext context) => _HowItWorksDialog(joker: joker),
     );
   }
 
@@ -293,10 +292,7 @@ class _HowItWorksDialogState extends State<_HowItWorksDialog>
   @override
   void initState() {
     super.initState();
-    _animCtrl = AnimationController(
-      vsync: this,
-      duration: _stepDuration,
-    );
+    _animCtrl = AnimationController(vsync: this, duration: _stepDuration);
     // Auto-start on open
     WidgetsBinding.instance.addPostFrameCallback((_) => _play());
   }
@@ -612,10 +608,22 @@ class _FishScene extends StatelessWidget {
   Widget build(BuildContext context) {
     // 4x4 mini grid. Cells 1,6,11 are "targeted" by fish.
     const List<String> letters = <String>[
-      'K', 'E', 'L', 'İ',
-      'M', 'E', 'L', 'E',
-      'R', 'A', 'N', 'A',
-      'S', 'O', 'R', 'U',
+      'K',
+      'E',
+      'L',
+      'İ',
+      'M',
+      'E',
+      'L',
+      'E',
+      'R',
+      'A',
+      'N',
+      'A',
+      'S',
+      'O',
+      'R',
+      'U',
     ];
     const Set<int> targeted = <int>{1, 6, 10};
 
@@ -644,18 +652,12 @@ class _FishScene extends StatelessWidget {
                     }
                     if (step == 2) {
                       return isTargeted
-                          ? _GridCell(
-                              letter: letters[idx],
-                              fading: true,
-                            )
+                          ? _GridCell(letter: letters[idx], fading: true)
                           : _GridCell(letter: letters[idx]);
                     }
                     // step 3: targeted gone, others shifted
                     if (isTargeted) {
-                      return _GridCell(
-                        letter: '·',
-                        fading: false,
-                      );
+                      return _GridCell(letter: '·', fading: false);
                     }
                     return _GridCell(letter: letters[idx]);
                   },
@@ -681,10 +683,22 @@ class _WheelScene extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const List<String> letters = <String>[
-      'K', 'E', 'L', 'İ',
-      'M', 'E', 'L', 'E',
-      'R', 'A', 'N', 'A',
-      'S', 'O', 'R', 'U',
+      'K',
+      'E',
+      'L',
+      'İ',
+      'M',
+      'E',
+      'L',
+      'E',
+      'R',
+      'A',
+      'N',
+      'A',
+      'S',
+      'O',
+      'R',
+      'U',
     ];
 
     return Column(
@@ -746,10 +760,22 @@ class _LollipopScene extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const List<String> letters = <String>[
-      'K', 'E', 'L', 'İ',
-      'M', 'E', 'L', 'E',
-      'R', 'A', 'N', 'A',
-      'S', 'O', 'R', 'U',
+      'K',
+      'E',
+      'L',
+      'İ',
+      'M',
+      'E',
+      'L',
+      'E',
+      'R',
+      'A',
+      'N',
+      'A',
+      'S',
+      'O',
+      'R',
+      'U',
     ];
 
     return Column(
@@ -775,14 +801,9 @@ class _LollipopScene extends StatelessWidget {
                       );
                     }
                     if (step == 2) {
-                      return _GridCell(
-                        letter: letters[idx],
-                        fading: isTarget,
-                      );
+                      return _GridCell(letter: letters[idx], fading: isTarget);
                     }
-                    return _GridCell(
-                      letter: isTarget ? '·' : letters[idx],
-                    );
+                    return _GridCell(letter: isTarget ? '·' : letters[idx]);
                   },
                 ),
             ],
@@ -804,9 +825,15 @@ class _FreeSwapScene extends StatelessWidget {
   Widget build(BuildContext context) {
     // 3x3 grid for clarity
     const List<String> base = <String>[
-      'K', 'E', 'L',
-      'M', 'A', 'R',
-      'S', 'O', 'N',
+      'K',
+      'E',
+      'L',
+      'M',
+      'A',
+      'R',
+      'S',
+      'O',
+      'N',
     ];
     // step 3: A(idx4) and R(idx5) are swapped
     final List<String> swapped = List<String>.from(base);
@@ -891,17 +918,41 @@ class _ShuffleScene extends StatelessWidget {
   final double progress;
 
   static const List<String> _before = <String>[
-    'K', 'E', 'L', 'İ',
-    'M', 'A', 'R', 'E',
-    'S', 'O', 'N', 'A',
-    'T', 'U', 'R', 'K',
+    'K',
+    'E',
+    'L',
+    'İ',
+    'M',
+    'A',
+    'R',
+    'E',
+    'S',
+    'O',
+    'N',
+    'A',
+    'T',
+    'U',
+    'R',
+    'K',
   ];
 
   static const List<String> _after = <String>[
-    'A', 'R', 'E', 'M',
-    'K', 'L', 'İ', 'S',
-    'O', 'N', 'T', 'E',
-    'U', 'K', 'A', 'R',
+    'A',
+    'R',
+    'E',
+    'M',
+    'K',
+    'L',
+    'İ',
+    'S',
+    'O',
+    'N',
+    'T',
+    'E',
+    'U',
+    'K',
+    'A',
+    'R',
   ];
 
   @override
@@ -967,17 +1018,41 @@ class _PartyScene extends StatelessWidget {
   final double progress;
 
   static const List<String> _before = <String>[
-    'K', 'E', 'L', 'İ',
-    'M', 'A', 'R', 'E',
-    'S', 'O', 'N', 'A',
-    'T', 'U', 'R', 'K',
+    'K',
+    'E',
+    'L',
+    'İ',
+    'M',
+    'A',
+    'R',
+    'E',
+    'S',
+    'O',
+    'N',
+    'A',
+    'T',
+    'U',
+    'R',
+    'K',
   ];
 
   static const List<String> _after = <String>[
-    'Y', 'E', 'N', 'İ',
-    'H', 'A', 'R', 'F',
-    'L', 'E', 'R', 'İ',
-    'Z', 'A', 'B', 'C',
+    'Y',
+    'E',
+    'N',
+    'İ',
+    'H',
+    'A',
+    'R',
+    'F',
+    'L',
+    'E',
+    'R',
+    'İ',
+    'Z',
+    'A',
+    'B',
+    'C',
   ];
 
   @override
@@ -1001,7 +1076,11 @@ class _PartyScene extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Icon(Icons.celebration_rounded, color: Color(0xFF7C5DA6), size: 16),
+              Icon(
+                Icons.celebration_rounded,
+                color: Color(0xFF7C5DA6),
+                size: 16,
+              ),
               SizedBox(width: 4),
               Text(
                 'Yeni harfler geldi!',
@@ -1225,10 +1304,7 @@ class _JokerCard extends StatelessWidget {
                 const SizedBox(height: 10),
 
                 // ── Kullanım Amacı ────────────────────
-                _DetailBlock(
-                  title: 'Kullanım amacı',
-                  content: joker.purpose,
-                ),
+                _DetailBlock(title: 'Kullanım amacı', content: joker.purpose),
                 const SizedBox(height: 14),
 
                 // ── Nasıl çalışır butonu ──────────────
@@ -1391,4 +1467,3 @@ class _InfoChip extends StatelessWidget {
     );
   }
 }
-
