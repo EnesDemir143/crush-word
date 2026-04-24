@@ -45,6 +45,7 @@ class _ScoreHistoryScreenState extends State<ScoreHistoryScreen> {
         surfaceTintColor: Colors.transparent,
         foregroundColor: const Color(0xFF3A3025),
         elevation: 0,
+        scrolledUnderElevation: 0,
         title: const Text(
           'Skor Tablosu',
           style: TextStyle(
@@ -53,7 +54,7 @@ class _ScoreHistoryScreenState extends State<ScoreHistoryScreen> {
           ),
         ),
       ),
-      extendBodyBehindAppBar: false,
+      extendBodyBehindAppBar: true,
       body: DecoratedBox(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -66,10 +67,16 @@ class _ScoreHistoryScreenState extends State<ScoreHistoryScreen> {
             ],
           ),
         ),
-        child: SizedBox.expand(
-          child: state.isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : _HistoryBody(state: state),
+        child: SafeArea(
+          bottom: false,
+          child: SizedBox.expand(
+            child: Padding(
+              padding: const EdgeInsets.only(top: kToolbarHeight + 12),
+              child: state.isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _HistoryBody(state: state),
+            ),
+          ),
         ),
       ),
     );

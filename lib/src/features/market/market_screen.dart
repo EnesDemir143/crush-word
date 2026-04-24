@@ -156,6 +156,7 @@ class _MarketScreenState extends State<MarketScreen> {
         surfaceTintColor: Colors.transparent,
         foregroundColor: const Color(0xFF3A3025),
         elevation: 0,
+        scrolledUnderElevation: 0,
         title: const Text(
           'Market',
           style: TextStyle(
@@ -189,7 +190,7 @@ class _MarketScreenState extends State<MarketScreen> {
           ),
         ],
       ),
-      extendBodyBehindAppBar: false,
+      extendBodyBehindAppBar: true,
       body: DecoratedBox(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -203,9 +204,9 @@ class _MarketScreenState extends State<MarketScreen> {
           ),
         ),
         child: SafeArea(
-          top: false,
+          bottom: false,
           child: Padding(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.fromLTRB(24, kToolbarHeight + 20, 24, 24),
             child: AnimatedBuilder(
               animation: _controller,
               builder: (BuildContext context, _) => _buildBody(context),
