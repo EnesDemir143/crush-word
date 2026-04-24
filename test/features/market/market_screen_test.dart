@@ -96,7 +96,8 @@ void main() {
       ),
       findsOneWidget,
     );
-    expect(find.text('Kullanım amacı'), findsNothing);
+    // Kullanım Amacı artık kart üzerinde gösterilmektedir.
+    expect(find.text('Kullanım amacı'), findsWidgets);
 
     await tester.scrollUntilVisible(
       find.text('Harf Karıştırma'),
