@@ -1,117 +1,185 @@
 # Crush Word
 
-Crush Word, Flutter ile gelistirilen tek oyunculu bir Turkce kelime bulma
-oyunudur. Oyuncu kare bir harf tahtasi uzerinde komsu harfleri surukleyerek
-kelimeler olusturur; gecerli kelimeler puan kazandirir, secilen hucreler
-temizlenir ve tahta yeniden dolar. Proje, hizli oynanabilirlik, yerel
-calisma, deterministik oyun kurallari ve test edilebilir gameplay mantigi
-uzerine kuruludur.
+Crush Word, Kocaeli Üniversitesi Yazılım Laboratuvarı-II kapsamında geliştirilen,
+Flutter tabanlı tek oyunculu bir Türkçe kelime oyunudur. Oyuncu kare harf
+ızgarasında komşu hücreleri sürükleyerek kelimeler oluşturur; geçerli kelimeler
+puan kazandırır, harfler temizlenir, gravity/refill çalışır ve oyun akışı yerel
+olarak saklanır.
 
-## Oyun Deneyimi
+Proje şu anda ders kapsamındaki ana oyun döngüsünü, ileri seviye tahta
+mekaniklerini, market/joker sistemini, skor geçmişini ve rapor teslim
+varlıklarını aynı repoda birleştiren tamamlanmış bir mobil oyun projesi
+seviyesindedir.
 
-- 6x6, 8x8 ve 10x10 olmak uzere farkli tahta boyutlari
-- Turkce harf frekanslarina gore agirlikli harf uretimi
-- Parmak surukleme ile kelime secimi
-- Sozluk tabanli gecerli / gecersiz kelime kontrolu
-- Harf puan tablosuna gore skor hesaplama
-- Gravity ve refill ile her hamle sonrasi tahtanin yeniden kurulmasi
-- Oyun bitisi ve onayli cikista sonuc kaydetme
+## Öne Çıkan Özellikler
 
-## Temel Ozellikler
+### Oyuncu akışı
+- İlk açılışta kullanıcı adı alma ve cihazda saklama
+- Ana ekrandan kullanıcı adı düzenleme
+- `Yeni Oyun`, `Skor Tablosu` ve `Market` girişleri
 
-- Offline calisan Turkce kelime dogrulama
-- Yerel persistence ile session ve sonuc yonetimi
-- Game-over overlay ve `Evet / Hayir` cikis onayi
-- Feature-first Flutter yapisi
-- Ayrik gameplay servisleri sayesinde test edilebilir is kurallari
-- SQLite tabanli gecmis ve checkpoint altyapisi
+### Oyun kurulumu
+- 6x6 (`Zor`), 8x8 (`Orta`) ve 10x10 (`Kolay`) tahta seçenekleri
+- Zorluğa bağlı 15 / 20 / 25 hamle limitleri
+- Türkçe harf frekanslarına göre ağırlıklı tahta üretimi
+- İlk açılışta ve hamle sonrasında oynanabilir tahta koruması
 
-## Teknoloji Yigini
+### Çekirdek gameplay
+- 8 yönlü komşuluk ile sürükle-bırak kelime seçimi
+- Aynı hücreyi tekrar kullanmayan path kontrolü
+- Sözlük tabanlı geçerli / geçersiz kelime doğrulama
+- 3 harften kısa seçimlerde geçersiz deneme davranışı
+- Geçerli ve geçersiz denemelerde hamle tüketimi
+- Harf puan tablosuna göre skor hesaplama
+- Gravity, refill ve dead-board recovery akışı
+- Oyun içinde gösterilen oynanabilir kelime sayısı
+
+### İleri mekanikler
+- Alt kelime tabanlı combo puanlama
+- Kelime uzunluğuna göre power tile üretimi:
+  - 4 harf: satır temizleme
+  - 5 harf: alan patlatma
+  - 6 harf: sütun temizleme
+  - 7+ harf: mega patlatma
+- Power tile yeniden kullanıldığında özel etkinin tetiklenmesi
+
+### Market ve joker sistemi
+- Yüksek başlangıç altını ile test dostu ekonomi
+- 6 zorunlu jokerin tamamı:
+  - Balık
+  - Tekerlek
+  - Lolipop Kırıcı
+  - Serbest Değiştirme
+  - Harf Karıştırma
+  - Parti Güçlendiricisi
+- Satın alma, envanterde saklama ve oyun içinde kullanma akışı
+- Joker katalogu, fiyatlar ve açıklamalar için tekil config kaynağı
+
+### Skor geçmişi ve oturum yönetimi
+- Oyun bitiminde sonucu yerel veritabanına kaydetme
+- Çıkış onayı ile sonucu koruyarak ana ekrana dönme
+- En yeni oyun en üstte olacak şekilde skor geçmişi
+- Üst özet kartında toplam oyun, en yüksek skor, ortalama skor,
+  toplam kelime, en uzun kelime ve toplam süre metrikleri
+- Aktif oyun için session checkpoint altyapısı
+
+## Teknoloji Yığını
 
 - Flutter
 - Dart
-- `shared_preferences` ile hafif profil bilgileri
-- `sqflite` ile structured local persistence
-- `path` ile yerel database path yonetimi
-- `flutter_test` ile unit ve widget testleri
-- `sqflite_common_ffi` ile persistence testleri
+- `shared_preferences` — profil ve hafif kullanıcı verileri
+- `sqflite` — oyun sonuçları, altın, joker envanteri ve checkpoint verileri
+- `path` — yerel veritabanı yolu yönetimi
+- `flutter_test` — unit ve widget testleri
+- `sqflite_common_ffi` — persistence test altyapısı
 
-## Mimari Yapi
+## Mimari
 
-Uygulama, UI ile oyun kurallarini ayiran bir yapi izler:
+Kod tabanı feature-first bir yapı izler ve oyun kurallarını UI katmanından
+ayırır:
 
-- `lib/src/features/` ekranlar, route'lar ve kullanici akislarini barindirir
-- `lib/src/core/gameplay/` board, scoring ve validation gibi oyun mantigini
-  tasir
-- `lib/src/core/config/` runtime oyun kurallarini ve config modellerini tutar
-- `lib/src/core/repositories/` uygulamanin domain-facing veri sinirlarini
-  saglar
-- `lib/src/core/persistence/sqlite/` SQLite bootstrap ve persistence adapter
-  detaylarini izole eder
+- `lib/src/app/` — uygulama bootstrap, route ve navigation tanımları
+- `lib/src/core/config/` — oyun kuralları ve runtime config modelleri
+- `lib/src/core/models/` — ortak domain modelleri
+- `lib/src/core/repositories/` — sözlük, profil, geçmiş, cüzdan ve checkpoint sınırları
+- `lib/src/core/storage/` — düşük seviye yerel depolama servisleri
+- `lib/src/features/` — ekranlar, controller'lar ve kullanıcı akışları
 
-## Proje Yapisi
+## Proje Yapısı
 
 ```text
 assets/
-  config/
-  dictionary/
+  config/game_rules.json
+  dictionary/tr_words.txt
+  images/
+    jokers/
 
-lib/src/
+lib/
+  main.dart
+  src/
+    app/
+    core/
+      config/
+      models/
+      presentation/
+      repositories/
+      storage/
+      theme/
+    features/
+      game/
+      game_setup/
+      home/
+      market/
+      onboarding/
+      score_history/
+
+test/
   app/
   core/
-    config/
-    gameplay/
-    persistence/sqlite/
-    repositories/
   features/
-    game/
-    game_setup/
-    home/
-    onboarding/
+
+report/
+  main.tex
+  main.pdf
+  references.bib
 ```
 
-## Guncel Durum
-
-Su an proje; oyun kurulumu, drag-selection, kelime dogrulama, puanlama,
-gravity/refill, game-over akisi ve yerel sonuc kaydi gibi temel gameplay
-akisini desteklemektedir. Skor gecmisi ekraninin kullaniciya gosterilen UI
-katmani ise sonraki gelistirme adimlarinda tamamlanacaktir.
-
-## Gelistirme
-
-### Calistirma
+## Çalıştırma
 
 ```bash
 flutter pub get
 flutter run
 ```
 
-### Test ve Kontrol
+Mobil hedef seçerek çalıştırmak için örnek:
 
-Tum genel kontroller:
+```bash
+flutter run -d ios
+flutter run -d android
+```
+
+## Doğrulama
+
+Genel kalite kontrolleri:
 
 ```bash
 flutter analyze
 flutter test
 ```
 
-Phase 3 endgame persistence akisi icin hedef test:
+Odaklı test örnekleri:
 
 ```bash
 flutter test test/features/game/endgame_flow_test.dart
+flutter test test/features/game/joker_bar_test.dart
+flutter test test/features/score_history/score_history_screen_test.dart
 ```
 
-## Local Persistence
+## Yerel Veri Katmanı
 
-Uygulama structured local data icin `word_crush.db` dosyasini kullanir. Mevcut
-kalici veri katmani asagidaki tablolari kullanir:
+Uygulama `word_crush.db` veritabanını kullanır. Kalıcı veri yapısında oyun
+sonuçları, joker envanteri, cüzdan/veri dengesi ve aktif oturum checkpoint'i
+saklanır. Bu sayede uygulama tamamen offline çalışabilir.
 
-- `game_results`
-- `session_checkpoint`
+## Rapor ve Teslim Varlıkları
 
-Bu sayede tamamlanan oyunlar ve aktif oturum snapshot'lari yerel olarak
-saklanabilir.
+Repo içinde proje raporu ve ilgili teslim materyalleri de yer alır:
+
+- `report/main.tex` — IEEE formatındaki LaTeX raporu
+- `report/main.pdf` — üretilmiş PDF çıktısı
+- `report/architecture.md` ve diyagram dosyaları — mimari özetler
+- `docs/Yazlab 2- Proje 2.pdf` — kaynak ders/proje dokümanı
+
+Raporu yeniden derlemek için:
+
+```bash
+cd report
+pdflatex main.tex
+bibtex main
+pdflatex main.tex
+pdflatex main.tex
+```
 
 ## Lisans
 
-Bu proje [MIT License](LICENSE) altinda lisanslanmistir.
+Bu proje [MIT License](LICENSE) altında lisanslanmıştır.
