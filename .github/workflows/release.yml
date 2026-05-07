@@ -1,0 +1,40 @@
+name: Release APK
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.0'
+          channel: stable
+
+      - run: flutter pub get
+
+      - run: flutter build apk --release
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Crush Word ${{ github.ref_name }}
+          body: |
+            ## Crush Word ${{ github.ref_name }}
+
+            Tek oyunculu Türkçe kelime bulma oyunu.
+
+            ### Kurulum
+            APK dosyasını indir, Android cihazına kur (Bilinmeyen kaynaklara izin ver).
+          files: build/app/outputs/flutter-apk/app-release.apk
