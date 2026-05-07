@@ -1,128 +1,158 @@
+<div align="center">
+
 # Crush Word
 
-Crush Word, Kocaeli Üniversitesi Yazılım Laboratuvarı-II kapsamında geliştirilen,
-Flutter tabanlı tek oyunculu bir Türkçe kelime oyunudur. Oyuncu kare harf
-ızgarasında komşu hücreleri sürükleyerek kelimeler oluşturur; geçerli kelimeler
-puan kazandırır, harfler temizlenir, gravity/refill çalışır ve oyun akışı yerel
-olarak saklanır.
+**Flutter ile geliştirilmiş tek oyunculu Türkçe kelime bulma oyunu**
 
-Proje şu anda ders kapsamındaki ana oyun döngüsünü, ileri seviye tahta
-mekaniklerini, market/joker sistemini, skor geçmişini ve rapor teslim
-varlıklarını aynı repoda birleştiren tamamlanmış bir mobil oyun projesi
-seviyesindedir.
+Kare harf ızgarasında komşu harfleri sürükle, anlamlı Türkçe kelimeler oluştur, puan kazan.  
+Tamamen çevrimdışı çalışır — sunucu bağımlılığı yok.
 
-## Öne Çıkan Özellikler
+[![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-3.x-0175C2?logo=dart)](https://dart.dev)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-### Oyuncu akışı
-- İlk açılışta kullanıcı adı alma ve cihazda saklama
-- Ana ekrandan kullanıcı adı düzenleme
-- `Yeni Oyun`, `Skor Tablosu` ve `Market` girişleri
+**[IEEE Teknik Raporu](report/main.pdf)**
 
-### Oyun kurulumu
-- 6x6 (`Zor`), 8x8 (`Orta`) ve 10x10 (`Kolay`) tahta seçenekleri
-- Zorluğa bağlı 15 / 20 / 25 hamle limitleri
-- Türkçe harf frekanslarına göre ağırlıklı tahta üretimi
-- İlk açılışta ve hamle sonrasında oynanabilir tahta koruması
+</div>
 
-### Çekirdek gameplay
-- 8 yönlü komşuluk ile sürükle-bırak kelime seçimi
-- Aynı hücreyi tekrar kullanmayan path kontrolü
-- Sözlük tabanlı geçerli / geçersiz kelime doğrulama
-- 3 harften kısa seçimlerde geçersiz deneme davranışı
-- Geçerli ve geçersiz denemelerde hamle tüketimi
-- Harf puan tablosuna göre skor hesaplama
-- Gravity, refill ve dead-board recovery akışı
-- Oyun içinde gösterilen oynanabilir kelime sayısı
+---
 
-### İleri mekanikler
-- Alt kelime tabanlı combo puanlama
-- Kelime uzunluğuna göre power tile üretimi:
-  - 4 harf: satır temizleme
-  - 5 harf: alan patlatma
-  - 6 harf: sütun temizleme
-  - 7+ harf: mega patlatma
-- Power tile yeniden kullanıldığında özel etkinin tetiklenmesi
+## Ekran Görüntüleri
 
-### Market ve joker sistemi
-- Yüksek başlangıç altını ile test dostu ekonomi
-- 6 zorunlu jokerin tamamı:
-  - Balık
-  - Tekerlek
-  - Lolipop Kırıcı
-  - Serbest Değiştirme
-  - Harf Karıştırma
-  - Parti Güçlendiricisi
-- Satın alma, envanterde saklama ve oyun içinde kullanma akışı
-- Joker katalogu, fiyatlar ve açıklamalar için tekil config kaynağı
+<p align="center">
+  <img src="report/game-board.png" width="30%" alt="Oyun Tahtası" />
+  &nbsp;&nbsp;
+  <img src="report/market.png" width="30%" alt="Market" />
+  &nbsp;&nbsp;
+  <img src="report/scor-hist.png" width="30%" alt="Skor Tablosu" />
+</p>
+<p align="center">
+  <em>Oyun ekranı &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Market &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Skor Tablosu</em>
+</p>
 
-### Skor geçmişi ve oturum yönetimi
-- Oyun bitiminde sonucu yerel veritabanına kaydetme
-- Çıkış onayı ile sonucu koruyarak ana ekrana dönme
-- En yeni oyun en üstte olacak şekilde skor geçmişi
-- Üst özet kartında toplam oyun, en yüksek skor, ortalama skor,
-  toplam kelime, en uzun kelime ve toplam süre metrikleri
-- Aktif oyun için session checkpoint altyapısı
+---
 
-## Teknoloji Yığını
+## Nasıl Oynanır?
 
-- Flutter
-- Dart
-- `shared_preferences` — profil ve hafif kullanıcı verileri
-- `sqflite` — oyun sonuçları, altın, joker envanteri ve checkpoint verileri
-- `path` — yerel veritabanı yolu yönetimi
-- `flutter_test` — unit ve widget testleri
-- `sqflite_common_ffi` — persistence test altyapısı
+1. Grid boyutunu seç: **6×6** (Zor) · **8×8** (Orta) · **10×10** (Kolay)
+2. Hamle limitini seç: **15 · 20 · 25**
+3. Tahtada komşu harfleri 8 yönde sürükleyerek kelime oluştur (en az 3 harf)
+4. Geçerli kelimeler temizlenir, harfler aşağı düşer, boşluklar yeni harflerle dolar
+5. Hamle bitmeden en yüksek puanı topla
+
+---
+
+## Temel Mekanikler
+
+### Ağırlıklı Harf Üretimi
+
+Tahta, Türkçe harf frekanslarına göre üç kademeli ağırlıklı algoritmayla oluşturulur:
+
+| Kademe | Ağırlık | Harfler |
+|--------|---------|---------|
+| Yüksek frekans | 6 | A, E, İ, L, R, N |
+| Orta frekans | 3 | K, M, T, S, Y, D |
+| Düşük frekans | 1 | J, Ğ, F, V |
+
+### Oynanabilir Tahta Garantisi
+
+Her hamle sonrası tahta, **Trie + DFS + backtracking** algoritmasıyla analiz edilir. Geçerli kelime bulunamazsa iki aşamalı kurtarma devreye girer:
+
+1. **Fisher-Yates karıştırma** (maks. 5 deneme) — mevcut harfleri yeniden düzenler
+2. **Yeniden üretim** (maks. 10 deneme) — tamamen yeni tahta oluşturur
+
+Oyuncuya hiçbir zaman çıkmaz tahta gösterilmez.
+
+### Puanlama
+
+Her harf, Türkçe'deki kullanım sıklığına göre puan taşır:
+
+| Puan | Harfler |
+|------|---------|
+| 1 | A, E, İ, K, L, N, R, T |
+| 2 | I, M, O, S, U |
+| 3 | B, D, Ü, Y |
+| 4 | C, Ç, Ş, Z |
+| 5 | G, H, P |
+| 7 | F, Ö, V |
+| 8 | Ğ |
+| 10 | J |
+
+### Combo Puanlama
+
+Ana kelimenin içindeki geçerli bitişik alt kelimeler de puan kazandırır.  
+Örnek: **YAZAR** → YAZ + AZAR + YAZAR = 3 combo, üç kelimenin puanı birden.
+
+### Power Tile Sistemi
+
+Uzun kelimeler son harfin konumuna özel güç bırakır. Bu güç başka bir kelimede kullanıldığında aktif olur:
+
+| Kelime Uzunluğu | Etki |
+|-----------------|------|
+| 4 harf | Satır temizleme |
+| 5 harf | Alan patlatma |
+| 6 harf | Sütun temizleme |
+| 7+ harf | Mega patlatma |
+
+---
+
+## Market & Joker Sistemi
+
+Oyun içi altınla joker satın alınır; gerçek para işlemi yoktur.
+
+| Joker | İşlev | Maliyet |
+|-------|-------|---------|
+| Balık | Rastgele harf yok eder | 100 altın |
+| Tekerlek | Seçilen harfin satır ve sütununu temizler | 200 altın |
+| Lolipop Kırıcı | Tek harf kaldırır | 75 altın |
+| Serbest Değiştirme | Komşu iki harfin yerini değiştirir | 125 altın |
+| Harf Karıştırma | Tüm tahtayı karıştırır | 300 altın |
+| Parti Güçlendiricisi | Tahtayı tamamen sıfırlar | 400 altın |
+
+---
+
+## Skor Geçmişi
+
+Her oyun otomatik kaydedilir. Skor tablosunda şunlar görünür:
+
+- **Genel istatistikler:** toplam oyun, en yüksek skor, ortalama skor, toplam kelime, en uzun kelime, toplam süre
+- **Oyun detayı:** grid boyutu, hamle sayısı, bulunan kelimeler, süre
+
+---
 
 ## Mimari
 
-Kod tabanı feature-first bir yapı izler ve oyun kurallarını UI katmanından
-ayırır:
+Feature-first yapı; oyun mantığı UI'dan tamamen bağımsız ve test edilebilir:
 
-- `lib/src/app/` — uygulama bootstrap, route ve navigation tanımları
-- `lib/src/core/config/` — oyun kuralları ve runtime config modelleri
-- `lib/src/core/models/` — ortak domain modelleri
-- `lib/src/core/repositories/` — sözlük, profil, geçmiş, cüzdan ve checkpoint sınırları
-- `lib/src/core/storage/` — düşük seviye yerel depolama servisleri
-- `lib/src/features/` — ekranlar, controller'lar ve kullanıcı akışları
-
-## Proje Yapısı
-
-```text
-assets/
-  config/game_rules.json
-  dictionary/tr_words.txt
-  images/
-    jokers/
-
-lib/
-  main.dart
-  src/
-    app/
-    core/
-      config/
-      models/
-      presentation/
-      repositories/
-      storage/
-      theme/
-    features/
-      game/
-      game_setup/
-      home/
-      market/
-      onboarding/
-      score_history/
-
-test/
-  app/
-  core/
-  features/
-
-report/
-  main.tex
-  main.pdf
-  references.bib
 ```
+lib/src/
+├── app/              # Bootstrap, route, navigation
+├── core/
+│   ├── config/       # Oyun kuralları ve runtime config
+│   ├── models/       # Domain modelleri
+│   ├── repositories/ # Sözlük, profil, geçmiş, cüzdan, checkpoint
+│   └── storage/      # SQLite & SharedPreferences servisleri
+└── features/
+    ├── game/         # Oyun ekranı ve controller
+    ├── game_setup/   # Tahta ve hamle seçimi
+    ├── home/         # Ana ekran
+    ├── market/       # Joker mağazası
+    ├── onboarding/   # Kullanıcı adı akışı
+    └── score_history/# Skor tablosu
+```
+
+Yerel veri: `word_crush.db` (SQLite) — oyun sonuçları, joker envanteri, cüzdan, oturum checkpoint.
+
+---
+
+## Teknoloji
+
+- **Flutter / Dart** — cross-platform mobil geliştirme
+- `sqflite` — yerel SQLite veritabanı
+- `shared_preferences` — profil verisi
+- `flutter_test` + `sqflite_common_ffi` — test altyapısı
+
+---
 
 ## Çalıştırma
 
@@ -131,55 +161,30 @@ flutter pub get
 flutter run
 ```
 
-Mobil hedef seçerek çalıştırmak için örnek:
-
-```bash
-flutter run -d ios
-flutter run -d android
-```
-
-## Doğrulama
-
-Genel kalite kontrolleri:
+## Test
 
 ```bash
 flutter analyze
 flutter test
 ```
 
-Odaklı test örnekleri:
+---
 
-```bash
-flutter test test/features/game/endgame_flow_test.dart
-flutter test test/features/game/joker_bar_test.dart
-flutter test test/features/score_history/score_history_screen_test.dart
-```
+## Rapor
 
-## Yerel Veri Katmanı
+Projenin IEEE formatındaki teknik raporu `report/` klasöründe:
 
-Uygulama `word_crush.db` veritabanını kullanır. Kalıcı veri yapısında oyun
-sonuçları, joker envanteri, cüzdan/veri dengesi ve aktif oturum checkpoint'i
-saklanır. Bu sayede uygulama tamamen offline çalışabilir.
+- **[report/main.pdf](report/main.pdf)** — Sistem mimarisi, algoritmalar, test sonuçları
+- `report/main.tex` — LaTeX kaynak dosyası
 
-## Rapor ve Teslim Varlıkları
+---
 
-Repo içinde proje raporu ve ilgili teslim materyalleri de yer alır:
+## Geliştiren
 
-- `report/main.tex` — IEEE formatındaki LaTeX raporu
-- `report/main.pdf` — üretilmiş PDF çıktısı
-- `report/architecture.md` ve diyagram dosyaları — mimari özetler
-- `docs/Yazlab 2- Proje 2.pdf` — kaynak ders/proje dokümanı
+**Enes Demir** & **Mert Şengül**
 
-Raporu yeniden derlemek için:
-
-```bash
-cd report
-pdflatex main.tex
-bibtex main
-pdflatex main.tex
-pdflatex main.tex
-```
+---
 
 ## Lisans
 
-Bu proje [MIT License](LICENSE) altında lisanslanmıştır.
+[MIT License](LICENSE)
