@@ -10,6 +10,7 @@ Tamamen çevrimdışı çalışır — sunucu bağımlılığı yok.
 [![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.x-0175C2?logo=dart)](https://dart.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Download APK](https://img.shields.io/github/v/release/EnesDemir143/crush-word?label=Download%20APK&logo=android)](https://github.com/EnesDemir143/crush-word/releases/latest)
 
 **[IEEE Teknik Raporu](report/main.pdf)**
 
