@@ -36,8 +36,9 @@ jobs:
           body: |
             ## Crush Word ${{ github.ref_name }}
 
-            Tek oyunculu Türkçe kelime bulma oyunu.
+            Single-player Turkish word puzzle game built with Flutter.
 
-            ### Kurulum
-            APK dosyasını indir, Android cihazına kur (Bilinmeyen kaynaklara izin ver).
+            ### Installation
+            Download the APK below and install it on your Android device.
+            If prompted, enable "Install from unknown sources" in your device settings.
           files: build/app/outputs/flutter-apk/app-release.apk

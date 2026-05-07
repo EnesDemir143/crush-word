@@ -2,74 +2,76 @@
 
 # Crush Word
 
-**Flutter ile geliştirilmiş tek oyunculu Türkçe kelime bulma oyunu**
+**Single-player Turkish word puzzle game built with Flutter**
 
-Kare harf ızgarasında komşu harfleri sürükle, anlamlı Türkçe kelimeler oluştur, puan kazan.  
-Tamamen çevrimdışı çalışır — sunucu bağımlılığı yok.
+Drag adjacent letters on a grid, form valid Turkish words, earn points.  
+Fully offline — no server required.
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter)](https://flutter.dev)
 [![Dart](https://img.shields.io/badge/Dart-3.x-0175C2?logo=dart)](https://dart.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Download APK](https://img.shields.io/github/v/release/EnesDemir143/crush-word?label=Download%20APK&logo=android)](https://github.com/EnesDemir143/crush-word/releases/latest)
 
-**[IEEE Teknik Raporu](report/main.pdf)**
+**[IEEE Technical Report](report/main.pdf)**
+
+🌐 [English](README.md) · [Türkçe](README.tr.md)
 
 </div>
 
 ---
 
-## Ekran Görüntüleri
+## Screenshots
 
 <p align="center">
-  <img src="report/game-board.png" width="30%" alt="Oyun Tahtası" />
+  <img src="report/game-board.png" width="30%" alt="Game Board" />
   &nbsp;&nbsp;
   <img src="report/market.png" width="30%" alt="Market" />
   &nbsp;&nbsp;
-  <img src="report/scor-hist.png" width="30%" alt="Skor Tablosu" />
+  <img src="report/scor-hist.png" width="30%" alt="Score History" />
 </p>
 <p align="center">
-  <em>Oyun ekranı &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Market &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Skor Tablosu</em>
+  <em>Game screen &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Market &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Score History</em>
 </p>
 
 ---
 
-## Nasıl Oynanır?
+## How to Play
 
-1. Grid boyutunu seç: **6×6** (Zor) · **8×8** (Orta) · **10×10** (Kolay)
-2. Hamle limitini seç: **15 · 20 · 25**
-3. Tahtada komşu harfleri 8 yönde sürükleyerek kelime oluştur (en az 3 harf)
-4. Geçerli kelimeler temizlenir, harfler aşağı düşer, boşluklar yeni harflerle dolar
-5. Hamle bitmeden en yüksek puanı topla
+1. Choose grid size: **6×6** (Hard) · **8×8** (Medium) · **10×10** (Easy)
+2. Choose move limit: **15 · 20 · 25**
+3. Drag adjacent letters in 8 directions to form a word (minimum 3 letters)
+4. Valid words are cleared, letters fall down, gaps fill with new letters
+5. Score as high as possible before running out of moves
 
 ---
 
-## Temel Mekanikler
+## Core Mechanics
 
-### Ağırlıklı Harf Üretimi
+### Weighted Letter Generation
 
-Tahta, Türkçe harf frekanslarına göre üç kademeli ağırlıklı algoritmayla oluşturulur:
+The board is generated using a three-tier weighted algorithm based on Turkish letter frequencies:
 
-| Kademe | Ağırlık | Harfler |
-|--------|---------|---------|
-| Yüksek frekans | 6 | A, E, İ, L, R, N |
-| Orta frekans | 3 | K, M, T, S, Y, D |
-| Düşük frekans | 1 | J, Ğ, F, V |
+| Tier | Weight | Letters |
+|------|--------|---------|
+| High frequency | 6 | A, E, İ, L, R, N |
+| Medium frequency | 3 | K, M, T, S, Y, D |
+| Low frequency | 1 | J, Ğ, F, V |
 
-### Oynanabilir Tahta Garantisi
+### Playable Board Guarantee
 
-Her hamle sonrası tahta, **Trie + DFS + backtracking** algoritmasıyla analiz edilir. Geçerli kelime bulunamazsa iki aşamalı kurtarma devreye girer:
+After every move, the board is analyzed with a **Trie + DFS + backtracking** algorithm. If no valid word exists, a two-stage recovery kicks in:
 
-1. **Fisher-Yates karıştırma** (maks. 5 deneme) — mevcut harfleri yeniden düzenler
-2. **Yeniden üretim** (maks. 10 deneme) — tamamen yeni tahta oluşturur
+1. **Fisher-Yates shuffle** (max 5 attempts) — rearranges existing letters
+2. **Full regeneration** (max 10 attempts) — generates a completely new board
 
-Oyuncuya hiçbir zaman çıkmaz tahta gösterilmez.
+The player is never shown a dead-end board.
 
-### Puanlama
+### Scoring
 
-Her harf, Türkçe'deki kullanım sıklığına göre puan taşır:
+Each letter carries a point value based on its frequency in Turkish:
 
-| Puan | Harfler |
-|------|---------|
+| Points | Letters |
+|--------|---------|
 | 1 | A, E, İ, K, L, N, R, T |
 | 2 | I, M, O, S, U |
 | 3 | B, D, Ü, Y |
@@ -79,83 +81,87 @@ Her harf, Türkçe'deki kullanım sıklığına göre puan taşır:
 | 8 | Ğ |
 | 10 | J |
 
-### Combo Puanlama
+### Combo Scoring
 
-Ana kelimenin içindeki geçerli bitişik alt kelimeler de puan kazandırır.  
-Örnek: **YAZAR** → YAZ + AZAR + YAZAR = 3 combo, üç kelimenin puanı birden.
+Valid sub-words within the main word also score points.  
+Example: **YAZAR** → YAZ + AZAR + YAZAR = 3 combos, all three words score.
 
-### Power Tile Sistemi
+### Power Tile System
 
-Uzun kelimeler son harfin konumuna özel güç bırakır. Bu güç başka bir kelimede kullanıldığında aktif olur:
+Long words leave a power tile at the last letter's position. The power activates when that tile is used in another word:
 
-| Kelime Uzunluğu | Etki |
-|-----------------|------|
-| 4 harf | Satır temizleme |
-| 5 harf | Alan patlatma |
-| 6 harf | Sütun temizleme |
-| 7+ harf | Mega patlatma |
-
----
-
-## Market & Joker Sistemi
-
-Oyun içi altınla joker satın alınır; gerçek para işlemi yoktur.
-
-| Joker | İşlev | Maliyet |
-|-------|-------|---------|
-| Balık | Rastgele harf yok eder | 100 altın |
-| Tekerlek | Seçilen harfin satır ve sütununu temizler | 200 altın |
-| Lolipop Kırıcı | Tek harf kaldırır | 75 altın |
-| Serbest Değiştirme | Komşu iki harfin yerini değiştirir | 125 altın |
-| Harf Karıştırma | Tüm tahtayı karıştırır | 300 altın |
-| Parti Güçlendiricisi | Tahtayı tamamen sıfırlar | 400 altın |
+| Word Length | Effect |
+|-------------|--------|
+| 4 letters | Clear row |
+| 5 letters | Area blast |
+| 6 letters | Clear column |
+| 7+ letters | Mega blast |
 
 ---
 
-## Skor Geçmişi
+## Market & Joker System
 
-Her oyun otomatik kaydedilir. Skor tablosunda şunlar görünür:
+Jokers are purchased with in-game gold — no real money involved.
 
-- **Genel istatistikler:** toplam oyun, en yüksek skor, ortalama skor, toplam kelime, en uzun kelime, toplam süre
-- **Oyun detayı:** grid boyutu, hamle sayısı, bulunan kelimeler, süre
+| Joker | Effect | Cost |
+|-------|--------|------|
+| Fish | Removes a random letter | 100 gold |
+| Wheel | Clears the row and column of a selected letter | 200 gold |
+| Lollipop Breaker | Removes a single letter | 75 gold |
+| Free Swap | Swaps two adjacent letters | 125 gold |
+| Letter Shuffle | Shuffles the entire board | 300 gold |
+| Party Booster | Fully resets the board | 400 gold |
 
 ---
 
-## Mimari
+## Score History
 
-Feature-first yapı; oyun mantığı UI'dan tamamen bağımsız ve test edilebilir:
+Every game is saved automatically. The leaderboard shows:
+
+- **Overall stats:** total games, highest score, average score, total words, longest word, total time
+- **Game detail:** grid size, move count, words found, duration
+
+---
+
+## Architecture
+
+Feature-first structure; game logic is fully decoupled from the UI and testable:
 
 ```
 lib/src/
-├── app/              # Bootstrap, route, navigation
+├── app/              # Bootstrap, routes, navigation
 ├── core/
-│   ├── config/       # Oyun kuralları ve runtime config
-│   ├── models/       # Domain modelleri
-│   ├── repositories/ # Sözlük, profil, geçmiş, cüzdan, checkpoint
-│   └── storage/      # SQLite & SharedPreferences servisleri
+│   ├── config/       # Game rules and runtime config
+│   ├── models/       # Domain models
+│   ├── repositories/ # Dictionary, profile, history, wallet, checkpoint
+│   └── storage/      # SQLite & SharedPreferences services
 └── features/
-    ├── game/         # Oyun ekranı ve controller
-    ├── game_setup/   # Tahta ve hamle seçimi
-    ├── home/         # Ana ekran
-    ├── market/       # Joker mağazası
-    ├── onboarding/   # Kullanıcı adı akışı
-    └── score_history/# Skor tablosu
+    ├── game/         # Game screen and controller
+    ├── game_setup/   # Board and move selection
+    ├── home/         # Home screen
+    ├── market/       # Joker shop
+    ├── onboarding/   # Username flow
+    └── score_history/# Score history screen
 ```
 
-Yerel veri: `word_crush.db` (SQLite) — oyun sonuçları, joker envanteri, cüzdan, oturum checkpoint.
+Local data: `word_crush.db` (SQLite) — game results, joker inventory, wallet, session checkpoint.
 
 ---
 
-## Teknoloji
+## Tech Stack
 
-- **Flutter / Dart** — cross-platform mobil geliştirme
-- `sqflite` — yerel SQLite veritabanı
-- `shared_preferences` — profil verisi
-- `flutter_test` + `sqflite_common_ffi` — test altyapısı
+- **Flutter / Dart** — cross-platform mobile development
+- `sqflite` — local SQLite database
+- `shared_preferences` — profile data
+- `flutter_test` + `sqflite_common_ffi` — test infrastructure
 
 ---
 
-## Çalıştırma
+## Download
+
+Grab the latest APK from the [Releases](https://github.com/EnesDemir143/crush-word/releases/latest) page and install it on your Android device (enable "Install from unknown sources" if prompted).
+
+## Run from Source
 
 ```bash
 flutter pub get
@@ -171,21 +177,21 @@ flutter test
 
 ---
 
-## Rapor
+## Report
 
-Projenin IEEE formatındaki teknik raporu `report/` klasöründe:
+The IEEE-format technical report is in the `report/` folder:
 
-- **[report/main.pdf](report/main.pdf)** — Sistem mimarisi, algoritmalar, test sonuçları
-- `report/main.tex` — LaTeX kaynak dosyası
+- **[report/main.pdf](report/main.pdf)** — System architecture, algorithms, test results
+- `report/main.tex` — LaTeX source
 
 ---
 
-## Geliştiren
+## Authors
 
 **Enes Demir** & **Mert Şengül**
 
 ---
 
-## Lisans
+## License
 
 [MIT License](LICENSE)
