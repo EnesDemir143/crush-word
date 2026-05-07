@@ -191,6 +191,15 @@ graphify-out/cache/
 graphify-out/graph.html
 graphify-out/graph.json
 
+# LaTeX build artifacts in report/
+report/*.aux
+report/*.bbl
+report/*.blg
+report/*.fdb_latexmk
+report/*.fls
+report/*.log
+report/*.out
+
 .claude/
 .codebuddy/
 .continue/
@@ -204,7 +213,4 @@ graphify-out/graph.json
 CLAUDE.md
 AGENTS.md
 
-report/
-
 .omx/
-report/
